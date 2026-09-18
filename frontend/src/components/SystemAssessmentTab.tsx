@@ -50,6 +50,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
   }
 
   const { host_info, health_score, status, status_color, summary, active_threats, software_audit, threat_forecast, remediation_plan } = assessment;
+  const safeThreats: any[] = Array.isArray(active_threats) ? active_threats : ((active_threats as any)?.suspicious_processes || []);
 
   // Circumference for radial circle SVG
   const radius = 38;
@@ -260,14 +261,14 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
       {/* Viewport: Overview */}
       {activeSubTab === 'overview' && (
         <div className="space-y-6">
-          {active_threats.length > 0 && (
+          {safeThreats.length > 0 && (
             <div className="bg-rose-950/40 border border-rose-500/60 p-5 rounded-3xl space-y-3 shadow-xl shadow-rose-950/20">
               <div className="flex items-center gap-2 text-rose-300 font-extrabold text-sm">
                 <ShieldAlert className="w-5 h-5 text-rose-400" />
                 <span>ALERT: Suspicious Malware Process Signatures Operating on Host!</span>
               </div>
               <div className="space-y-2">
-                {active_threats.map((t, idx) => (
+                {safeThreats.map((t, idx) => (
                   <div key={idx} className="bg-slate-950/90 p-3.5 rounded-2xl border border-rose-900/60 text-xs font-mono flex justify-between items-center">
                     <div>
                       <span className="text-rose-400 font-bold">{t.name} (PID: {t.pid})</span>
@@ -286,30 +287,30 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
           <div className="glass-card p-6 rounded-3xl space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className={`p-2.5 rounded-xl ${active_threats.length > 0 ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
-                  {active_threats.length > 0 ? <AlertOctagon className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
+                <div className={`p-2.5 rounded-xl ${safeThreats.length > 0 ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                  {safeThreats.length > 0 ? <AlertOctagon className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
                 </div>
                 <div>
                   <h3 className="text-sm font-extrabold text-white">
-                    {active_threats.length > 0 ? 'Suspicious Live Processes Detected' : 'Live Host Processes: Clean & Verified'}
+                    {safeThreats.length > 0 ? 'Suspicious Live Processes Detected' : 'Live Host Processes: Clean & Verified'}
                   </h3>
                   <p className="text-xs text-slate-400">
-                    {active_threats.length > 0
+                    {safeThreats.length > 0
                       ? 'Process paths originating from Temp/Downloads or unrecognized binaries'
                       : 'All active process binaries verified against known OS signatures'}
                   </p>
                 </div>
               </div>
               <span className={`px-3 py-1 rounded-xl text-xs font-mono font-bold ${
-                active_threats.length > 0 
+                safeThreats.length > 0 
                   ? 'bg-rose-950/80 text-rose-300 border border-rose-800/60' 
                   : 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/60'
               }`}>
-                {active_threats.length} Flagged
+                {safeThreats.length} Flagged
               </span>
             </div>
 
-            {active_threats.length > 0 && (
+            {safeThreats.length > 0 && (
               <div className="overflow-x-auto border border-rose-900/30 rounded-2xl bg-rose-950/10">
                 <table className="w-full text-left font-mono text-xs">
                   <thead className="bg-rose-950/40 text-rose-300/80 border-b border-rose-900/30">
@@ -321,7 +322,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-rose-900/20">
-                    {active_threats.map((t, idx) => (
+                    {safeThreats.map((t, idx) => (
                       <tr key={idx} className="hover:bg-rose-900/20 transition">
                         <td className="p-3 text-rose-300 font-bold">{t.pid}</td>
                         <td className="p-3 text-white font-bold">{t.name}</td>
@@ -462,7 +463,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.04] bg-slate-950/40">
-                {active_threats.length > 0 && active_threats.map((p, idx) => (
+                {safeThreats.length > 0 && safeThreats.map((p, idx) => (
                   <tr key={`sus-${idx}`} className="bg-rose-950/20 hover:bg-rose-950/30">
                     <td className="p-3.5 text-rose-300 font-bold">{p.pid}</td>
                     <td className="p-3.5 text-rose-200 font-bold">{p.name}</td>
@@ -475,7 +476,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
                     <td className="p-3.5 text-rose-300">{p.anomaly_reason}</td>
                   </tr>
                 ))}
-                {assessment.active_threats.length === 0 && (
+                {safeThreats.length === 0 && (
                   <tr>
                     <td colSpan={5} className="p-6 text-center text-emerald-400">
                       All active process binaries verified against known OS signatures.

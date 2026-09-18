@@ -418,10 +418,7 @@ class HostScanner:
                 "known_vulnerabilities_detected": len(vulnerabilities),
                 "persistence_keys_checked": len(persistence)
             },
-            "active_threats": {
-                "suspicious_processes": suspicious_procs,
-                "length": len(suspicious_procs)
-            },
+            "active_threats": suspicious_procs,
             "software_audit": {
                 "total_software_found": len(software_list),
                 "vulnerability_count": len(vulnerabilities),

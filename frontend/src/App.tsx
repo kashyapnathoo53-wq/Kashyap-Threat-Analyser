@@ -203,7 +203,11 @@ export const App: React.FC = () => {
             )}
 
             {report && (
-              <div className="hidden md:flex items-center gap-2.5 bg-slate-900/90 px-3.5 py-2 rounded-xl border border-white/[0.08] text-xs font-mono shadow-inner">
+              <button 
+                onClick={() => setActiveTab('overview')}
+                className="hidden md:flex items-center gap-2.5 bg-slate-900/90 hover:bg-slate-800/90 px-3.5 py-2 rounded-xl border border-white/[0.08] hover:border-cyan-500/50 text-xs font-mono shadow-inner transition cursor-pointer"
+                title="Click to view Executive Overview"
+              >
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: report.threat_scoring.color }} />
                 <div className="text-left">
                   <div className="text-[10px] text-slate-400 leading-none">Sample</div>
@@ -217,12 +221,12 @@ export const App: React.FC = () => {
                     {(report as any).analysis_duration_ms}ms
                   </span>
                 )}
-              </div>
+              </button>
             )}
 
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-black rounded-xl text-xs transition-all duration-300 shadow-xl shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-[1.02] active:scale-[0.98]"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-black rounded-xl text-xs transition-all duration-300 shadow-xl shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
               <Upload className="w-4 h-4 text-slate-950 stroke-[2.5]" />
               <span>Submit Payload</span>
@@ -241,7 +245,7 @@ export const App: React.FC = () => {
             </div>
             <button 
               onClick={() => setErrorMessage(null)} 
-              className="text-slate-400 hover:text-white px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-xs"
+              className="text-slate-400 hover:text-white px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-xs cursor-pointer"
             >
               Dismiss
             </button>
@@ -251,64 +255,92 @@ export const App: React.FC = () => {
 
       {/* Main Workspace */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
-        {/* Executive KPI Ribbon (Only visible when report loaded) */}
+        {/* Executive KPI Ribbon (Clickable jump cards) */}
         {!loading && report && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-            {/* KPI 1 */}
-            <div className="glass-card p-4 rounded-2xl relative overflow-hidden">
+            {/* KPI 1 - Threat Verdict */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('overview')}
+              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-cyan-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
+                activeTab === 'overview' ? 'border-cyan-500/60 ring-1 ring-cyan-500/30' : ''
+              }`}
+            >
               <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span>Threat Verdict</span>
-                <ShieldAlert className="w-4 h-4 text-cyan-400" />
+                <span className="font-bold group-hover:text-cyan-300 transition">Threat Verdict</span>
+                <ShieldAlert className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition" />
               </div>
               <div className="text-xl font-black font-mono tracking-tight" style={{ color: report.threat_scoring.color }}>
                 {report.threat_scoring.severity}
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">
-                Risk Score: <strong className="text-white font-mono">{report.threat_scoring.threat_score}/100</strong> &bull; {report.threat_scoring.confidence}% Conf.
+              <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
+                <span>Score: <strong className="text-white font-mono">{report.threat_scoring.threat_score}/100</strong></span>
+                <span className="text-[10px] text-cyan-400 font-mono flex items-center gap-0.5">Open &rarr;</span>
               </div>
-            </div>
+            </button>
 
-            {/* KPI 2 */}
-            <div className="glass-card p-4 rounded-2xl relative overflow-hidden">
+            {/* KPI 2 - Host Health Status */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('host')}
+              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-emerald-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
+                activeTab === 'host' ? 'border-emerald-500/60 ring-1 ring-emerald-500/30' : ''
+              }`}
+            >
               <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span>Host Health Status</span>
-                <MonitorCheck className="w-4 h-4 text-emerald-400" />
+                <span className="font-bold group-hover:text-emerald-300 transition">Host Health Status</span>
+                <MonitorCheck className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition" />
               </div>
               <div className="text-xl font-black font-mono tracking-tight" style={{ color: hostAssessment?.status_color || '#22c55e' }}>
                 {hostAssessment?.health_score ?? 100}/100
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">
-                Host: <strong className="text-slate-200">{hostAssessment?.host_info?.hostname || 'ONLINE'}</strong> &bull; {hostAssessment?.active_threats?.suspicious_processes?.length || 0} Susp. Procs
+              <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
+                <span className="truncate">Host: <strong className="text-slate-200 font-mono">{hostAssessment?.host_info?.hostname || 'ONLINE'}</strong></span>
+                <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-0.5 shrink-0">Open &rarr;</span>
               </div>
-            </div>
+            </button>
 
-            {/* KPI 3 */}
-            <div className="glass-card p-4 rounded-2xl relative overflow-hidden">
+            {/* KPI 3 - Forensic Extraction */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('iocs')}
+              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-purple-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
+                activeTab === 'iocs' ? 'border-purple-500/60 ring-1 ring-purple-500/30' : ''
+              }`}
+            >
               <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span>Forensic Extraction</span>
-                <Database className="w-4 h-4 text-purple-400" />
+                <span className="font-bold group-hover:text-purple-300 transition">Forensic Extraction</span>
+                <Database className="w-4 h-4 text-purple-400 group-hover:scale-110 transition" />
               </div>
               <div className="text-xl font-black font-mono tracking-tight text-purple-300">
                 {report.ioc_extraction.total_extracted} Indicators
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">
-                {report.ioc_extraction.summary_by_category?.['Network C2'] || 0} C2 IPs &bull; STIX 2.1 Ready
+              <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
+                <span>{report.ioc_extraction.summary_by_category?.['Network C2'] || 0} C2 IPs</span>
+                <span className="text-[10px] text-purple-400 font-mono flex items-center gap-0.5">Open &rarr;</span>
               </div>
-            </div>
+            </button>
 
-            {/* KPI 4 */}
-            <div className="glass-card p-4 rounded-2xl relative overflow-hidden">
+            {/* KPI 4 - Execution Speed */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('static')}
+              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-amber-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
+                activeTab === 'static' ? 'border-amber-500/60 ring-1 ring-amber-500/30' : ''
+              }`}
+            >
               <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span>Execution Speed</span>
-                <Zap className="w-4 h-4 text-amber-400" />
+                <span className="font-bold group-hover:text-amber-300 transition">Execution Speed</span>
+                <Zap className="w-4 h-4 text-amber-400 group-hover:scale-110 transition" />
               </div>
               <div className="text-xl font-black font-mono tracking-tight text-amber-300">
                 {(report as any).analysis_duration_ms || 18} ms
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">
-                Zero-Lag Streaming Engine &bull; {((report as any).file_size_bytes ? `${((report as any).file_size_bytes / 1024).toFixed(1)} KB` : 'PE Binary')}
+              <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
+                <span>Streaming Engine</span>
+                <span className="text-[10px] text-amber-400 font-mono flex items-center gap-0.5">Open &rarr;</span>
               </div>
-            </div>
+            </button>
           </div>
         )}
 

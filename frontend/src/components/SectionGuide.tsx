@@ -26,8 +26,11 @@ export const SectionGuide: React.FC<GuideProps> = ({
     <div className="glass-card rounded-2xl overflow-hidden border border-white/[0.08] shadow-2xl transition-all duration-300 mb-6 group">
       {/* Header bar */}
       <div 
+        role="button"
+        tabIndex={0}
         onClick={() => setIsExpanded(!isExpanded)}
-        className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-white/[0.03] transition select-none"
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsExpanded(!isExpanded); } }}
+        className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-white/[0.04] transition select-none"
       >
         <div className="flex items-center gap-3.5">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/20 to-sky-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0 shadow-inner">
@@ -41,13 +44,18 @@ export const SectionGuide: React.FC<GuideProps> = ({
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              {isExpanded ? "Click to minimize analyst methodology & telemetry rules" : "Methodology, threat intelligence value & critical indicators to watch"}
+              {isExpanded ? "Click anywhere on this card to minimize" : "Click to expand methodology, threat intelligence value & critical indicators"}
             </p>
           </div>
         </div>
 
         <button 
-          className="text-xs font-mono font-bold text-cyan-300 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/[0.08] hover:border-cyan-500/40 transition shadow-sm"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(!isExpanded);
+          }}
+          className="text-xs font-mono font-bold text-cyan-300 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/[0.08] hover:border-cyan-500/40 transition shadow-sm cursor-pointer"
         >
           <span>{isExpanded ? "Collapse Guide" : "Read Brief"}</span>
           {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}

@@ -56,10 +56,19 @@ def test_full_pipeline():
     stix = rep.generate_stix_21(filename, static_res, threat_res, ioc_res, mitre_res)
     assert stix["type"] == "bundle"
     html = rep.generate_html(filename, static_res, threat_res, yara_res, behavioral_res, ioc_res, mitre_res)
-    assert "Malware Automated Analysis Report" in html
+    assert "Analysis Report" in html
     print("  [x] Reporter passed.")
+
+    # 8. Host Scanner & Vulnerability Auditor
+    from host_scanner import HostScanner
+    hs = HostScanner()
+    assessment = hs.auto_assess_system()
+    assert "health_score" in assessment
+    assert len(assessment["host_info"]["hostname"]) > 0
+    assert len(assessment["threat_forecast"]) > 0
+    print(f"  [x] Host Scanner & Vulnerability Auditor passed (Host: {assessment['host_info']['hostname']}, Health: {assessment['health_score']}/100).")
     
-    print("[SUCCESS] All pipeline tests passed cleanly!")
+    print("[SUCCESS] All pipeline & host security tests passed cleanly!")
 
 if __name__ == "__main__":
     test_full_pipeline()

@@ -162,3 +162,81 @@ export interface FullAnalysisReport {
   mitre_mapping: MitreMapping;
   threat_scoring: ThreatScoring;
 }
+
+export interface SoftwareVulnerability {
+  software: string;
+  installed_version: string;
+  cve: string;
+  severity: string;
+  cvss: number;
+  description: string;
+  remediation: string;
+}
+
+export interface InstalledSoftwareItem {
+  name: string;
+  version: string;
+  publisher: string;
+  has_cve?: boolean;
+  cve_id?: string;
+  severity?: string;
+}
+
+export interface ThreatForecastItem {
+  vector: string;
+  probability: string;
+  impact: string;
+  reasoning: string;
+  mitigation: string;
+}
+
+export interface RemediationItem {
+  action: string;
+  urgency: string;
+  details: string;
+}
+
+export interface HostAssessment {
+  timestamp: string;
+  host_info: {
+    hostname: string;
+    os: string;
+    architecture: string;
+    python_version: string;
+  };
+  health_score: number;
+  status: string;
+  status_color: string;
+  alert_level: string;
+  summary: {
+    total_processes_scanned: number;
+    suspicious_processes: number;
+    startup_items_scanned: number;
+    suspicious_startup_items: number;
+    installed_software_scanned: number;
+    known_vulnerabilities_detected: number;
+  };
+  active_threats: {
+    pid: number;
+    name: string;
+    path: string;
+    is_suspicious: boolean;
+    threat_level: string;
+    anomaly_reason: string;
+  }[];
+  persistence_items: {
+    name: string;
+    command: string;
+    location: string;
+    is_suspicious: boolean;
+    risk: string;
+  }[];
+  software_audit: {
+    installed_software: InstalledSoftwareItem[];
+    total_software_found: number;
+    vulnerabilities: SoftwareVulnerability[];
+    vulnerability_count: number;
+  };
+  threat_forecast: ThreatForecastItem[];
+  remediation_plan: RemediationItem[];
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FullAnalysisReport } from './types';
+import { FullAnalysisReport, HostAssessment } from './types';
 import { DashboardOverview } from './components/DashboardOverview';
 import { StaticAnalysisTab } from './components/StaticAnalysisTab';
 import { BehavioralSandboxTab } from './components/BehavioralSandboxTab';
@@ -7,19 +7,38 @@ import { MitreAttackTab } from './components/MitreAttackTab';
 import { IocExtractorTab } from './components/IocExtractorTab';
 import { YaraWorkbenchTab } from './components/YaraWorkbenchTab';
 import { ReportGeneratorTab } from './components/ReportGeneratorTab';
+import { SystemAssessmentTab } from './components/SystemAssessmentTab';
 import { SampleSelectorModal } from './components/SampleSelectorModal';
-import { Shield, ShieldAlert, Cpu, Terminal, Layers, Database, Code2, FileText, Upload, RefreshCw } from 'lucide-react';
+import { Shield, ShieldAlert, Cpu, Terminal, Layers, Database, Code2, FileText, Upload, RefreshCw, Activity, AlertTriangle, MonitorCheck } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [report, setReport] = useState<FullAnalysisReport | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('overview');
+  const [hostAssessment, setHostAssessment] = useState<HostAssessment | null>(null);
+  const [hostLoading, setHostLoading] = useState<boolean>(true);
+  const [activeTab, setActiveTab] = useState<string>('host');
   const [showModal, setShowModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Load default preset on startup
+  // Auto-run Host Assessment and load sample on startup
   useEffect(() => {
+    runHostAutoAssessment();
     loadPresetSample('sample_wannacry');
   }, []);
+
+  const runHostAutoAssessment = async () => {
+    setHostLoading(true);
+    try {
+      const res = await fetch('/api/system/auto-assess');
+      if (res.ok) {
+        const data = await res.json();
+        setHostAssessment(data);
+      }
+    } catch (err) {
+      console.error("Host assessment failed:", err);
+    } finally {
+      setHostLoading(false);
+    }
+  };
 
   const loadPresetSample = async (presetId: string) => {
     setLoading(true);
@@ -80,6 +99,22 @@ export const App: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            {hostAssessment && (
+              <button 
+                onClick={() => setActiveTab('host')}
+                className="hidden lg:flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 text-xs hover:border-cyan-500 transition"
+              >
+                <MonitorCheck className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="text-slate-400">Host Status:</span>
+                <span 
+                  className="px-2 py-0.5 rounded text-[10px] font-bold text-white uppercase"
+                  style={{ backgroundColor: hostAssessment.status_color }}
+                >
+                  {hostAssessment.health_score}/100
+                </span>
+              </button>
+            )}
+
             {report && (
               <div className="hidden md:flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 text-xs font-mono">
                 <span className="text-slate-400">Sample:</span>
@@ -116,7 +151,8 @@ export const App: React.FC = () => {
             {/* Tab Navigation Controls */}
             <div className="flex overflow-x-auto bg-slate-900/80 p-1.5 rounded-xl border border-slate-800 text-xs font-semibold gap-1">
               {[
-                { id: 'overview', label: 'Executive Overview', icon: ShieldAlert },
+                { id: 'host', label: 'System Auto-Assessment', icon: MonitorCheck, badge: hostAssessment ? `${hostAssessment.health_score}/100` : undefined, badgeColor: hostAssessment?.status_color },
+                { id: 'overview', label: 'Sample Overview', icon: ShieldAlert },
                 { id: 'static', label: 'Static Analysis', icon: Cpu },
                 { id: 'sandbox', label: 'Behavioral Sandbox', icon: Terminal },
                 { id: 'mitre', label: 'MITRE ATT&CK', icon: Layers },
@@ -130,7 +166,7 @@ export const App: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition whitespace-nowrap ${
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-lg transition whitespace-nowrap ${
                       isActive 
                         ? 'bg-cyan-500 text-slate-950 font-bold shadow-md' 
                         : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
@@ -138,12 +174,27 @@ export const App: React.FC = () => {
                   >
                     <Icon className="w-4 h-4" />
                     {tab.label}
+                    {tab.badge && (
+                      <span 
+                        className="px-1.5 py-0.2 text-[10px] font-mono font-bold rounded text-white"
+                        style={{ backgroundColor: tab.badgeColor || '#22c55e' }}
+                      >
+                        {tab.badge}
+                      </span>
+                    )}
                   </button>
                 );
               })}
             </div>
 
             {/* Tab Body Viewports */}
+            {activeTab === 'host' && (
+              <SystemAssessmentTab 
+                assessment={hostAssessment} 
+                loading={hostLoading} 
+                onRescan={runHostAutoAssessment} 
+              />
+            )}
             {activeTab === 'overview' && <DashboardOverview report={report} onNavigateTab={setActiveTab} />}
             {activeTab === 'static' && <StaticAnalysisTab staticAnalysis={report.static_analysis} />}
             {activeTab === 'sandbox' && <BehavioralSandboxTab behavioral={report.behavioral_analysis} />}

@@ -13,6 +13,7 @@ from mitre_mapper import MitreMapper
 from threat_scorer import ThreatScorer
 from reporter import Reporter
 from samples_generator import get_preset_samples, get_preset_sample_by_id
+from host_scanner import HostScanner
 
 app = FastAPI(
     title="Kashyap Threat Analyser - Automated Malware Static & Behavioral Analysis Platform",
@@ -37,9 +38,11 @@ ioc_extractor = IocExtractor()
 mitre_mapper = MitreMapper()
 threat_scorer = ThreatScorer()
 reporter = Reporter()
+host_scanner = HostScanner()
 
 # Global memory storage for analyzed reports
 analysis_store: Dict[str, Any] = {}
+latest_host_assessment: Dict[str, Any] = {}
 
 class CustomYaraRequest(BaseModel):
     name: str
@@ -56,7 +59,28 @@ def root():
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "engines": ["static", "yara", "behavioral", "ioc", "mitre", "scorer", "reporter"]}
+    return {"status": "ok", "engines": ["static", "yara", "behavioral", "ioc", "mitre", "scorer", "reporter", "host_scanner"]}
+
+@app.get("/api/system/auto-assess")
+def get_system_auto_assess():
+    global latest_host_assessment
+    result = host_scanner.auto_assess_system()
+    latest_host_assessment = result
+    return result
+
+@app.get("/api/system/quick-status")
+def get_system_quick_status():
+    global latest_host_assessment
+    if not latest_host_assessment:
+        latest_host_assessment = host_scanner.auto_assess_system()
+    return {
+        "status": latest_host_assessment.get("status", "HEALTHY / PROTECTED"),
+        "health_score": latest_host_assessment.get("health_score", 100),
+        "status_color": latest_host_assessment.get("status_color", "#22c55e"),
+        "alert_level": latest_host_assessment.get("alert_level", "INFO"),
+        "suspicious_processes": latest_host_assessment.get("summary", {}).get("suspicious_processes", 0),
+        "vulnerabilities": latest_host_assessment.get("summary", {}).get("known_vulnerabilities_detected", 0)
+    }
 
 @app.get("/api/samples/presets")
 def list_presets():

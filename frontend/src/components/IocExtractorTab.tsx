@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IocExtraction } from '../types';
 import { SectionGuide } from './SectionGuide';
-import { Database, Download, Copy, Check, ShieldAlert, Globe, Key, FileText, Share2 } from 'lucide-react';
+import { Database, Download, Copy, Check, ShieldAlert, Globe, Key, FileText, Share2, Search, Filter } from 'lucide-react';
 
 interface Props {
   ioc: IocExtraction;
@@ -11,6 +11,7 @@ interface Props {
 export const IocExtractorTab: React.FC<Props> = ({ ioc, reportId }) => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const copyToClipboard = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
@@ -19,8 +20,9 @@ export const IocExtractorTab: React.FC<Props> = ({ ioc, reportId }) => {
   };
 
   const filteredIocs = ioc.iocs.filter(item => {
-    if (categoryFilter === 'ALL') return true;
-    return item.category.toLowerCase().includes(categoryFilter.toLowerCase()) || item.type.toLowerCase().includes(categoryFilter.toLowerCase());
+    const matchesCat = categoryFilter === 'ALL' || item.category.toLowerCase().includes(categoryFilter.toLowerCase()) || item.type.toLowerCase().includes(categoryFilter.toLowerCase());
+    const matchesSearch = item.value.toLowerCase().includes(searchQuery.toLowerCase()) || item.type.toLowerCase().includes(searchQuery.toLowerCase()) || item.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCat && matchesSearch;
   });
 
   const exportCsv = () => {
@@ -65,109 +67,137 @@ export const IocExtractorTab: React.FC<Props> = ({ ioc, reportId }) => {
       />
 
       {/* Header Controls */}
-      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="glass-panel p-6 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h3 className="text-base font-bold text-slate-200 flex items-center gap-2">
-            <Database className="w-5 h-5 text-emerald-400" /> Extracted Indicators of Compromise (IOCs)
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+              <Database className="w-5 h-5 text-purple-400" /> Extracted Indicators of Compromise (IOCs)
+            </h3>
+            <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-md bg-purple-950/80 text-purple-300 border border-purple-800">
+              {ioc.total_extracted} Indicators
+            </span>
+          </div>
           <p className="text-xs text-slate-400 mt-1">
-            Automated Regex & Heuristic Extraction of Network, Host, Hash, and Crypto Artifacts ({ioc.total_extracted} Total).
+            Machine-readable forensic artifacts for firewall rules, EDR blocklists, and threat hunting feeds
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            onClick={exportCsv}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white rounded-xl text-xs font-bold border border-white/[0.08] transition shadow-sm"
+          >
+            <Download className="w-3.5 h-3.5" /> CSV Table
+          </button>
           <button
             onClick={downloadStix}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg transition"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-cyan-900/30"
           >
-            <Download className="w-3.5 h-3.5" /> STIX 2.1 JSON
+            <Share2 className="w-3.5 h-3.5" /> STIX 2.1 JSON
           </button>
           <button
             onClick={downloadMisp}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-700 hover:bg-cyan-600 text-white text-xs font-semibold rounded-lg transition"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-purple-900/30"
           >
-            <Download className="w-3.5 h-3.5" /> MISP JSON
-          </button>
-          <button
-            onClick={exportCsv}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition"
-          >
-            <Download className="w-3.5 h-3.5" /> Export CSV
+            <Share2 className="w-3.5 h-3.5" /> MISP Feed
           </button>
         </div>
       </div>
 
-      {/* Category Pills */}
-      <div className="flex flex-wrap gap-2 text-xs">
-        {['ALL', 'Network', 'File', 'Persistence', 'Crypto'].map(cat => (
-          <button
-            key={cat}
-            onClick={() => setCategoryFilter(cat)}
-            className={`px-3 py-1.5 rounded-lg border font-semibold transition ${
-              categoryFilter === cat
-                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-                : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700'
-            }`}
-          >
-            {cat} Filters
-          </button>
-        ))}
+      {/* Filter and Search Bar */}
+      <div className="glass-card p-4 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div className="relative w-full sm:w-72">
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Search indicator values..."
+            className="w-full bg-slate-950 border border-white/[0.08] rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 font-mono"
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-1.5 w-full sm:w-auto">
+          {['ALL', 'Network', 'File', 'Persistence', 'Crypto'].map(cat => (
+            <button
+              key={cat}
+              onClick={() => setCategoryFilter(cat)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition ${
+                categoryFilter === cat 
+                  ? 'bg-cyan-500 text-slate-950 font-black shadow-md' 
+                  : 'bg-slate-950 text-slate-400 hover:text-white border border-white/[0.06]'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* IOC Table */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden">
-        <table className="w-full text-left font-mono text-xs">
-          <thead className="bg-slate-950 text-slate-400 border-b border-slate-800">
-            <tr>
-              <th className="p-3">Type</th>
-              <th className="p-3">IOC Value</th>
-              <th className="p-3">Category</th>
-              <th className="p-3">Threat Intelligence Context</th>
-              <th className="p-3">Confidence</th>
-              <th className="p-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-800/60">
-            {filteredIocs.length === 0 ? (
+      {/* IOC Grid Table */}
+      <div className="glass-card rounded-3xl overflow-hidden border border-white/[0.06]">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left font-mono text-xs">
+            <thead className="bg-slate-950 text-slate-400 border-b border-white/[0.06]">
               <tr>
-                <td colSpan={6} className="p-6 text-center text-slate-500 italic">No indicators found matching filter.</td>
+                <th className="p-3.5">Type &amp; Category</th>
+                <th className="p-3.5">Indicator Value</th>
+                <th className="p-3.5">Confidence</th>
+                <th className="p-3.5">Risk Rating</th>
+                <th className="p-3.5 text-right">Actions</th>
               </tr>
-            ) : (
-              filteredIocs.map((item, idx) => (
-                <tr key={idx} className="hover:bg-slate-800/40">
-                  <td className="p-3 text-cyan-300 font-bold">{item.type}</td>
-                  <td className="p-3 text-slate-200 font-bold break-all max-w-xs">{item.value}</td>
-                  <td className="p-3 text-slate-400">{item.category}</td>
-                  <td className="p-3 text-slate-400 text-[11px]">
-                    {item.threat_intel?.virustotal_ratio && (
-                      <span className="mr-2 text-rose-400">VT: {item.threat_intel.virustotal_ratio}</span>
-                    )}
-                    {item.threat_intel?.abuseipdb_score && (
-                      <span className="mr-2 text-amber-400">AbuseIPDB: {item.threat_intel.abuseipdb_score}</span>
-                    )}
-                    {item.threat_intel?.risk && (
-                      <span className="px-1.5 py-0.5 bg-rose-950 text-rose-300 border border-rose-800 rounded text-[10px] font-bold">
-                        {item.threat_intel.risk}
+            </thead>
+            <tbody className="divide-y divide-white/[0.04] bg-slate-950/40">
+              {filteredIocs.length > 0 ? (
+                filteredIocs.map((item, idx) => (
+                  <tr key={idx} className="hover:bg-slate-900/60 transition">
+                    <td className="p-3.5">
+                      <span className="text-white font-bold block">{item.type}</span>
+                      <span className="text-[10px] text-slate-500">{item.category}</span>
+                    </td>
+                    <td className="p-3.5">
+                      <span className="text-cyan-300 font-bold select-all break-all">{item.value}</span>
+                      {item.threat_intel?.virustotal_ratio && (
+                        <div className="text-[10px] text-slate-500 mt-0.5">
+                          VT: <span className="text-rose-400">{item.threat_intel.virustotal_ratio}</span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-3.5">
+                      <span className="px-2 py-0.5 rounded-md bg-cyan-950/80 text-cyan-300 border border-cyan-800/40 text-[10px] font-bold">
+                        {item.confidence}%
                       </span>
-                    )}
-                  </td>
-                  <td className="p-3">
-                    <span className="text-emerald-400 font-bold">{item.confidence}%</span>
-                  </td>
-                  <td className="p-3 text-right">
-                    <button
-                      onClick={() => copyToClipboard(item.value, idx)}
-                      className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition"
-                      title="Copy IOC value"
-                    >
-                      {copiedIndex === idx ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
+                    </td>
+                    <td className="p-3.5">
+                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                        item.threat_intel?.risk === 'CRITICAL' ? 'bg-rose-950 text-rose-300 border border-rose-800' :
+                        item.threat_intel?.risk === 'HIGH' ? 'bg-amber-950 text-amber-300 border border-amber-800' :
+                        'bg-slate-800 text-slate-300'
+                      }`}>
+                        {item.threat_intel?.risk || 'HIGH'}
+                      </span>
+                    </td>
+                    <td className="p-3.5 text-right">
+                      <button
+                        onClick={() => copyToClipboard(item.value, idx)}
+                        className="p-1.5 bg-slate-900 hover:bg-cyan-500 hover:text-slate-950 text-slate-400 rounded-xl transition border border-white/[0.06]"
+                        title="Copy Indicator Value"
+                      >
+                        {copiedIndex === idx ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="p-8 text-center text-slate-500 italic">
+                    No Indicators of Compromise found matching current filter.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

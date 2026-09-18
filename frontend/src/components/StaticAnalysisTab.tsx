@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StaticAnalysis } from '../types';
 import { SectionGuide } from './SectionGuide';
-import { Copy, Check, FileCode, Cpu, Code2, Search, Lock, Binary, ShieldAlert } from 'lucide-react';
+import { Copy, Check, FileCode, Cpu, Code2, Search, Lock, Binary, ShieldAlert, Key, Zap } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 
 interface Props {
@@ -41,7 +41,7 @@ export const StaticAnalysisTab: React.FC<Props> = ({ staticAnalysis }) => {
     <div className="space-y-6">
       {/* Comprehensive Section Guide */}
       <SectionGuide
-        title="Static Malware Analysis &amp; Structural Disassembly"
+        title="Static Malware Forensics &amp; Structural Disassembly"
         badge="Binary Forensics"
         whatItDoes="Inspects the file without executing its code. It extracts cryptographic hashes (MD5, SHA1, SHA256, SSDEEP fuzzy hash), parses Portable Executable (PE) headers, measures Shannon entropy per section (.text, .rdata, .data, .rsrc) to detect packers like UPX or Themida, and identifies high-risk Windows API functions imported from KERNEL32 and ADVAPI32."
         howItHelps="Static analysis reveals the binary's underlying capabilities, obfuscation level, and origin without running any dangerous payloads. Comparing SSDEEP hashes lets you identify malware polymorphic variants that share code even if their SHA256 has changed."
@@ -56,124 +56,192 @@ export const StaticAnalysisTab: React.FC<Props> = ({ staticAnalysis }) => {
         defaultExpanded={false}
       />
 
-      {/* File Hashes Card */}
-      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl">
-        <h3 className="text-base font-bold text-slate-200 mb-4 flex items-center gap-2">
-          <FileCode className="w-4 h-4 text-cyan-400" /> Cryptographic File Hashes
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-mono text-xs">
+      {/* Cryptographic File Hashes Grid */}
+      <div className="glass-card p-6 rounded-3xl">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+              <FileCode className="w-4 h-4 text-cyan-400" /> Cryptographic File Fingerprints
+            </h3>
+            <p className="text-xs text-slate-400">
+              Immutable cryptographic hashes for threat intelligence cross-referencing and chain of custody
+            </p>
+          </div>
+          <span className="text-[11px] font-mono text-cyan-300 bg-cyan-950/80 px-2.5 py-1 rounded-lg border border-cyan-800/50">
+            {staticAnalysis.hashes.size_bytes} Bytes ({ (staticAnalysis.hashes.size_bytes / 1024).toFixed(1) } KB)
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 font-mono text-xs">
           {[
             { label: 'MD5', val: staticAnalysis.hashes.md5 },
             { label: 'SHA1', val: staticAnalysis.hashes.sha1 },
             { label: 'SHA256', val: staticAnalysis.hashes.sha256 },
-            { label: 'SSDEEP', val: staticAnalysis.hashes.ssdeep },
-          ].map(item => (
-            <div key={item.label} className="bg-slate-950/80 p-3 rounded-lg border border-slate-800/80 flex items-center justify-between">
-              <div className="truncate mr-2">
-                <span className="text-slate-400 font-bold block mb-0.5">{item.label}</span>
-                <span className="text-cyan-300 truncate">{item.val}</span>
+            { label: 'SSDEEP (Fuzzy)', val: staticAnalysis.hashes.ssdeep },
+          ].map((h, i) => (
+            <div 
+              key={i} 
+              className="bg-slate-950/80 p-3.5 rounded-2xl border border-white/[0.05] flex items-center justify-between gap-3 group hover:border-cyan-500/40 transition shadow-sm"
+            >
+              <div className="truncate">
+                <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-sans font-bold mb-0.5">
+                  {h.label}
+                </span>
+                <span className="text-slate-300 text-xs truncate block select-all group-hover:text-cyan-300 transition">
+                  {h.val}
+                </span>
               </div>
               <button
-                onClick={() => copyToClipboard(item.val, item.label)}
-                className="p-1.5 text-slate-400 hover:text-white bg-slate-800 rounded transition"
-                title="Copy hash"
+                onClick={() => copyToClipboard(h.val, h.label)}
+                className="p-2 bg-slate-900 hover:bg-cyan-500 hover:text-slate-950 text-slate-400 rounded-xl transition shrink-0 border border-white/[0.06]"
+                title="Copy hash to clipboard"
               >
-                {copiedHash === item.label ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedHash === h.label ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
             </div>
           ))}
         </div>
       </div>
 
-      {/* PE Header & Section Entropy Chart */}
+      {/* Section Entropy & Structure */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl">
-          <h3 className="text-base font-bold text-slate-200 mb-2 flex items-center gap-2">
-            <Cpu className="w-4 h-4 text-purple-400" /> Section Entropy Profile
-          </h3>
-          <p className="text-xs text-slate-400 mb-4">
-            Entropy values &gt; 7.0 indicate packed or encrypted sections (e.g., UPX, Themida).
-          </p>
+        {/* Entropy Chart */}
+        <div className="glass-card p-6 rounded-3xl">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+                <Cpu className="w-4 h-4 text-cyan-400" /> Section Shannon Entropy Curve
+              </h3>
+              <p className="text-xs text-slate-400">
+                Values &gt; 7.0 indicate high randomness (packing, encryption, or compression)
+              </p>
+            </div>
+            {staticAnalysis.pe_structure.is_packed && (
+              <span className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg bg-rose-950/90 text-rose-300 border border-rose-800 animate-pulse">
+                Packed / Encrypted
+              </span>
+            )}
+          </div>
 
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={entropyData}>
-                <XAxis dataKey="name" stroke="#64748b" tick={{ fontSize: 11 }} />
-                <YAxis domain={[0, 8]} stroke="#64748b" tick={{ fontSize: 11 }} />
-                <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155' }} />
-                <Area type="monotone" dataKey="entropy" stroke="#a855f7" fill="#a855f722" strokeWidth={2} />
+              <AreaChart data={entropyData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="entropyGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="name" stroke="#64748b" fontSize={11} fontStyle="monospace" />
+                <YAxis domain={[0, 8]} stroke="#64748b" fontSize={11} fontStyle="monospace" />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#030712', borderColor: '#334155', borderRadius: '12px', fontSize: '12px' }}
+                  formatter={(val: any) => [`${val} / 8.0`, 'Entropy']}
+                />
+                <Area type="monotone" dataKey="entropy" stroke="#06b6d4" strokeWidth={2} fillOpacity={1} fill="url(#entropyGradient)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-800 flex justify-between text-xs text-slate-400">
-            <span>Packer Detection: <strong className="text-amber-400">{staticAnalysis.pe_structure.packer || 'None Detected'}</strong></span>
-            <span>Digital Signature: <strong className="text-rose-400">{staticAnalysis.pe_structure.digital_signature.status}</strong></span>
+          <div className="mt-4 pt-3 border-t border-white/[0.06] text-xs text-slate-400 flex items-center justify-between font-mono">
+            <span>Overall File Entropy: <strong className="text-cyan-300">{staticAnalysis.file_info.entropy}</strong></span>
+            <span>Packer: <span className="text-amber-300">{staticAnalysis.pe_structure.packer || "None Detected"}</span></span>
           </div>
         </div>
 
-        {/* Suspicious API Imports Table */}
-        <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex flex-col">
-          <h3 className="text-base font-bold text-slate-200 mb-4 flex items-center gap-2">
-            <Code2 className="w-4 h-4 text-cyan-400" /> Suspicious Imported APIs ({staticAnalysis.pe_structure.import_count})
-          </h3>
+        {/* Suspicious Win32 APIs */}
+        <div className="glass-card p-6 rounded-3xl flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4 text-rose-400" /> High-Risk Imported Win32 APIs
+                </h3>
+                <p className="text-xs text-slate-400">
+                  APIs associated with process injection, evasion, and persistence
+                </p>
+              </div>
+              <span className="text-xs font-mono font-bold text-rose-300 bg-rose-950/80 px-2.5 py-1 rounded-lg border border-rose-800">
+                {staticAnalysis.pe_structure.import_count} Flagged
+              </span>
+            </div>
 
-          <div className="overflow-y-auto max-h-64 flex-1 space-y-2 pr-1">
-            {staticAnalysis.pe_structure.imports.length === 0 ? (
-              <div className="text-slate-500 text-xs italic py-4 text-center">No high-risk Windows API functions imported.</div>
-            ) : (
-              staticAnalysis.pe_structure.imports.map((imp, idx) => (
-                <div key={idx} className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800 text-xs flex items-center justify-between">
-                  <div>
-                    <span className="font-mono text-cyan-300 font-bold">{imp.function}</span>
-                    <span className="text-slate-500 ml-2">({imp.dll})</span>
-                    <div className="text-slate-400 mt-0.5">{imp.description}</div>
+            <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+              {staticAnalysis.pe_structure.imports.length > 0 ? (
+                staticAnalysis.pe_structure.imports.map((api, idx) => (
+                  <div key={idx} className="p-3 bg-slate-950/80 rounded-xl border border-white/[0.05] flex items-start justify-between gap-3 text-xs">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-white text-xs">{api.function}</span>
+                        <span className="text-[10px] text-slate-500 font-mono">[{api.dll}]</span>
+                      </div>
+                      <div className="text-[11px] text-slate-400 mt-0.5">{api.description}</div>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold shrink-0 ${
+                      api.risk === 'HIGH' ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'bg-amber-950 text-amber-300 border border-amber-800'
+                    }`}>
+                      {api.risk}
+                    </span>
                   </div>
-                  <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${imp.risk === 'HIGH' ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'bg-amber-950 text-amber-300 border border-amber-800'}`}>
-                    {imp.risk}
-                  </span>
+                ))
+              ) : (
+                <div className="text-xs text-slate-500 italic text-center py-6">
+                  No known high-risk API imports identified in binary table.
                 </div>
-              ))
-            )}
+              )}
+            </div>
+          </div>
+
+          <div className="pt-3 border-t border-white/[0.06] text-xs text-slate-400 flex items-center justify-between">
+            <span>Digital Certificate</span>
+            <span className="text-rose-400 font-mono font-bold text-[11px]">
+              {staticAnalysis.pe_structure.digital_signature.status}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* String Extraction & Auto-Decoders Card */}
-      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl">
+      {/* Extracted Forensic Strings & Auto-Decoder */}
+      <div className="glass-card p-6 rounded-3xl">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-          <h3 className="text-base font-bold text-slate-200 flex items-center gap-2">
-            <Lock className="w-4 h-4 text-cyan-400" /> Extracted & Decoded Strings
-          </h3>
+          <div>
+            <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+              <Binary className="w-4 h-4 text-cyan-400" /> Extracted Strings &amp; Auto-Decoded Streams
+            </h3>
+            <p className="text-xs text-slate-400">
+              Recovered ASCII, UTF-16LE Unicode, Base64, and XOR decoded telemetry
+            </p>
+          </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <div className="relative flex-1 sm:w-64">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+          {/* Search bar & tab filters */}
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-48">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
               <input
                 type="text"
                 value={stringFilter}
                 onChange={e => setStringFilter(e.target.value)}
                 placeholder="Filter strings..."
-                className="w-full bg-slate-950 border border-slate-800 text-xs rounded-lg pl-8 pr-3 py-1.5 text-slate-200 focus:outline-none focus:border-cyan-500"
+                className="w-full bg-slate-950 border border-white/[0.08] rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 font-mono"
               />
             </div>
 
-            <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
+            <div className="flex rounded-xl bg-slate-950 p-1 border border-white/[0.08] text-xs font-bold font-mono">
               <button
                 onClick={() => setStringTab('decoded')}
-                className={`px-3 py-1 rounded font-medium ${stringTab === 'decoded' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400'}`}
+                className={`px-3 py-1 rounded-lg transition ${stringTab === 'decoded' ? 'bg-cyan-500 text-slate-950 font-black' : 'text-slate-400 hover:text-white'}`}
               >
                 Decoded ({staticAnalysis.strings.decoded.length})
               </button>
               <button
                 onClick={() => setStringTab('ascii')}
-                className={`px-3 py-1 rounded font-medium ${stringTab === 'ascii' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400'}`}
+                className={`px-3 py-1 rounded-lg transition ${stringTab === 'ascii' ? 'bg-cyan-500 text-slate-950 font-black' : 'text-slate-400 hover:text-white'}`}
               >
                 ASCII ({staticAnalysis.strings.ascii_total})
               </button>
               <button
                 onClick={() => setStringTab('unicode')}
-                className={`px-3 py-1 rounded font-medium ${stringTab === 'unicode' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400'}`}
+                className={`px-3 py-1 rounded-lg transition ${stringTab === 'unicode' ? 'bg-cyan-500 text-slate-950 font-black' : 'text-slate-400 hover:text-white'}`}
               >
                 Unicode ({staticAnalysis.strings.unicode_total})
               </button>
@@ -181,37 +249,52 @@ export const StaticAnalysisTab: React.FC<Props> = ({ staticAnalysis }) => {
           </div>
         </div>
 
-        <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs max-h-64 overflow-y-auto space-y-1.5">
+        {/* Content list */}
+        <div className="bg-slate-950/90 rounded-2xl border border-white/[0.06] p-3 max-h-72 overflow-y-auto font-mono text-xs">
           {stringTab === 'decoded' && (
-            filteredDecoded.length === 0 ? (
-              <div className="text-slate-500 italic py-2">No matching decoded string artifacts.</div>
-            ) : (
-              filteredDecoded.map((item, idx) => (
-                <div key={idx} className="bg-slate-900/90 p-2 rounded border border-slate-800 flex justify-between items-center">
-                  <div>
-                    <span className="text-amber-400 font-semibold mr-2">[{item.type}]</span>
-                    <span className="text-cyan-300 font-bold">{item.decoded}</span>
+            <div className="space-y-2">
+              {filteredDecoded.length > 0 ? (
+                filteredDecoded.map((s, idx) => (
+                  <div key={idx} className="p-2.5 bg-slate-900/80 rounded-xl border border-white/[0.05] flex items-center justify-between gap-3">
+                    <div className="truncate">
+                      <span className="text-[10px] uppercase font-bold text-purple-400 block">{s.type}</span>
+                      <span className="text-cyan-300 font-bold text-xs select-all">{s.decoded}</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 truncate max-w-[120px]">{s.original}</span>
                   </div>
-                  <span className="text-[10px] text-slate-500 truncate max-w-[200px]">Raw: {item.original}</span>
-                </div>
-              ))
-            )
+                ))
+              ) : (
+                <div className="text-xs text-slate-500 italic text-center py-6">No decoded obfuscated strings matched the filter.</div>
+              )}
+            </div>
           )}
 
           {stringTab === 'ascii' && (
-            filteredAscii.slice(0, 100).map((str, idx) => (
-              <div key={idx} className="text-slate-300 hover:text-cyan-300 py-0.5 border-b border-slate-900/50 truncate">
-                {str}
-              </div>
-            ))
+            <div className="space-y-1">
+              {filteredAscii.length > 0 ? (
+                filteredAscii.map((s, idx) => (
+                  <div key={idx} className="py-1 px-2 hover:bg-slate-900 rounded text-slate-300 select-all truncate border-b border-slate-900/50">
+                    {s}
+                  </div>
+                ))
+              ) : (
+                <div className="text-xs text-slate-500 italic text-center py-6">No ASCII strings found matching filter.</div>
+              )}
+            </div>
           )}
 
           {stringTab === 'unicode' && (
-            filteredUnicode.slice(0, 50).map((str, idx) => (
-              <div key={idx} className="text-purple-300 hover:text-cyan-300 py-0.5 border-b border-slate-900/50 truncate">
-                {str}
-              </div>
-            ))
+            <div className="space-y-1">
+              {filteredUnicode.length > 0 ? (
+                filteredUnicode.map((s, idx) => (
+                  <div key={idx} className="py-1 px-2 hover:bg-slate-900 rounded text-sky-300 select-all truncate border-b border-slate-900/50">
+                    {s}
+                  </div>
+                ))
+              ) : (
+                <div className="text-xs text-slate-500 italic text-center py-6">No Unicode strings found matching filter.</div>
+              )}
+            </div>
           )}
         </div>
       </div>

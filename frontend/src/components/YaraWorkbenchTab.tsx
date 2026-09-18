@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { YaraScan } from '../types';
 import { SectionGuide } from './SectionGuide';
-import { Terminal, Plus, CheckCircle2, Play, Code2, ShieldCheck, AlertOctagon, Sparkles, BookOpen } from 'lucide-react';
+import { Terminal, Plus, CheckCircle2, Play, Code2, ShieldCheck, AlertOctagon, Sparkles, BookOpen, Fingerprint } from 'lucide-react';
 
 interface Props {
   yaraScan: YaraScan;
@@ -58,134 +58,148 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
         defaultExpanded={false}
       />
 
-      {/* Registered YARA Rules Match Highlights */}
-      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl">
-        <h3 className="text-base font-bold text-slate-200 mb-1 flex items-center gap-2">
-          <Terminal className="w-5 h-5 text-amber-400" /> Active YARA Scan Results ({yaraScan.match_count} Hits / {yaraScan.total_rules_scanned} Rules)
-        </h3>
-        <p className="text-xs text-slate-400 mb-4">
-          Real-time pattern signature matches detected against binary content and memory strings.
-        </p>
+      {/* Matches Header Banner */}
+      <div className="glass-panel p-6 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+              <Fingerprint className="w-5 h-5 text-amber-400" /> Compiled YARA Engine Scan Results
+            </h3>
+            <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-md bg-amber-950/80 text-amber-300 border border-amber-800">
+              {yaraScan.total_matches} Rule Matches
+            </span>
+          </div>
+          <p className="text-xs text-slate-400 mt-1">
+            Byte-level pattern matching across signature database &bull; Scanned in {yaraScan.scan_duration_ms} ms
+          </p>
+        </div>
 
-        <div className="space-y-3">
-          {yaraScan.matches.length === 0 ? (
-            <div className="p-4 bg-slate-950 rounded-lg text-center text-slate-500 text-xs italic">
-              No YARA signature rule hits detected for this sample.
-            </div>
-          ) : (
-            yaraScan.matches.map(m => (
-              <div key={m.rule_id} className="bg-slate-950 p-4 rounded-xl border border-amber-500/40 space-y-2">
-                <div className="flex justify-between items-center">
+        <span className="text-xs font-mono text-emerald-400 bg-emerald-950/60 px-3 py-1.5 rounded-xl border border-emerald-800/40 font-bold flex items-center gap-1.5">
+          <CheckCircle2 className="w-3.5 h-3.5" /> Engine v4.5 Compatible
+        </span>
+      </div>
+
+      {/* Matched Rules List */}
+      <div className="glass-card p-6 rounded-3xl space-y-4">
+        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          Triggered Signature Hits
+        </h4>
+
+        {yaraScan.matches.length > 0 ? (
+          <div className="space-y-3">
+            {yaraScan.matches.map((rule, idx) => (
+              <div key={idx} className="bg-slate-950/80 p-4 rounded-2xl border border-white/[0.05] space-y-2">
+                <div className="flex flex-wrap justify-between items-center gap-2">
                   <div className="flex items-center gap-2">
-                    <AlertOctagon className="w-4 h-4 text-amber-400" />
-                    <span className="font-mono font-bold text-cyan-300 text-sm">{m.rule_name}</span>
-                    <span className="px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-amber-950 text-amber-300 border border-amber-800">
-                      {m.category}
+                    <span className="font-mono font-bold text-amber-300 text-sm">{rule.rule_name}</span>
+                    <span className="px-2 py-0.5 text-[10px] uppercase font-mono font-bold rounded bg-slate-800 text-slate-300">
+                      {rule.category}
                     </span>
                   </div>
-                  <span className="px-2.5 py-0.5 text-xs font-bold rounded bg-rose-950 text-rose-300 border border-rose-800">
-                    {m.severity}
+                  <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded bg-rose-950 text-rose-300 border border-rose-800">
+                    MATCH CONFIRMED
                   </span>
                 </div>
 
-                <div className="text-xs text-slate-300">{m.description}</div>
+                <p className="text-xs text-slate-300">{rule.description}</p>
 
-                <div className="bg-slate-900/90 p-2.5 rounded border border-slate-800 text-xs font-mono">
-                  <span className="text-slate-400 block mb-1">Matched String Tokens:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {m.matched_strings.map((str, sIdx) => (
-                      <span key={sIdx} className="px-2 py-0.5 bg-slate-950 text-rose-300 rounded border border-rose-900/60">
-                        "{str}"
-                      </span>
-                    ))}
-                  </div>
+                <div className="pt-2 border-t border-white/[0.04] text-[11px] font-mono text-slate-400 flex flex-wrap gap-2">
+                  <span>Author: <strong className="text-slate-200">{rule.meta?.author || 'Kashyap Threat Intel'}</strong></span>
+                  <span>&bull;</span>
+                  <span>Matched Strings: <span className="text-cyan-300">{rule.strings_matched?.join(', ') || 'N/A'}</span></span>
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-8 bg-slate-950/60 rounded-2xl text-center text-slate-500 text-xs italic border border-white/[0.04]">
+            No standard YARA signatures matched this sample. Try adding custom patterns below.
+          </div>
+        )}
       </div>
 
-      {/* YARA Signature Editor & Validator */}
-      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl space-y-4">
-        <h3 className="text-base font-bold text-slate-200 flex items-center gap-2">
-          <Code2 className="w-5 h-5 text-cyan-400" /> Interactive YARA Rule Workbench
-        </h3>
-        <p className="text-xs text-slate-400">
-          Write custom YARA detection rules, set string tokens, define boolean logic, and run instant rule compilation.
-        </p>
+      {/* Live Rule Authoring Workbench */}
+      <div className="glass-card p-6 rounded-3xl">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+              <Code2 className="w-4 h-4 text-cyan-400" /> Interactive YARA Signature Authoring &amp; Compiler
+            </h3>
+            <p className="text-xs text-slate-400">
+              Draft, compile, and register custom detection rules to expand your threat hunting coverage
+            </p>
+          </div>
+          <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/80 px-2.5 py-1 rounded-lg border border-cyan-800/50">
+            Live Sandbox Testing
+          </span>
+        </div>
 
         {registerStatus && (
-          <div className="p-3 bg-emerald-950/80 border border-emerald-500/50 rounded-lg text-emerald-300 text-xs flex items-center gap-2">
+          <div className="mb-4 p-3 bg-emerald-950/60 border border-emerald-500/40 rounded-xl text-emerald-300 text-xs font-mono flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" /> {registerStatus}
           </div>
         )}
 
         <form onSubmit={handleRegisterRule} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-400 mb-1 font-bold">Rule Name</label>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                Rule Identifier
+              </label>
               <input
                 type="text"
                 value={ruleName}
                 onChange={e => setRuleName(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-cyan-300 font-mono focus:border-cyan-500 focus:outline-none"
+                className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-cyan-500/60"
               />
             </div>
-
             <div>
-              <label className="block text-slate-400 mb-1 font-bold">Threat Category</label>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                Threat Classification
+              </label>
               <select
                 value={category}
                 onChange={e => setCategory(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-200 focus:border-cyan-500 focus:outline-none"
+                className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-cyan-500/60"
               >
                 <option value="Ransomware">Ransomware</option>
-                <option value="Process Injection">Process Injection</option>
+                <option value="Trojan">Trojan / Loader</option>
                 <option value="Infostealer">Infostealer</option>
                 <option value="WebShell">WebShell</option>
-                <option value="Command & Control">Command &amp; Control</option>
+                <option value="APT">APT / Targeted Campaign</option>
               </select>
             </div>
           </div>
 
-          <div className="text-xs">
-            <label className="block text-slate-400 mb-1 font-bold">Matched String Identifiers (Comma-separated)</label>
+          <div>
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
+              Target Strings / Hex Patterns (comma-separated)
+            </label>
             <input
               type="text"
               value={stringsInput}
               onChange={e => setStringsInput(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-rose-300 font-mono focus:border-cyan-500 focus:outline-none"
+              className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500/60"
             />
           </div>
 
-          <div className="text-xs">
-            <label className="block text-slate-400 mb-1 font-bold">Condition Logic Expression</label>
+          <div>
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
+              Evaluation Condition
+            </label>
             <input
               type="text"
               value={conditionInput}
               onChange={e => setConditionInput(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-amber-300 font-mono focus:border-cyan-500 focus:outline-none"
+              className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-purple-300 focus:outline-none focus:border-cyan-500/60"
             />
-          </div>
-
-          {/* Code Preview */}
-          <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs text-slate-400">
-            <div className="text-purple-400">rule {ruleName} &#123;</div>
-            <div className="pl-4 text-cyan-400">strings:</div>
-            {stringsInput.split(',').map((s, idx) => (
-              <div key={idx} className="pl-8 text-rose-300">$s{idx+1} = "{s.trim()}"</div>
-            ))}
-            <div className="pl-4 text-cyan-400">condition:</div>
-            <div className="pl-8 text-amber-300">{conditionInput}</div>
-            <div className="text-purple-400">&#125;</div>
           </div>
 
           <button
             type="submit"
-            className="flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold rounded-lg text-xs transition shadow-lg"
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-cyan-500/25"
           >
-            <Plus className="w-4 h-4" /> Compile & Register YARA Rule
+            <Play className="w-3.5 h-3.5" /> Compile &amp; Save YARA Rule
           </button>
         </form>
       </div>

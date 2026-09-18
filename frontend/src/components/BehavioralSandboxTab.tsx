@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BehavioralAnalysis } from '../types';
 import { ProcessTreeGraph } from './ProcessTreeGraph';
 import { SectionGuide } from './SectionGuide';
-import { Terminal, Network, HardDrive, Filter, Activity, Cpu, Radio, ShieldAlert } from 'lucide-react';
+import { Terminal, Network, HardDrive, Filter, Activity, Cpu, Radio, ShieldAlert, Globe, Key, FilePlus, Search } from 'lucide-react';
 
 interface Props {
   behavioral: BehavioralAnalysis;
@@ -40,144 +40,160 @@ export const BehavioralSandboxTab: React.FC<Props> = ({ behavioral }) => {
       />
 
       {/* Process Execution Hierarchy Tree */}
-      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl">
-        <h3 className="text-base font-bold text-slate-200 mb-1 flex items-center gap-2">
-          <Terminal className="w-4 h-4 text-cyan-400" /> Interactive Execution Process Tree
-        </h3>
-        <p className="text-xs text-slate-400 mb-4">
-          Hierarchical parent-child process execution tree simulated in isolation sandbox.
-        </p>
+      <div className="glass-card p-6 rounded-3xl">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+              <Terminal className="w-4 h-4 text-cyan-400" /> Interactive Virtual Process Hierarchy Tree
+            </h3>
+            <p className="text-xs text-slate-400">
+              Parent-to-child process spawn hierarchy observed inside the execution sandbox
+            </p>
+          </div>
+          <span className="text-[11px] font-mono text-cyan-300 bg-cyan-950/80 px-2.5 py-1 rounded-lg border border-cyan-800/50">
+            PID Root: {behavioral.process_tree.pid}
+          </span>
+        </div>
 
-        <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 max-h-80 overflow-y-auto">
+        <div className="bg-slate-950/90 p-4 rounded-2xl border border-white/[0.06] max-h-80 overflow-y-auto">
           <ProcessTreeGraph node={behavioral.process_tree} />
         </div>
       </div>
 
-      {/* API Call Stream Trace Viewer */}
-      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl">
+      {/* Syscall API Event Trace Stream */}
+      <div className="glass-card p-6 rounded-3xl">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div>
-            <h3 className="text-base font-bold text-slate-200 flex items-center gap-2">
-              <Activity className="w-4 h-4 text-rose-400" /> Dynamic OS API Trace Log ({behavioral.total_api_calls})
+            <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+              <Activity className="w-4 h-4 text-rose-400" /> Kernel &amp; Win32 Syscall Event Stream
             </h3>
             <p className="text-xs text-slate-400">
-              Interception log of Win32/NT Syscall invocations during binary emulation.
+              Chronological API execution trace intercepted by sandbox hook engine
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search API or args..."
-              className="bg-slate-950 border border-slate-800 text-xs rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none focus:border-cyan-500 w-full sm:w-48"
-            />
+          <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-48">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search API calls..."
+                className="w-full bg-slate-950 border border-white/[0.08] rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 font-mono"
+              />
+            </div>
 
-            <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
-              {['ALL', 'CRITICAL', 'HIGH', 'MEDIUM'].map(risk => (
+            <div className="flex rounded-xl bg-slate-950 p-1 border border-white/[0.08] text-xs font-bold font-mono">
+              {['ALL', 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'].map(level => (
                 <button
-                  key={risk}
-                  onClick={() => setRiskFilter(risk)}
-                  className={`px-2.5 py-1 rounded font-semibold ${
-                    riskFilter === risk 
-                      ? risk === 'CRITICAL' ? 'bg-rose-500 text-white' : risk === 'HIGH' ? 'bg-amber-500 text-slate-950' : 'bg-cyan-500 text-slate-950'
-                      : 'text-slate-400'
+                  key={level}
+                  onClick={() => setRiskFilter(level)}
+                  className={`px-2.5 py-1 rounded-lg transition text-[11px] ${
+                    riskFilter === level ? 'bg-cyan-500 text-slate-950 font-black' : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  {risk}
+                  {level}
                 </button>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="overflow-x-auto border border-slate-800 rounded-lg">
-          <table className="w-full text-left font-mono text-xs">
-            <thead className="bg-slate-950 text-slate-400 border-b border-slate-800">
-              <tr>
-                <th className="p-2.5">Time</th>
-                <th className="p-2.5">Process</th>
-                <th className="p-2.5">API Function</th>
-                <th className="p-2.5">Category</th>
-                <th className="p-2.5">Arguments / Call Context</th>
-                <th className="p-2.5">Return</th>
-                <th className="p-2.5">Risk</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60 bg-slate-900/40">
-              {filteredApiStream.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="p-4 text-center text-slate-500 italic">No API calls match filter.</td>
-                </tr>
-              ) : (
-                filteredApiStream.map((api, idx) => (
-                  <tr key={idx} className="hover:bg-slate-800/40">
-                    <td className="p-2.5 text-slate-500">{api.timestamp.toFixed(1)}s</td>
-                    <td className="p-2.5 text-cyan-300 font-bold">{api.process}</td>
-                    <td className="p-2.5 text-amber-300 font-bold">{api.api}</td>
-                    <td className="p-2.5 text-slate-400">{api.category}</td>
-                    <td className="p-2.5 text-slate-300 max-w-xs truncate" title={api.arguments}>{api.arguments}</td>
-                    <td className="p-2.5 text-slate-400">{api.return_val}</td>
-                    <td className="p-2.5">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        api.risk === 'CRITICAL' ? 'bg-rose-950 text-rose-300 border border-rose-800' :
-                        api.risk === 'HIGH' ? 'bg-amber-950 text-amber-300 border border-amber-800' :
-                        'bg-slate-800 text-slate-400'
-                      }`}>
-                        {api.risk}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+        <div className="bg-slate-950/90 rounded-2xl border border-white/[0.06] divide-y divide-white/[0.04] max-h-80 overflow-y-auto font-mono text-xs">
+          {filteredApiStream.length > 0 ? (
+            filteredApiStream.map((call, idx) => (
+              <div key={idx} className="p-3 hover:bg-slate-900/60 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="space-y-0.5 truncate">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-slate-500">[{call.timestamp || `+${idx * 15}ms`}]</span>
+                    <span className="text-white font-bold">{call.api}</span>
+                    <span className="text-[10px] text-cyan-400 bg-cyan-950/60 px-1.5 py-0.2 rounded border border-cyan-800/40">
+                      PID {call.pid} ({call.process})
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-400 truncate pl-4 select-all">
+                    &rarr; Args: <code className="text-slate-300">{call.arguments}</code>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-[10px] text-slate-500">{call.category}</span>
+                  <span className={`px-2 py-0.5 text-[9px] font-black rounded uppercase ${
+                    call.risk === 'CRITICAL' ? 'bg-rose-950 text-rose-300 border border-rose-800' :
+                    call.risk === 'HIGH' ? 'bg-amber-950 text-amber-300 border border-amber-800' :
+                    'bg-slate-800 text-slate-300'
+                  }`}>
+                    {call.risk}
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-xs text-slate-500 italic text-center py-8">
+              No API syscall events match the current filter.
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Filesystem/Registry Mutations & Network Stream */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl">
-          <h3 className="text-base font-bold text-slate-200 mb-3 flex items-center gap-2">
-            <HardDrive className="w-4 h-4 text-emerald-400" /> Filesystem & Registry Activity
-          </h3>
-          <div className="space-y-2 max-h-56 overflow-y-auto pr-1 text-xs font-mono">
-            {behavioral.filesystem_activity.map((fs, idx) => (
-              <div key={`fs-${idx}`} className="bg-slate-950/70 p-2 rounded border border-slate-800 flex justify-between items-center">
-                <span className="text-emerald-400 font-bold mr-2">[{fs.action}]</span>
-                <span className="text-slate-300 truncate flex-1">{fs.path}</span>
-                <span className="text-slate-500 ml-2">{fs.size}</span>
-              </div>
-            ))}
-            {behavioral.registry_activity.map((reg, idx) => (
-              <div key={`reg-${idx}`} className="bg-slate-950/70 p-2 rounded border border-slate-800 flex justify-between items-center">
-                <span className="text-purple-400 font-bold mr-2">[{reg.action}]</span>
-                <span className="text-slate-300 truncate flex-1">{reg.key}</span>
+      {/* Filesystem, Registry & Network Telemetry */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Filesystem */}
+        <div className="glass-card p-5 rounded-3xl">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <FilePlus className="w-3.5 h-3.5 text-cyan-400" /> Filesystem Drops
+            </h4>
+            <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/50">
+              {behavioral.filesystem_activity.length} Files
+            </span>
+          </div>
+          <div className="space-y-2 max-h-52 overflow-y-auto pr-1 text-xs font-mono">
+            {behavioral.filesystem_activity.map((f, i) => (
+              <div key={i} className="p-2 bg-slate-950/80 rounded-xl border border-white/[0.04]">
+                <div className="text-rose-300 font-bold truncate select-all">{f.path}</div>
+                <div className="text-[10px] text-slate-500 mt-0.5">{f.action} &bull; {f.size_bytes ? `${f.size_bytes}B` : 'Created'}</div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl">
-          <h3 className="text-base font-bold text-slate-200 mb-3 flex items-center gap-2">
-            <Network className="w-4 h-4 text-cyan-400" /> Dynamic Network Traffic Capture
-          </h3>
-          <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1 text-xs">
-            {behavioral.network_activity.map((net, idx) => (
-              <div key={idx} className="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="px-2 py-0.5 bg-cyan-950 text-cyan-300 font-mono font-bold rounded border border-cyan-800">
-                    {net.proto} &rarr; {net.destination}
-                  </span>
-                  <span className="text-slate-400 font-mono">{net.bytes_sent} Bytes</span>
-                </div>
-                <div className="text-slate-300 font-mono text-[11px] truncate">
-                  Domain: <strong className="text-cyan-400">{net.domain}</strong>
-                </div>
-                <div className="text-slate-400 text-[11px] mt-0.5">
-                  Type: {net.type}
-                </div>
+        {/* Registry */}
+        <div className="glass-card p-5 rounded-3xl">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <Key className="w-3.5 h-3.5 text-amber-400" /> Registry Modifications
+            </h4>
+            <span className="text-[10px] font-mono text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/50">
+              {behavioral.registry_activity.length} Keys
+            </span>
+          </div>
+          <div className="space-y-2 max-h-52 overflow-y-auto pr-1 text-xs font-mono">
+            {behavioral.registry_activity.map((r, i) => (
+              <div key={i} className="p-2 bg-slate-950/80 rounded-xl border border-white/[0.04]">
+                <div className="text-amber-300 font-bold truncate select-all">{r.key}</div>
+                <div className="text-[10px] text-slate-400 truncate mt-0.5">{r.value_name} = {r.data}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Network C2 */}
+        <div className="glass-card p-5 rounded-3xl">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <Globe className="w-3.5 h-3.5 text-purple-400" /> Outbound C2 Sockets
+            </h4>
+            <span className="text-[10px] font-mono text-purple-400 bg-purple-950/60 px-2 py-0.5 rounded border border-purple-800/50">
+              {behavioral.network_activity.length} Beacons
+            </span>
+          </div>
+          <div className="space-y-2 max-h-52 overflow-y-auto pr-1 text-xs font-mono">
+            {behavioral.network_activity.map((net, i) => (
+              <div key={i} className="p-2 bg-slate-950/80 rounded-xl border border-white/[0.04]">
+                <div className="text-purple-300 font-bold truncate select-all">{net.destination}</div>
+                <div className="text-[10px] text-slate-500 mt-0.5">{net.protocol} &bull; {net.domain || 'Direct IP'}</div>
               </div>
             ))}
           </div>

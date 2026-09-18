@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MitreMapping, MitreTechnique } from '../types';
 import { SectionGuide } from './SectionGuide';
-import { Layers, ShieldAlert, Download, CheckCircle2, ExternalLink, Target, Flame } from 'lucide-react';
+import { Layers, ShieldAlert, Download, CheckCircle2, ExternalLink, Target, Flame, ChevronRight, X } from 'lucide-react';
 
 interface Props {
   mitre: MitreMapping;
@@ -41,21 +41,26 @@ export const MitreAttackTab: React.FC<Props> = ({ mitre }) => {
       />
 
       {/* Header Banner */}
-      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="glass-panel p-6 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h3 className="text-base font-bold text-slate-200 flex items-center gap-2">
-            <Layers className="w-5 h-5 text-purple-400" /> MITRE ATT&CK Enterprise Matrix (v14+) Mapping
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+              <Layers className="w-5 h-5 text-purple-400" /> MITRE ATT&amp;CK Enterprise Matrix (v14+)
+            </h3>
+            <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-md bg-purple-950/80 text-purple-300 border border-purple-800">
+              {mitre.total_techniques_mapped} Techniques Active
+            </span>
+          </div>
           <p className="text-xs text-slate-400 mt-1">
-            Automated alignment of binary features, API calls, and YARA hits across the 12 core tactics.
+            Correlated low-level binary features, API traces, and YARA matches across enterprise adversary tactics
           </p>
         </div>
 
         <button
           onClick={downloadNavigatorJson}
-          className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-semibold text-xs transition shadow-lg"
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl font-bold text-xs transition shadow-lg shadow-purple-900/30 shrink-0"
         >
-          <Download className="w-4 h-4" /> Download ATT&CK Navigator Layer
+          <Download className="w-4 h-4" /> Export ATT&amp;CK Navigator Layer
         </button>
       </div>
 
@@ -71,74 +76,99 @@ export const MitreAttackTab: React.FC<Props> = ({ mitre }) => {
           return (
             <div
               key={tactic.id}
-              className={`p-3 rounded-xl border transition-all min-h-[160px] flex flex-col ${
+              className={`glass-card rounded-2xl p-3.5 flex flex-col justify-between transition min-h-[160px] ${
                 hasHits
-                  ? 'bg-slate-900/90 border-purple-500/60 shadow-lg'
-                  : 'bg-slate-950/40 border-slate-800/80 opacity-60'
+                  ? 'border-purple-500/50 bg-gradient-to-b from-purple-950/20 via-slate-900/60 to-slate-950/80 shadow-md shadow-purple-950/20'
+                  : 'opacity-70 bg-slate-950/40'
               }`}
             >
-              <div className="text-[10px] font-mono text-purple-400 uppercase font-bold">{tactic.id}</div>
-              <div className="text-xs font-bold text-slate-200 mb-2 truncate" title={tactic.name}>{tactic.name}</div>
+              <div>
+                <div className="flex items-center justify-between text-[10px] font-mono mb-1">
+                  <span className="text-slate-500">{tactic.id}</span>
+                  {hasHits && (
+                    <span className="px-1.5 py-0.2 rounded font-bold bg-purple-500 text-slate-950">
+                      {techniquesForTactic.length}
+                    </span>
+                  )}
+                </div>
 
-              <div className="flex-1 space-y-1.5 overflow-y-auto">
-                {techniquesForTactic.length === 0 ? (
-                  <div className="text-[10px] text-slate-600 italic py-2">No active TTPs</div>
-                ) : (
-                  techniquesForTactic.map((t, idx) => (
+                <div className="text-xs font-bold text-white mb-2 leading-tight">
+                  {tactic.name}
+                </div>
+
+                <div className="space-y-1.5">
+                  {techniquesForTactic.map(tech => (
                     <button
-                      key={idx}
-                      onClick={() => setSelectedTechnique(t)}
-                      className={`w-full text-left p-1.5 rounded border text-[11px] font-mono transition ${
-                        t.confidence === 'CRITICAL'
-                          ? 'bg-rose-950/80 border-rose-500/60 text-rose-200 hover:border-rose-400'
-                          : 'bg-purple-950/80 border-purple-500/60 text-purple-200 hover:border-purple-400'
-                      }`}
+                      key={tech.technique_id}
+                      onClick={() => setSelectedTechnique(tech)}
+                      className="w-full text-left p-1.5 rounded-lg bg-slate-900/90 hover:bg-purple-900/40 border border-purple-500/30 hover:border-purple-400 transition text-[11px] font-mono group"
                     >
-                      <div className="font-bold">{t.technique_id}</div>
-                      <div className="text-[10px] truncate">{t.technique_name}</div>
+                      <div className="text-purple-300 font-bold group-hover:text-white truncate">
+                        {tech.technique_id}
+                      </div>
+                      <div className="text-[10px] text-slate-400 truncate leading-tight mt-0.5">
+                        {tech.name}
+                      </div>
                     </button>
-                  ))
-                )}
+                  ))}
+                </div>
               </div>
+
+              {!hasHits && (
+                <div className="text-[10px] text-slate-600 italic mt-2">No active TTPs</div>
+              )}
             </div>
           );
         })}
       </div>
 
-      {/* Technique Evidence Inspector */}
+      {/* Selected Technique Modal / Evidence Drawer */}
       {selectedTechnique && (
-        <div className="bg-slate-900 border border-purple-500/50 p-5 rounded-xl shadow-2xl space-y-3">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <ShieldAlert className="w-5 h-5 text-rose-400" />
-              <h4 className="text-base font-bold text-white">
-                {selectedTechnique.technique_id} - {selectedTechnique.technique_name}
-              </h4>
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="glass-panel w-full max-w-lg rounded-3xl p-6 border border-purple-500/50 shadow-2xl space-y-4">
+            <div className="flex justify-between items-start border-b border-white/[0.06] pb-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 bg-purple-950 text-purple-300 border border-purple-800 text-[10px] font-mono font-bold rounded">
+                    {selectedTechnique.technique_id}
+                  </span>
+                  <span className="text-xs uppercase font-bold text-slate-400">{selectedTechnique.tactic_name}</span>
+                </div>
+                <h4 className="text-base font-extrabold text-white mt-1">{selectedTechnique.name}</h4>
+              </div>
+              <button
+                onClick={() => setSelectedTechnique(null)}
+                className="text-slate-400 hover:text-white w-8 h-8 rounded-lg hover:bg-slate-800 flex items-center justify-center"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            <button
-              onClick={() => setSelectedTechnique(null)}
-              className="text-xs text-slate-400 hover:text-white px-2 py-1 bg-slate-800 rounded"
-            >
-              Close
-            </button>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-            <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
-              <span className="text-slate-500 uppercase font-bold block mb-1">Target Tactic</span>
-              <span className="text-purple-300 font-bold">{selectedTechnique.tactic_name} ({selectedTechnique.tactic_id})</span>
-            </div>
-            <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
-              <span className="text-slate-500 uppercase font-bold block mb-1">Confidence Rating</span>
-              <span className="text-rose-400 font-bold">{selectedTechnique.confidence}</span>
-            </div>
-          </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              {selectedTechnique.description}
+            </p>
 
-          <div className="bg-slate-950 p-3.5 rounded-lg border border-slate-800">
-            <span className="text-slate-400 text-xs font-bold block mb-1">Runtime Execution Evidence:</span>
-            <code className="text-cyan-300 text-xs font-mono block bg-slate-900 p-2 rounded border border-slate-800">
-              {selectedTechnique.evidence}
-            </code>
+            <div className="bg-slate-950 p-3.5 rounded-xl border border-white/[0.06] space-y-1 text-xs">
+              <span className="text-[10px] text-slate-500 uppercase font-mono font-bold block">Telemetry Evidence</span>
+              <div className="text-purple-300 font-mono text-[11px] break-all">{selectedTechnique.evidence}</div>
+            </div>
+
+            <div className="flex justify-between items-center text-xs pt-2">
+              <a
+                href={selectedTechnique.url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-cyan-400 hover:underline flex items-center gap-1 font-mono text-[11px]"
+              >
+                View MITRE ATT&CK Matrix Docs <ExternalLink className="w-3 h-3" />
+              </a>
+              <button
+                onClick={() => setSelectedTechnique(null)}
+                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

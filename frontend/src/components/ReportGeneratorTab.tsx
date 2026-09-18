@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FullAnalysisReport } from '../types';
 import { SectionGuide } from './SectionGuide';
-import { FileText, Download, Printer, Copy, Check, ExternalLink, ShieldCheck, Award } from 'lucide-react';
+import { FileText, Download, Printer, Copy, Check, ExternalLink, ShieldCheck, Award, Share2 } from 'lucide-react';
 
 interface Props {
   report: FullAnalysisReport;
@@ -64,100 +64,94 @@ export const ReportGeneratorTab: React.FC<Props> = ({ report }) => {
       />
 
       {/* Header Bar */}
-      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="glass-panel p-6 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h3 className="text-base font-bold text-slate-200 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-cyan-400" /> Automated Malware Analysis Report Generator
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+              <FileText className="w-5 h-5 text-cyan-400" /> Executive &amp; Technical Threat Dossier
+            </h3>
+            <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-md bg-cyan-950/80 text-cyan-300 border border-cyan-800">
+              CISO Ready
+            </span>
+          </div>
           <p className="text-xs text-slate-400 mt-1">
-            Executive Summary, Static/Behavioral Breakdown, ATT&CK Matrix, IOC list, and PDF/HTML/STIX 2.1 Export.
+            Publication-ready compliance reporting with cryptographic verification chain of custody
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
-            <button
-              onClick={() => setReportFormat('html')}
-              className={`px-3 py-1 rounded font-semibold ${reportFormat === 'html' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400'}`}
-            >
-              HTML Executive
-            </button>
-            <button
-              onClick={() => setReportFormat('markdown')}
-              className={`px-3 py-1 rounded font-semibold ${reportFormat === 'markdown' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400'}`}
-            >
-              Markdown
-            </button>
-            <button
-              onClick={() => setReportFormat('stix')}
-              className={`px-3 py-1 rounded font-semibold ${reportFormat === 'stix' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400'}`}
-            >
-              STIX 2.1 Bundle
-            </button>
-          </div>
-
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={handlePrintPdf}
-            className="flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg font-semibold text-xs transition shadow-lg"
+            className="flex items-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-cyan-500/25"
           >
             <Printer className="w-4 h-4" /> Print / Save as PDF
           </button>
+          <a
+            href={`/api/reports/${report.report_id}/export/html`}
+            download={`${report.sample_name}_threat_report.html`}
+            className="flex items-center gap-1.5 px-3.5 py-2.5 bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white rounded-xl text-xs font-bold border border-white/[0.08] transition shadow-sm"
+          >
+            <Download className="w-3.5 h-3.5" /> HTML Dossier
+          </a>
         </div>
       </div>
 
-      {/* Live Preview Document Frame */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
-        {reportFormat === 'html' && (
-          <iframe
-            title="Executive HTML Report Preview"
-            srcDoc={htmlContent}
-            className="w-full h-[650px] border-none bg-slate-950"
-          />
-        )}
-
-        {reportFormat === 'markdown' && (
-          <div className="p-5 font-mono text-xs text-slate-300 max-h-[650px] overflow-y-auto space-y-4">
-            <div className="flex justify-between items-center pb-3 border-b border-slate-800">
-              <span className="text-slate-400 font-bold">Markdown Source Output</span>
-              <button
-                onClick={copyMarkdown}
-                className="flex items-center gap-1 px-3 py-1 bg-slate-800 hover:bg-slate-700 text-white rounded text-xs"
-              >
-                {copiedMd ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                {copiedMd ? 'Copied!' : 'Copy Markdown'}
-              </button>
-            </div>
-            <pre className="whitespace-pre-wrap bg-slate-950 p-4 rounded border border-slate-800 text-cyan-300">
-              {markdownContent}
-            </pre>
-          </div>
-        )}
-
-        {reportFormat === 'stix' && (
-          <div className="p-5 font-mono text-xs text-slate-300 max-h-[650px] overflow-y-auto">
-            <div className="mb-3 text-slate-400 font-bold">STIX 2.1 Cyber Threat Intelligence JSON Bundle</div>
-            <pre className="whitespace-pre-wrap bg-slate-950 p-4 rounded border border-slate-800 text-emerald-300">
-              {JSON.stringify({
-                type: "bundle",
-                id: `bundle--${report.report_id.slice(0, 36)}`,
-                spec_version: "2.1",
-                objects: [
-                  {
-                    type: "malware",
-                    name: report.sample_name,
-                    threat_score: report.threat_scoring.threat_score,
-                    verdict: report.threat_scoring.verdict
-                  },
-                  ...report.ioc_extraction.iocs.map(i => ({
-                    type: "indicator",
-                    pattern: `[${i.type} = '${i.value}']`
-                  }))
-                ]
-              }, null, 2)}
-            </pre>
-          </div>
-        )}
+      {/* Format Selector Pills */}
+      <div className="flex gap-2">
+        {[
+          { id: 'html', label: 'Interactive HTML View', icon: FileText },
+          { id: 'markdown', label: 'Markdown Format (Jira / GitHub)', icon: Copy },
+        ].map(fmt => (
+          <button
+            key={fmt.id}
+            onClick={() => setReportFormat(fmt.id as any)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition font-mono ${
+              reportFormat === fmt.id
+                ? 'bg-cyan-500 text-slate-950 font-black shadow-md'
+                : 'glass-card text-slate-400 hover:text-white'
+            }`}
+          >
+            <fmt.icon className="w-3.5 h-3.5" />
+            {fmt.label}
+          </button>
+        ))}
       </div>
+
+      {/* Viewport: HTML Preview */}
+      {reportFormat === 'html' && (
+        <div className="glass-card rounded-3xl overflow-hidden border border-white/[0.08] shadow-2xl">
+          <div className="bg-slate-950/80 px-4 py-2 border-b border-white/[0.06] flex justify-between items-center text-xs text-slate-400 font-mono">
+            <span>PREVIEW: Responsive Executive Report</span>
+            <span className="text-emerald-400 font-bold">&bull; Live Rendering</span>
+          </div>
+          <iframe
+            srcDoc={htmlContent}
+            title="Executive Report HTML Preview"
+            className="w-full h-[650px] bg-white border-none"
+          />
+        </div>
+      )}
+
+      {/* Viewport: Markdown Preview */}
+      {reportFormat === 'markdown' && (
+        <div className="glass-card rounded-3xl p-6 border border-white/[0.08] space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-xs font-bold text-slate-300 uppercase font-mono">
+              Markdown Source Code (Copy for Incident Tickets)
+            </span>
+            <button
+              onClick={copyMarkdown}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-black rounded-lg text-xs transition"
+            >
+              {copiedMd ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              {copiedMd ? "Copied to Clipboard!" : "Copy Markdown"}
+            </button>
+          </div>
+          <pre className="p-4 bg-slate-950/90 rounded-2xl border border-white/[0.06] text-slate-300 font-mono text-xs max-h-[550px] overflow-y-auto whitespace-pre-wrap select-all">
+            {markdownContent}
+          </pre>
+        </div>
+      )}
     </div>
   );
 };

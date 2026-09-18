@@ -4,51 +4,52 @@
 
 @layer base {
   body {
-    background-color: #030712;
+    background-color: #050204;
     color: #f8fafc;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     overflow-x: hidden;
   }
 }
 
-/* Futuristic Cyber Mesh Grid Background */
+/* Luxurious Cyber Mehroon Mesh Grid Background */
 .cyber-bg {
-  background-color: #030712;
+  background-color: #050204;
   background-image: 
-    radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.08) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(14, 165, 233, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 0%, rgba(159, 18, 57, 0.18) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(190, 18, 60, 0.14) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(136, 19, 55, 0.15) 0px, transparent 50%),
     linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
   background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
 }
 
-/* Glassmorphism Classes */
+/* Mehroon Glassmorphism Classes */
 .glass-panel {
-  background: rgba(11, 17, 33, 0.75);
+  background: rgba(22, 5, 12, 0.78);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(244, 63, 94, 0.15);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .glass-card {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(26, 7, 15, 0.65);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(244, 63, 94, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  border-color: rgba(6, 182, 212, 0.3);
-  box-shadow: 0 15px 40px rgba(6, 182, 212, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: rgba(244, 63, 94, 0.4);
+  box-shadow: 0 15px 40px rgba(159, 18, 57, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transform: translateY(-1px);
 }
 
-.glow-cyan {
-  box-shadow: 0 0 35px -5px rgba(6, 182, 212, 0.35);
+/* Mehroon / Crimson Glows */
+.glow-maroon {
+  box-shadow: 0 0 35px -5px rgba(190, 18, 60, 0.45);
 }
 
 .glow-rose {
@@ -63,9 +64,9 @@
   box-shadow: 0 0 35px -5px rgba(168, 85, 247, 0.35);
 }
 
-/* Gradient Text */
-.gradient-text-cyan {
-  background: linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #06b6d4 100%);
+/* Mehroon Gradient Text */
+.gradient-text-maroon {
+  background: linear-gradient(135deg, #ffffff 0%, #fb7185 45%, #e11d48 70%, #9f1239 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -82,29 +83,18 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Pulsing radar line */
-@keyframes radar-sweep {
-  0% { transform: translateY(-100%); opacity: 0; }
-  50% { opacity: 0.8; }
-  100% { transform: translateY(1000%); opacity: 0; }
-}
-
-.animate-radar-sweep {
-  animation: radar-sweep 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Custom Sleek Scrollbar */
+/* Custom Sleek Mehroon Scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #060b17;
+  background: #090205;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #4c0519;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #0284c7;
+  background: #be123c;
 }

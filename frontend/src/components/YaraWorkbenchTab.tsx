@@ -106,7 +106,7 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
                 <div className="pt-2 border-t border-white/[0.04] text-[11px] font-mono text-slate-400 flex flex-wrap gap-2">
                   <span>Author: <strong className="text-slate-200">{rule.meta?.author || 'Kashyap Threat Intel'}</strong></span>
                   <span>&bull;</span>
-                  <span>Matched Strings: <span className="text-cyan-300">{rule.strings_matched?.join(', ') || 'N/A'}</span></span>
+                  <span>Matched Strings: <span className="text-rose-300">{rule.strings_matched?.join(', ') || 'N/A'}</span></span>
                 </div>
               </div>
             ))}
@@ -123,13 +123,13 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-              <Code2 className="w-4 h-4 text-cyan-400" /> Interactive YARA Signature Authoring &amp; Compiler
+              <Code2 className="w-4 h-4 text-rose-400" /> Interactive YARA Signature Authoring &amp; Compiler
             </h3>
             <p className="text-xs text-slate-400">
               Draft, compile, and register custom detection rules to expand your threat hunting coverage
             </p>
           </div>
-          <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/80 px-2.5 py-1 rounded-lg border border-cyan-800/50">
+          <span className="text-[10px] font-mono text-rose-400 bg-rose-950/80 px-2.5 py-1 rounded-lg border border-rose-800/50">
             Live Sandbox Testing
           </span>
         </div>
@@ -150,7 +150,7 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
                 type="text"
                 value={ruleName}
                 onChange={e => setRuleName(e.target.value)}
-                className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-cyan-500/60"
+                className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-rose-500/60"
               />
             </div>
             <div>
@@ -160,7 +160,7 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
               <select
                 value={category}
                 onChange={e => setCategory(e.target.value)}
-                className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-cyan-500/60"
+                className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-rose-500/60"
               >
                 <option value="Ransomware">Ransomware</option>
                 <option value="Trojan">Trojan / Loader</option>
@@ -179,7 +179,7 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
               type="text"
               value={stringsInput}
               onChange={e => setStringsInput(e.target.value)}
-              className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500/60"
+              className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-rose-300 focus:outline-none focus:border-rose-500/60"
             />
           </div>
 
@@ -191,13 +191,13 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
               type="text"
               value={conditionInput}
               onChange={e => setConditionInput(e.target.value)}
-              className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-purple-300 focus:outline-none focus:border-cyan-500/60"
+              className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-purple-300 focus:outline-none focus:border-rose-500/60"
             />
           </div>
 
           <button
             type="submit"
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-cyan-500/25"
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-black rounded-xl text-xs transition shadow-lg shadow-rose-900/30"
           >
             <Play className="w-3.5 h-3.5" /> Compile &amp; Save YARA Rule
           </button>

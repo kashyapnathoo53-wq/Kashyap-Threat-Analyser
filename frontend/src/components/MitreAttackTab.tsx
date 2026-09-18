@@ -158,7 +158,7 @@ export const MitreAttackTab: React.FC<Props> = ({ mitre }) => {
                 href={selectedTechnique.url}
                 target="_blank"
                 rel="noreferrer"
-                className="text-cyan-400 hover:underline flex items-center gap-1 font-mono text-[11px]"
+                className="text-rose-400 hover:underline flex items-center gap-1 font-mono text-[11px]"
               >
                 View MITRE ATT&CK Matrix Docs <ExternalLink className="w-3 h-3" />
               </a>

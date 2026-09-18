@@ -119,7 +119,7 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
               </h2>
 
               <p className="text-xs text-slate-400 font-medium">
-                Binary: <strong className="text-cyan-300 font-mono">{report.sample_name}</strong> &bull; {report.static_analysis.file_info.type} &bull; Architecture: {report.static_analysis.file_info.architecture}
+                Binary: <strong className="text-rose-400 font-mono">{report.sample_name}</strong> &bull; {report.static_analysis.file_info.type} &bull; Architecture: {report.static_analysis.file_info.architecture}
               </p>
             </div>
           </div>
@@ -128,10 +128,10 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
           <div className="flex flex-wrap lg:flex-col gap-2.5 w-full lg:w-auto shrink-0">
             <button
               onClick={() => onNavigateTab('report')}
-              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-cyan-500/40 text-xs font-bold transition shadow-sm"
+              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-rose-500/40 text-xs font-bold transition shadow-sm"
             >
               <span>Executive Dossier</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-cyan-400" />
+              <ArrowUpRight className="w-3.5 h-3.5 text-rose-400" />
             </button>
             <button
               onClick={() => onNavigateTab('iocs')}
@@ -152,15 +152,15 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
           className="glass-card p-4 rounded-2xl cursor-pointer group relative overflow-hidden"
         >
           <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-cyan-300 transition">Static Analysis</span>
-            <HardDrive className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition" />
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-rose-400 transition">Static Analysis</span>
+            <HardDrive className="w-4 h-4 text-rose-400 group-hover:scale-110 transition" />
           </div>
           <div className="text-xl font-black font-mono text-white">
             {report.static_analysis.pe_structure.is_packed ? "PACKED / CRYPT" : "UNPACKED PE"}
           </div>
           <div className="text-xs text-slate-400 mt-1 flex items-center justify-between">
-            <span>Entropy: <strong className="text-cyan-300">{report.static_analysis.file_info.entropy}</strong></span>
-            <span className="text-[11px] text-cyan-400 flex items-center gap-0.5">Explore <ArrowUpRight className="w-3 h-3" /></span>
+            <span>Entropy: <strong className="text-rose-300">{report.static_analysis.file_info.entropy}</strong></span>
+            <span className="text-[11px] text-rose-400 flex items-center gap-0.5">Explore <ArrowUpRight className="w-3 h-3" /></span>
           </div>
         </div>
 
@@ -226,13 +226,13 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-extrabold text-white tracking-wide flex items-center gap-2">
-                <Activity className="w-4 h-4 text-cyan-400" /> Multi-Factor Score Breakdown
+                <Activity className="w-4 h-4 text-rose-400" /> Multi-Factor Score Breakdown
               </h3>
               <p className="text-xs text-slate-400">
                 Mathematical contribution of each analytical vector to the final score
               </p>
             </div>
-            <span className="text-xs font-mono font-bold text-cyan-300 bg-cyan-950/80 px-2.5 py-1 rounded-lg border border-cyan-800/50">
+            <span className="text-xs font-mono font-bold text-rose-300 bg-rose-950/80 px-2.5 py-1 rounded-lg border border-rose-800/50">
               Normalized (0-100)
             </span>
           </div>

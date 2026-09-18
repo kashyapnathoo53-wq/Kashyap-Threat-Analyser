@@ -40,12 +40,12 @@ export const ProcessTreeGraph: React.FC<ProcessTreeProps> = ({ node, depth = 0 }
         {isMaliciousProc ? (
           <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
         ) : (
-          <Cpu className="w-4 h-4 text-cyan-400 shrink-0" />
+          <Cpu className="w-4 h-4 text-rose-400 shrink-0" />
         )}
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-mono font-bold text-sm text-cyan-300">{node.name}</span>
+            <span className="font-mono font-bold text-sm text-rose-300">{node.name}</span>
             <span className="px-1.5 py-0.5 text-xs font-mono bg-slate-800 text-slate-400 rounded">PID: {node.pid}</span>
             <span className={`px-1.5 py-0.5 text-xs font-mono rounded ${node.integrity === 'SYSTEM' || node.integrity === 'High' ? 'bg-amber-900/50 text-amber-300' : 'bg-slate-800 text-slate-400'}`}>
               Integrity: {node.integrity}

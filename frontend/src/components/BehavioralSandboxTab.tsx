@@ -44,13 +44,13 @@ export const BehavioralSandboxTab: React.FC<Props> = ({ behavioral }) => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-              <Terminal className="w-4 h-4 text-cyan-400" /> Interactive Virtual Process Hierarchy Tree
+              <Terminal className="w-4 h-4 text-rose-400" /> Interactive Virtual Process Hierarchy Tree
             </h3>
             <p className="text-xs text-slate-400">
               Parent-to-child process spawn hierarchy observed inside the execution sandbox
             </p>
           </div>
-          <span className="text-[11px] font-mono text-cyan-300 bg-cyan-950/80 px-2.5 py-1 rounded-lg border border-cyan-800/50">
+          <span className="text-[11px] font-mono text-rose-300 bg-rose-950/80 px-2.5 py-1 rounded-lg border border-rose-800/50">
             PID Root: {behavioral.process_tree.pid}
           </span>
         </div>
@@ -80,7 +80,7 @@ export const BehavioralSandboxTab: React.FC<Props> = ({ behavioral }) => {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search API calls..."
-                className="w-full bg-slate-950 border border-white/[0.08] rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 font-mono"
+                className="w-full bg-slate-950 border border-white/[0.08] rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-rose-500/60 font-mono"
               />
             </div>
 
@@ -90,7 +90,7 @@ export const BehavioralSandboxTab: React.FC<Props> = ({ behavioral }) => {
                   key={level}
                   onClick={() => setRiskFilter(level)}
                   className={`px-2.5 py-1 rounded-lg transition text-[11px] ${
-                    riskFilter === level ? 'bg-cyan-500 text-slate-950 font-black' : 'text-slate-400 hover:text-white'
+                    riskFilter === level ? 'bg-rose-600 text-white font-black shadow-md shadow-rose-950/40' : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   {level}
@@ -108,7 +108,7 @@ export const BehavioralSandboxTab: React.FC<Props> = ({ behavioral }) => {
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] text-slate-500">[{call.timestamp || `+${idx * 15}ms`}]</span>
                     <span className="text-white font-bold">{call.api}</span>
-                    <span className="text-[10px] text-cyan-400 bg-cyan-950/60 px-1.5 py-0.2 rounded border border-cyan-800/40">
+                    <span className="text-[10px] text-rose-300 bg-rose-950/60 px-1.5 py-0.2 rounded border border-rose-800/40">
                       PID {call.pid} ({call.process})
                     </span>
                   </div>
@@ -143,9 +143,9 @@ export const BehavioralSandboxTab: React.FC<Props> = ({ behavioral }) => {
         <div className="glass-card p-5 rounded-3xl">
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-              <FilePlus className="w-3.5 h-3.5 text-cyan-400" /> Filesystem Drops
+              <FilePlus className="w-3.5 h-3.5 text-rose-400" /> Filesystem Drops
             </h4>
-            <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/50">
+            <span className="text-[10px] font-mono text-rose-400 bg-rose-950/60 px-2 py-0.5 rounded border border-rose-800/50">
               {behavioral.filesystem_activity.length} Files
             </span>
           </div>

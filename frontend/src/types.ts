@@ -1,0 +1,164 @@
+export interface HashInfo {
+  md5: string;
+  sha1: string;
+  sha256: string;
+  sha512: string;
+  ssdeep: string;
+  size_bytes: number;
+}
+
+export interface FileInfo {
+  type: string;
+  architecture: string;
+  magic_bytes: string;
+  entropy: number;
+}
+
+export interface SectionInfo {
+  name: string;
+  virtual_size: string;
+  raw_size: number;
+  entropy: number;
+  characteristics: string;
+  is_suspicious: boolean;
+}
+
+export interface ImportInfo {
+  dll: string;
+  function: string;
+  description: string;
+  risk: string;
+}
+
+export interface DecodedString {
+  original: string;
+  type: string;
+  decoded: string;
+}
+
+export interface StaticAnalysis {
+  hashes: HashInfo;
+  file_info: FileInfo;
+  pe_structure: {
+    sections: SectionInfo[];
+    imports: ImportInfo[];
+    import_count: number;
+    is_packed: boolean;
+    packer?: string;
+    digital_signature: {
+      signed: boolean;
+      status: string;
+      publisher: string;
+    };
+  };
+  strings: {
+    ascii: string[];
+    ascii_total: number;
+    unicode: string[];
+    unicode_total: number;
+    decoded: DecodedString[];
+  };
+}
+
+export interface YaraMatch {
+  rule_id: string;
+  rule_name: string;
+  category: string;
+  severity: string;
+  description: string;
+  matched_strings: string[];
+  threat_level: number;
+}
+
+export interface YaraScan {
+  matches: YaraMatch[];
+  match_count: number;
+  total_rules_scanned: number;
+}
+
+export interface ProcessNode {
+  pid: number;
+  name: string;
+  path: string;
+  cmd: string;
+  integrity: string;
+  children?: ProcessNode[];
+}
+
+export interface ApiCall {
+  timestamp: number;
+  pid: number;
+  process: string;
+  api: string;
+  category: string;
+  arguments: string;
+  return_val: string;
+  risk: string;
+}
+
+export interface BehavioralAnalysis {
+  process_tree: ProcessNode;
+  api_call_stream: ApiCall[];
+  filesystem_activity: { action: string; path: string; size: string }[];
+  registry_activity: { action: string; key: string; value?: string }[];
+  network_activity: { proto: string; destination: string; domain: string; type: string; bytes_sent: number }[];
+  total_api_calls: number;
+  execution_time_seconds: number;
+}
+
+export interface IocItem {
+  type: string;
+  value: string;
+  category: string;
+  confidence: number;
+  threat_intel: Record<string, any>;
+}
+
+export interface IocExtraction {
+  iocs: IocItem[];
+  total_extracted: number;
+  summary_by_category: Record<string, number>;
+}
+
+export interface MitreTechnique {
+  tactic_id: string;
+  tactic_name: string;
+  technique_id: string;
+  technique_name: string;
+  evidence: string;
+  confidence: string;
+}
+
+export interface MitreMapping {
+  tactics: { id: string; name: string }[];
+  mapped_techniques: MitreTechnique[];
+  total_mapped_techniques: number;
+  navigator_layer: any;
+}
+
+export interface ThreatScoring {
+  threat_score: number;
+  verdict: string;
+  severity: string;
+  color: string;
+  score_breakdown: {
+    static_score: number;
+    yara_score: number;
+    behavioral_score: number;
+    ioc_score: number;
+    mitre_score: number;
+  };
+  risk_factors: string[];
+}
+
+export interface FullAnalysisReport {
+  report_id: string;
+  sample_name: string;
+  timestamp: string;
+  static_analysis: StaticAnalysis;
+  yara_scan: YaraScan;
+  behavioral_analysis: BehavioralAnalysis;
+  ioc_extraction: IocExtraction;
+  mitre_mapping: MitreMapping;
+  threat_scoring: ThreatScoring;
+}

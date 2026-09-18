@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { HostAssessment } from '../types';
-import { ShieldCheck, ShieldAlert, AlertTriangle, RefreshCw, Cpu, HardDrive, AlertOctagon, Terminal, CheckCircle2, TrendingUp, Wrench, Package } from 'lucide-react';
+import { SectionGuide } from './SectionGuide';
+import { ShieldCheck, ShieldAlert, AlertTriangle, RefreshCw, Cpu, HardDrive, AlertOctagon, Terminal, CheckCircle2, TrendingUp, Wrench, Package, Radio } from 'lucide-react';
 
 interface Props {
   assessment: HostAssessment | null;
@@ -13,10 +14,14 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
 
   if (loading) {
     return (
-      <div className="bg-slate-900/80 border border-slate-800 p-12 rounded-2xl flex flex-col items-center justify-center space-y-4">
-        <RefreshCw className="w-10 h-10 text-cyan-400 animate-spin" />
-        <div className="text-base font-bold text-slate-200">Performing Deep Host Security Auto-Assessment...</div>
-        <div className="text-xs text-slate-400 font-mono">
+      <div className="bg-slate-900/90 border border-cyan-500/30 p-12 rounded-2xl flex flex-col items-center justify-center space-y-4 shadow-2xl relative overflow-hidden">
+        <div className="absolute inset-0 bg-cyan-500/5 animate-pulse" />
+        <div className="relative">
+          <RefreshCw className="w-12 h-12 text-cyan-400 animate-spin" />
+          <Radio className="w-5 h-5 text-cyan-300 absolute top-3.5 left-3.5 animate-ping" />
+        </div>
+        <div className="text-base font-black tracking-wide text-white">Performing Deep Host Security Auto-Assessment...</div>
+        <div className="text-xs text-cyan-300/80 font-mono">
           Scanning running system processes, registry RunKeys, installed software versions, and CVE vulnerabilities...
         </div>
       </div>
@@ -30,7 +35,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
         <div className="text-lg font-bold text-slate-200">No Assessment Data Available</div>
         <button
           onClick={onRescan}
-          className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs rounded-lg transition"
+          className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs rounded-lg transition shadow-lg shadow-cyan-600/20"
         >
           Initiate Auto-Assessment Now
         </button>
@@ -42,6 +47,23 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
 
   return (
     <div className="space-y-6">
+      {/* Comprehensive Section Guide */}
+      <SectionGuide
+        title="System Auto-Assessment &amp; Live Host Posture"
+        badge="Live Endpoint Defense"
+        whatItDoes="Automatically analyzes the machine on which Kashyap Threat Analyser is executing. It performs non-intrusive runtime inspection of running operating system processes, checks Windows Registry startup RunKeys for hidden persistence payloads, audits all installed third-party software packages against known National Vulnerability Database (NVD) CVE entries, and builds a predictive attack forecast."
+        howItHelps="Unlike traditional malware tools where you must manually find and upload suspicious files, this engine acts as an immediate self-auditor. It proactively alerts you if background coinminers, unpatched browser zero-days, or persistence backdoors are already active on your PC before they can cause data exfiltration or ransomware encryption."
+        keyIndicators={[
+          { label: "Health Score < 60", detail: "Indicates critical active risks such as suspicious temp processes or high CVSS CVEs", severity: "critical" },
+          { label: "Temp Executables", detail: "Processes executing from AppData\\Local\\Temp or Downloads indicate dropped trojans", severity: "critical" },
+          { label: "CVSS >= 9.0 (RCE)", detail: "Remote Code Execution bugs in browsers or archivers allow zero-click compromise", severity: "high" },
+          { label: "Suspicious RunKeys", detail: "Registry entries pointing to VBS/PS1 or temp paths signify unauthorized persistence", severity: "high" },
+          { label: "Predictive Forecast", detail: "Projects likely attack scenarios tailored to your machine's exact software versions", severity: "info" }
+        ]}
+        analystTip="Click 'Re-scan Host' whenever you install new software, update patches, or suspect abnormal fan activity or network sluggishness."
+        defaultExpanded={false}
+      />
+
       {/* Host Posture Header Card */}
       <div 
         className="p-6 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl transition-all"

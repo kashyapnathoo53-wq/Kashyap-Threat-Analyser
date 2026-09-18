@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StaticAnalysis } from '../types';
-import { Copy, Check, FileCode, Cpu, Code2, Search, Lock } from 'lucide-react';
+import { SectionGuide } from './SectionGuide';
+import { Copy, Check, FileCode, Cpu, Code2, Search, Lock, Binary, ShieldAlert } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 
 interface Props {
@@ -38,6 +39,23 @@ export const StaticAnalysisTab: React.FC<Props> = ({ staticAnalysis }) => {
 
   return (
     <div className="space-y-6">
+      {/* Comprehensive Section Guide */}
+      <SectionGuide
+        title="Static Malware Analysis &amp; Structural Disassembly"
+        badge="Binary Forensics"
+        whatItDoes="Inspects the file without executing its code. It extracts cryptographic hashes (MD5, SHA1, SHA256, SSDEEP fuzzy hash), parses Portable Executable (PE) headers, measures Shannon entropy per section (.text, .rdata, .data, .rsrc) to detect packers like UPX or Themida, and identifies high-risk Windows API functions imported from KERNEL32 and ADVAPI32."
+        howItHelps="Static analysis reveals the binary's underlying capabilities, obfuscation level, and origin without running any dangerous payloads. Comparing SSDEEP hashes lets you identify malware polymorphic variants that share code even if their SHA256 has changed."
+        keyIndicators={[
+          { label: "Entropy > 7.1", detail: "Indicates encrypted shellcode or commercial packers (UPX, Themida, ASPack)", severity: "critical" },
+          { label: "VirtualAllocEx + WriteProcessMemory", detail: "Classic indicator of Process Injection / Process Hollowing into foreign processes", severity: "critical" },
+          { label: "Digital Signature: UNSIGNED", detail: "Legitimate enterprise software is digitally signed; malware is almost always unsigned or self-signed", severity: "high" },
+          { label: "Decoded Base64/XOR", detail: "Malware authors hide C2 URLs and PowerShell commands using simple XOR/Base64 encodings", severity: "high" },
+          { label: "Unusual Section Names", detail: "Sections outside standard names (.UPX0, .evil, .vmp) suggest custom packing or stealth loaders", severity: "info" }
+        ]}
+        analystTip="Inspect the Decoded Strings sub-tab first. Attackers frequently leave C2 URLs, IP addresses, or batch commands obfuscated via single-byte XOR keys (0x5A, 0x13, 0x37) that our auto-decoder recovers."
+        defaultExpanded={false}
+      />
+
       {/* File Hashes Card */}
       <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl">
         <h3 className="text-base font-bold text-slate-200 mb-4 flex items-center gap-2">

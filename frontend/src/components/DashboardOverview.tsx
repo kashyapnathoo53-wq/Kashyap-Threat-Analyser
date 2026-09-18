@@ -1,6 +1,7 @@
 import React from 'react';
 import { FullAnalysisReport } from '../types';
-import { ShieldAlert, AlertTriangle, ShieldCheck, Activity, Terminal, Database, Layers, CheckCircle2 } from 'lucide-react';
+import { SectionGuide } from './SectionGuide';
+import { ShieldAlert, AlertTriangle, ShieldCheck, Activity, Terminal, Database, Layers, CheckCircle2, Zap, Clock, HardDrive } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 
 interface Props {
@@ -13,15 +14,32 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
   const score = threat.threat_score;
 
   const scoreData = [
-    { name: 'Static', score: threat.score_breakdown.static_score, max: 25, color: '#3b82f6' },
+    { name: 'Static', score: threat.score_breakdown.static_score, max: 25, color: '#00f0ff' },
     { name: 'YARA', score: threat.score_breakdown.yara_score, max: 25, color: '#f59e0b' },
     { name: 'Behavioral', score: threat.score_breakdown.behavioral_score, max: 30, color: '#ef4444' },
     { name: 'IOC Density', score: threat.score_breakdown.ioc_score, max: 10, color: '#10b981' },
-    { name: 'MITRE TTPs', score: threat.score_breakdown.mitre_score, max: 10, color: '#8b5cf6' },
+    { name: 'MITRE TTPs', score: threat.score_breakdown.mitre_score, max: 10, color: '#a855f7' },
   ];
 
   return (
     <div className="space-y-6">
+      {/* Comprehensive Section Guide */}
+      <SectionGuide
+        title="Executive Threat Overview &amp; Scoring Engine"
+        badge="Multi-Factor Risk Engine"
+        whatItDoes="Synthesizes all raw outputs from the static analyzer, YARA scanning engine, emulated behavioral sandbox, extracted indicators (IOCs), and MITRE ATT&CK mapping into a single weighted Threat Score from 0 to 100. It computes a categorical severity verdict (Clean, Low Risk, Suspicious, Malicious, or Critical) with an audit breakdown."
+        howItHelps="Allows security operation centers (SOC), incident responders, and malware analysts to immediately prioritize triage. Instead of reading through thousands of lines of disassembly or API logs, the verdict instantly tells you whether a binary is safe, obfuscated, or an active ransomware/trojan threat."
+        keyIndicators={[
+          { label: "Score 0 - 19 (CLEAN)", detail: "Standard benign executable with valid signatures and ordinary API imports", severity: "info" },
+          { label: "Score 20 - 39 (LOW)", detail: "Contains unusual section names or generic scripting components", severity: "info" },
+          { label: "Score 40 - 69 (SUSPICIOUS)", detail: "High entropy or anti-debugging detection routines detected", severity: "high" },
+          { label: "Score 70 - 89 (MALICIOUS)", detail: "Confirmed malicious imports (memory injection, shadow copy deletion)", severity: "critical" },
+          { label: "Score 90 - 100 (CRITICAL)", detail: "Ransomware payloads, active C2 beacons, and destructive credential stealer signatures", severity: "critical" }
+        ]}
+        analystTip="Review the Category Breakdown chart below. If the Behavioral score is disproportionately high, the binary is performing dynamic evasions that static signatures alone might miss."
+        defaultExpanded={false}
+      />
+
       {/* Top Threat Verdict Banner */}
       <div 
         className="p-6 rounded-xl border flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl transition-all"

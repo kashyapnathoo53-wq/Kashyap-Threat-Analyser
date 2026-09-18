@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MitreMapping, MitreTechnique } from '../types';
-import { Layers, ShieldAlert, Download, CheckCircle2, ExternalLink } from 'lucide-react';
+import { SectionGuide } from './SectionGuide';
+import { Layers, ShieldAlert, Download, CheckCircle2, ExternalLink, Target, Flame } from 'lucide-react';
 
 interface Props {
   mitre: MitreMapping;
@@ -22,6 +23,23 @@ export const MitreAttackTab: React.FC<Props> = ({ mitre }) => {
 
   return (
     <div className="space-y-6">
+      {/* Comprehensive Section Guide */}
+      <SectionGuide
+        title="MITRE ATT&amp;CK Matrix &amp; TTP Alignment"
+        badge="Enterprise Threat Matrix"
+        whatItDoes="Correlates every low-level indicator—suspicious API calls, modified registry RunKeys, YARA signatures, and network beacons—to standard MITRE Adversarial Tactics, Techniques, and Common Knowledge (ATT&CK v14+) IDs. It groups findings into 12 core enterprise adversary tactics (Initial Access through Impact) and exports an ATT&CK Navigator JSON layer."
+        howItHelps="Standardizes reporting so incident responders and threat hunters can map the adversary's playbook. Rather than seeing raw assembly calls, teams understand the threat's kill chain: 'T1059 Command Execution' &rarr; 'T1055 Process Injection' &rarr; 'T1547 Persistence' &rarr; 'T1490 Recovery Inhibition'."
+        keyIndicators={[
+          { label: "T1490 (Inhibit Recovery)", detail: "Signature of Ransomware deleting volume shadow copies (vssadmin/bcdedit)", severity: "critical" },
+          { label: "T1055 (Process Injection)", detail: "Adversary injecting malicious code into notepad.exe or svchost.exe to bypass antivirus", severity: "critical" },
+          { label: "T1555 (Credentials from Web Browsers)", detail: "Infostealers querying browser SQLite databases to exfiltrate passwords and cookies", severity: "critical" },
+          { label: "T1071 (Application Layer Protocol)", detail: "C2 servers masking beacons as legitimate HTTPS traffic to bypass corporate firewalls", severity: "high" },
+          { label: "T1547 (Boot/Logon Autostart)", detail: "Registry RunKeys and scheduled tasks established to survive host reboots", severity: "high" }
+        ]}
+        analystTip="Click on any highlighted technique pill in the 12-tactic board below to open the Evidence Drawer showing the exact API invocation and PID trigger."
+        defaultExpanded={false}
+      />
+
       {/* Header Banner */}
       <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>

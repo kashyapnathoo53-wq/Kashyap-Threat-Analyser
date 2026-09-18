@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FullAnalysisReport } from '../types';
-import { FileText, Download, Printer, Copy, Check, ExternalLink } from 'lucide-react';
+import { SectionGuide } from './SectionGuide';
+import { FileText, Download, Printer, Copy, Check, ExternalLink, ShieldCheck, Award } from 'lucide-react';
 
 interface Props {
   report: FullAnalysisReport;
@@ -46,6 +47,22 @@ export const ReportGeneratorTab: React.FC<Props> = ({ report }) => {
 
   return (
     <div className="space-y-6">
+      {/* Comprehensive Section Guide */}
+      <SectionGuide
+        title="Automated Executive &amp; Technical Reporting Engine"
+        badge="Audit &amp; Compliance"
+        whatItDoes="Synthesizes all analytical telemetry into publication-ready formats: Responsive HTML Executive Reports, formatted Markdown summaries, STIX 2.1 CTI bundles, and print-ready PDF exports. Each report captures sample metadata, threat scores, YARA signature detections, extracted IOC tables, and MITRE ATT&CK TTP mappings."
+        howItHelps="Transforms complex reverse engineering data into clear, defensible artifacts for management briefings, legal chain of custody, customer security audits, and regulatory compliance. You can save the report as PDF or paste the Markdown directly into Jira, GitHub issues, or Slack."
+        keyIndicators={[
+          { label: "Executive Summary", detail: "High-level risk rating and verdict designed for CISO and leadership briefings", severity: "info" },
+          { label: "Cryptographic Provenance", detail: "Immutable SHA256 and MD5 hashes establishing forensically sound chain of custody", severity: "info" },
+          { label: "STIX 2.1 Bundle Export", detail: "Directly importable into Threat Intelligence Platforms (TIP) like OpenCTI and ThreatConnect", severity: "info" },
+          { label: "Printable PDF Mode", detail: "Clean print styling formatted for offline distribution or incident archive storage", severity: "info" }
+        ]}
+        analystTip="Click 'Print / Save as PDF' in the top right corner to generate an offline PDF report with professional typography."
+        defaultExpanded={false}
+      />
+
       {/* Header Bar */}
       <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>

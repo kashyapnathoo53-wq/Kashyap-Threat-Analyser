@@ -3,12 +3,10 @@ from typing import Dict, List, Any
 
 class IocExtractor:
     def __init__(self):
-        # Regex patterns for IOC parsing
+        # Precise, bounded regex patterns for IOC parsing
         self.ipv4_pattern = re.compile(r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b")
-        self.url_pattern = re.compile(r"https?://[^\s/$.?#].[^\s]*", re.IGNORECASE)
-        self.domain_pattern = re.compile(r"\b(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}\b")
-        self.email_pattern = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
-        self.registry_pattern = re.compile(r"\b(?:HKLM|HKCU|HKEY_LOCAL_MACHINE|HKEY_CURRENT_USER)\\[a-zA-Z0-9_\\\-]+\b", re.IGNORECASE)
+        self.url_pattern = re.compile(r"https?://[a-zA-Z0-9_\-\.]+(?::[0-9]{1,5})?(?:/[^\s\"'<>]*)?", re.IGNORECASE)
+        self.domain_pattern = re.compile(r"\b(?:[a-zA-Z0-9-]+\.)+(?:com|org|net|xyz|ru|cn|cc|io|top|club|info|biz)\b", re.IGNORECASE)
         self.btc_pattern = re.compile(r"\b[13][a-km-zA-HJ-NP-Z1-9]{25,34}\b|\bbc1[qzry9x8gf253amvg3fpd86743k84n3ne0249bbqcck0e]{38,59}\b")
         self.eth_pattern = re.compile(r"\b0x[a-fA-F0-9]{40}\b")
 
@@ -16,18 +14,27 @@ class IocExtractor:
         parts = ip.split(".")
         if len(parts) != 4:
             return False
-        # Filter local loopback / zero addresses
+        # Filter local loopback / zero / broadcast addresses
         if ip in ["127.0.0.1", "0.0.0.0", "255.255.255.255"]:
             return False
-        return all(0 <= int(p) <= 255 for p in parts)
+        try:
+            return all(0 <= int(p) <= 255 for p in parts)
+        except ValueError:
+            return False
 
     def extract(self, content: bytes, static_results: Dict[str, Any], behavioral_results: Dict[str, Any]) -> Dict[str, Any]:
-        content_str = content.decode("ascii", errors="ignore")
+        # Fast & clean approach: search IOCs in extracted strings & behavioral logs instead of raw binary bytes
+        strings_info = static_results.get("strings", {})
+        combined_strings = strings_info.get("ascii", []) + strings_info.get("unicode", [])
         
+        # Also sample first 128KB of text to catch quick embedded tokens
+        sample_text = content[:131072].decode("ascii", errors="ignore")
+        search_corpus = "\n".join(combined_strings[:200]) + "\n" + sample_text
+
         extracted_iocs = []
         seen = set()
 
-        # Add Hashes from static analysis
+        # 1. Add Cryptographic Hashes from static analysis
         hashes = static_results.get("hashes", {})
         if hashes.get("sha256"):
             extracted_iocs.append({
@@ -49,8 +56,8 @@ class IocExtractor:
             })
             seen.add(hashes["md5"])
 
-        # Extract IPs
-        raw_ips = self.ipv4_pattern.findall(content_str)
+        # 2. Extract Network IPs
+        raw_ips = self.ipv4_pattern.findall(search_corpus)
         for net_item in behavioral_results.get("network_activity", []):
             dst = net_item.get("destination", "").split(":")[0]
             if dst:
@@ -67,8 +74,8 @@ class IocExtractor:
                     "threat_intel": {"abuseipdb_score": "98%", "country": "RU / NL", "risk": "HIGH"}
                 })
 
-        # Extract URLs
-        raw_urls = self.url_pattern.findall(content_str)
+        # 3. Extract URLs
+        raw_urls = self.url_pattern.findall(search_corpus)
         for url in set(raw_urls):
             if url not in seen and len(url) < 150:
                 seen.add(url)
@@ -80,15 +87,15 @@ class IocExtractor:
                     "threat_intel": {"status": "FLAGGED_MALICIOUS", "risk": "HIGH"}
                 })
 
-        # Extract Domains
-        raw_domains = self.domain_pattern.findall(content_str)
+        # 4. Extract Domains
+        raw_domains = self.domain_pattern.findall(search_corpus)
         for net_item in behavioral_results.get("network_activity", []):
             dom = net_item.get("domain", "")
             if dom:
                 raw_domains.append(dom)
 
         for domain in set(raw_domains):
-            if domain not in seen and not domain.endswith((".dll", ".exe", ".sys", ".txt", ".png", ".jpg")):
+            if domain not in seen and not domain.endswith((".dll", ".exe", ".sys", ".txt", ".png", ".jpg", ".bin")):
                 seen.add(domain)
                 extracted_iocs.append({
                     "type": "Domain Name",
@@ -98,7 +105,7 @@ class IocExtractor:
                     "threat_intel": {"whois": "Registrar Privacy Protected", "risk": "HIGH"}
                 })
 
-        # Extract Registry Keys
+        # 5. Extract Registry Keys from behavioral emulation
         for reg_item in behavioral_results.get("registry_activity", []):
             key = reg_item.get("key", "")
             if key and key not in seen:
@@ -111,7 +118,7 @@ class IocExtractor:
                     "threat_intel": {"persistence": "Windows Startup RunKey", "risk": "HIGH"}
                 })
 
-        # Extract Dropped Files
+        # 6. Extract Dropped Files
         for fs_item in behavioral_results.get("filesystem_activity", []):
             path = fs_item.get("path", "")
             if path and path not in seen:
@@ -124,8 +131,8 @@ class IocExtractor:
                     "threat_intel": {"file_type": "Executable / Ransom Note", "risk": "MEDIUM"}
                 })
 
-        # Extract Crypto Wallets
-        btc_wallets = self.btc_pattern.findall(content_str)
+        # 7. Extract Crypto Wallets (BTC, ETH)
+        btc_wallets = self.btc_pattern.findall(search_corpus)
         for w in set(btc_wallets):
             if w not in seen:
                 seen.add(w)
@@ -137,7 +144,7 @@ class IocExtractor:
                     "threat_intel": {"blockchain": "Flagged Ransomware Address", "risk": "CRITICAL"}
                 })
 
-        eth_wallets = self.eth_pattern.findall(content_str)
+        eth_wallets = self.eth_pattern.findall(search_corpus)
         for w in set(eth_wallets):
             if w not in seen:
                 seen.add(w)

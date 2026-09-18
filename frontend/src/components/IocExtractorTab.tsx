@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { IocExtraction } from '../types';
-import { Database, Download, Copy, Check, ShieldAlert, Globe, Key, FileText } from 'lucide-react';
+import { SectionGuide } from './SectionGuide';
+import { Database, Download, Copy, Check, ShieldAlert, Globe, Key, FileText, Share2 } from 'lucide-react';
 
 interface Props {
   ioc: IocExtraction;
@@ -46,6 +47,23 @@ export const IocExtractorTab: React.FC<Props> = ({ ioc, reportId }) => {
 
   return (
     <div className="space-y-6">
+      {/* Comprehensive Section Guide */}
+      <SectionGuide
+        title="Automated IOC Extraction &amp; Threat Intel Sharing"
+        badge="Threat Intelligence"
+        whatItDoes="Automatically extracts Indicators of Compromise (IOCs) across multiple dimensions: Cryptographic File Hashes (MD5, SHA256), Network Command-and-Control IPs, Domains, URLs, Windows Registry persistence keys, Dropped file paths, and Ransomware Crypto Wallets (Bitcoin, Ethereum). It formats indicators into industry standard STIX 2.1 and MISP JSON schemas."
+        howItHelps="Extracted IOCs provide actionable artifacts you can immediately feed into perimeter firewalls (Palo Alto, Fortinet), DNS sinkholes, Endpoint Detection &amp; Response (EDR) blocklists (CrowdStrike, SentinelOne), and SIEM search rules (Splunk, Elastic) to contain attacks across your network."
+        keyIndicators={[
+          { label: "Network C2 IPs/Domains", detail: "Active IP addresses and domains receiving beacon telemetry or downloading second-stage payloads", severity: "critical" },
+          { label: "Crypto Wallets (BTC/ETH)", detail: "Payment addresses embedded in ransom notes or crypto drainers; indicates active ransomware campaigns", severity: "critical" },
+          { label: "Registry Persistence Keys", detail: "Exact RunKey registry values that need deletion during incident eradication", severity: "high" },
+          { label: "Dropped Artifact Paths", detail: "File paths in AppData or Temp that need automated host quarantine", severity: "high" },
+          { label: "STIX 2.1 &amp; MISP Feeds", detail: "Standardized machine-readable threat sharing formats used by global ISACs and SOCs", severity: "info" }
+        ]}
+        analystTip="Use the 'STIX 2.1 JSON' button above to export structured threat bundles that can be ingested into your organization's OpenCTI or MISP threat intelligence platforms."
+        defaultExpanded={false}
+      />
+
       {/* Header Controls */}
       <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>

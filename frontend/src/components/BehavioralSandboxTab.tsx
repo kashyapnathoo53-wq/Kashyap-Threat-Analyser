@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { BehavioralAnalysis } from '../types';
 import { ProcessTreeGraph } from './ProcessTreeGraph';
-import { Terminal, Network, HardDrive, Filter, Activity } from 'lucide-react';
+import { SectionGuide } from './SectionGuide';
+import { Terminal, Network, HardDrive, Filter, Activity, Cpu, Radio, ShieldAlert } from 'lucide-react';
 
 interface Props {
   behavioral: BehavioralAnalysis;
@@ -21,6 +22,23 @@ export const BehavioralSandboxTab: React.FC<Props> = ({ behavioral }) => {
 
   return (
     <div className="space-y-6">
+      {/* Comprehensive Section Guide */}
+      <SectionGuide
+        title="Dynamic Behavioral Sandbox &amp; Runtime Emulation"
+        badge="Live Telemetry Tracer"
+        whatItDoes="Simulates live execution of the sample inside a controlled sandbox environment. It traces all Win32 and NT kernel API calls (Syscalls), maps parent-to-child process creation trees, tracks modifications to the filesystem and Windows Registry RunKeys, and monitors simulated outbound network sockets (C2 beaconing, DNS requests, HTTP POST exfiltration)."
+        howItHelps="Static analysis can be fooled by polymorphic encryption or packed code. Dynamic behavioral analysis reveals what the malware actually DOES when executed: what processes it spawns, what registry keys it hijacks to persist through reboots, and what servers it connects to for command-and-control instructions."
+        keyIndicators={[
+          { label: "vssadmin.exe delete shadows", detail: "Ransomware behavior: inhibits system recovery so victims cannot restore previous file versions", severity: "critical" },
+          { label: "CreateRemoteThread / NtUnmapViewOfSection", detail: "Process hollowing and shellcode execution inside legitimate system processes like svchost.exe", severity: "critical" },
+          { label: "CryptUnprotectData / Login Data", detail: "Infostealer behavior: dumping Chrome/Firefox/Edge stored passwords using Windows DPAPI", severity: "critical" },
+          { label: "HKCU\\...\\CurrentVersion\\Run", detail: "Host persistence: ensuring the malware re-launches every time Windows starts up", severity: "high" },
+          { label: "Outbound C2 IP Connections", detail: "Direct network beacons transmitting victim host information or downloading second-stage payloads", severity: "high" }
+        ]}
+        analystTip="Expand the Process Execution Hierarchy Tree below to identify hidden subprocesses. Modern loaders often launch cmd.exe or powershell.exe with base64 encoded arguments to evade basic EDR detection."
+        defaultExpanded={false}
+      />
+
       {/* Process Execution Hierarchy Tree */}
       <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl">
         <h3 className="text-base font-bold text-slate-200 mb-1 flex items-center gap-2">

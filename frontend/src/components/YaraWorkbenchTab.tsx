@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { YaraScan } from '../types';
-import { Terminal, Plus, CheckCircle2, Play, Code2, ShieldCheck, AlertOctagon } from 'lucide-react';
+import { SectionGuide } from './SectionGuide';
+import { Terminal, Plus, CheckCircle2, Play, Code2, ShieldCheck, AlertOctagon, Sparkles, BookOpen } from 'lucide-react';
 
 interface Props {
   yaraScan: YaraScan;
@@ -40,6 +41,23 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
 
   return (
     <div className="space-y-6">
+      {/* Comprehensive Section Guide */}
+      <SectionGuide
+        title="YARA Signature Engine &amp; Rule Authoring Workbench"
+        badge="Pattern Matching Engine"
+        whatItDoes="Executes YARA pattern matching rules against the uploaded payload's binary strings and raw bytes. It tests for known malware families (WannaCry, LockBit, Cobalt Strike, Emotet, WebShells, Keyloggers). Additionally, it provides an interactive live compiler allowing analysts to draft, test, and register custom YARA signatures."
+        howItHelps="YARA is the gold standard for classifying and identifying malware families based on textual or binary patterns. If an adversary modifies a small portion of their code, cryptographic hashes fail, but YARA rules targeting unique strings, API sequences, or encryption keys still trigger immediately."
+        keyIndicators={[
+          { label: "Rule Hits (Match Count)", detail: "Number of predefined threat intelligence signatures satisfied by this file", severity: "critical" },
+          { label: "Ransomware_VSS_Deletion", detail: "Matches volume shadow copy deletion routines characteristic of top ransomware families", severity: "critical" },
+          { label: "Process_Injection_Memory", detail: "Matches remote memory allocation and thread creation API calls used by C2 beacons", severity: "critical" },
+          { label: "Infostealer_Browser_DPAPI", detail: "Matches queries directed at browser credential storage and DPAPI decryption", severity: "high" },
+          { label: "WebShell_PHP_Generic", detail: "Detects hidden PHP webshell backdoors using eval(base64_decode) execution wrappers", severity: "high" }
+        ]}
+        analystTip="Use the Interactive Workbench form below to author your own detection rules with boolean expressions (e.g. 'any of ($strings)' or '$s1 and ($s2 or $s3)')."
+        defaultExpanded={false}
+      />
+
       {/* Registered YARA Rules Match Highlights */}
       <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl">
         <h3 className="text-base font-bold text-slate-200 mb-1 flex items-center gap-2">

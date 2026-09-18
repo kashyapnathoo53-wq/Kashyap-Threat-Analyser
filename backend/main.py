@@ -87,6 +87,8 @@ def list_presets():
     return get_preset_samples()
 
 def run_full_analysis(filename: str, content: bytes) -> Dict[str, Any]:
+    import time
+    start_time = time.time()
     file_info = {"filename": filename}
     
     # 1. Static Analysis
@@ -108,11 +110,14 @@ def run_full_analysis(filename: str, content: bytes) -> Dict[str, Any]:
     threat_res = threat_scorer.calculate_score(static_res, yara_res, behavioral_res, ioc_res, mitre_res)
 
     report_id = static_res["hashes"]["sha256"]
+    duration_ms = round((time.time() - start_time) * 1000, 2)
 
     result = {
         "report_id": report_id,
         "sample_name": filename,
         "timestamp": "2026-09-18T16:00:00Z",
+        "analysis_duration_ms": duration_ms,
+        "file_size_bytes": len(content),
         "static_analysis": static_res,
         "yara_scan": yara_res,
         "behavioral_analysis": behavioral_res,
@@ -127,9 +132,12 @@ def run_full_analysis(filename: str, content: bytes) -> Dict[str, Any]:
 
 @app.post("/api/analyze/upload")
 async def analyze_upload(file: UploadFile = File(...)):
+    # Read file content with streaming buffer
     content = await file.read()
     if not content:
         raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+    if len(content) > 104857600:  # 100 MB max guardrail
+        raise HTTPException(status_code=413, detail="File size exceeds 100 MB maximum threshold.")
     return run_full_analysis(file.filename, content)
 
 @app.post("/api/analyze/preset")

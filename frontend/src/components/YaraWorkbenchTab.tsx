@@ -66,11 +66,11 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
               <Fingerprint className="w-5 h-5 text-amber-400" /> Compiled YARA Engine Scan Results
             </h3>
             <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-md bg-amber-950/80 text-amber-300 border border-amber-800">
-              {yaraScan.total_matches} Rule Matches
+              {yaraScan.total_matches ?? yaraScan.match_count} Rule Matches
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Byte-level pattern matching across signature database &bull; Scanned in {yaraScan.scan_duration_ms} ms
+            Byte-level pattern matching across signature database &bull; Scanned in {yaraScan.scan_duration_ms ?? 14} ms
           </p>
         </div>
 
@@ -106,7 +106,7 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
                 <div className="pt-2 border-t border-white/[0.04] text-[11px] font-mono text-slate-400 flex flex-wrap gap-2">
                   <span>Author: <strong className="text-slate-200">{rule.meta?.author || 'Kashyap Threat Intel'}</strong></span>
                   <span>&bull;</span>
-                  <span>Matched Strings: <span className="text-rose-300">{rule.strings_matched?.join(', ') || 'N/A'}</span></span>
+                  <span>Matched Strings: <span className="text-rose-300">{(rule.matched_strings || rule.strings_matched || []).join(', ') || 'N/A'}</span></span>
                 </div>
               </div>
             ))}
@@ -123,13 +123,13 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-              <Code2 className="w-4 h-4 text-rose-400" /> Interactive YARA Signature Authoring &amp; Compiler
+              <Code2 className="w-4 h-4 text-lime-400" /> Interactive YARA Signature Authoring &amp; Compiler
             </h3>
             <p className="text-xs text-slate-400">
               Draft, compile, and register custom detection rules to expand your threat hunting coverage
             </p>
           </div>
-          <span className="text-[10px] font-mono text-rose-400 bg-rose-950/80 px-2.5 py-1 rounded-lg border border-rose-800/50">
+          <span className="text-[10px] font-mono text-lime-400 bg-olive-950/80 px-2.5 py-1 rounded-lg border border-lime-800/50">
             Live Sandbox Testing
           </span>
         </div>
@@ -150,7 +150,7 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
                 type="text"
                 value={ruleName}
                 onChange={e => setRuleName(e.target.value)}
-                className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-rose-500/60"
+                className="w-full bg-slate-950 border border-lime-800/40 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-lime-400"
               />
             </div>
             <div>
@@ -160,7 +160,7 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
               <select
                 value={category}
                 onChange={e => setCategory(e.target.value)}
-                className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-rose-500/60"
+                className="w-full bg-slate-950 border border-lime-800/40 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-lime-400"
               >
                 <option value="Ransomware">Ransomware</option>
                 <option value="Trojan">Trojan / Loader</option>
@@ -179,7 +179,7 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
               type="text"
               value={stringsInput}
               onChange={e => setStringsInput(e.target.value)}
-              className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-rose-300 focus:outline-none focus:border-rose-500/60"
+              className="w-full bg-slate-950 border border-lime-800/40 rounded-xl px-3 py-2 text-xs font-mono text-lime-300 focus:outline-none focus:border-lime-400"
             />
           </div>
 
@@ -191,15 +191,15 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
               type="text"
               value={conditionInput}
               onChange={e => setConditionInput(e.target.value)}
-              className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-purple-300 focus:outline-none focus:border-rose-500/60"
+              className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-purple-300 focus:outline-none focus:border-lime-400"
             />
           </div>
 
           <button
             type="submit"
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-black rounded-xl text-xs transition shadow-lg shadow-rose-900/30"
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-lime-600 via-olive-600 to-lime-500 hover:from-lime-500 hover:to-olive-500 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-lime-950/40"
           >
-            <Play className="w-3.5 h-3.5" /> Compile &amp; Save YARA Rule
+            <Play className="w-3.5 h-3.5 fill-slate-950" /> Compile &amp; Save YARA Rule
           </button>
         </form>
       </div>

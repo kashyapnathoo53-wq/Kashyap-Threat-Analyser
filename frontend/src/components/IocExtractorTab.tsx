@@ -71,9 +71,9 @@ export const IocExtractorTab: React.FC<Props> = ({ ioc, reportId }) => {
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-base font-extrabold text-white flex items-center gap-2">
-              <Database className="w-5 h-5 text-purple-400" /> Extracted Indicators of Compromise (IOCs)
+              <Database className="w-5 h-5 text-lime-400" /> Extracted Indicators of Compromise (IOCs)
             </h3>
-            <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-md bg-purple-950/80 text-purple-300 border border-purple-800">
+            <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-md bg-olive-950/80 text-lime-300 border border-lime-800">
               {ioc.total_extracted} Indicators
             </span>
           </div>
@@ -91,7 +91,7 @@ export const IocExtractorTab: React.FC<Props> = ({ ioc, reportId }) => {
           </button>
           <button
             onClick={downloadStix}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-rose-900/30"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-lime-600 via-olive-600 to-lime-500 hover:from-lime-500 hover:to-olive-500 text-slate-950 rounded-xl text-xs font-black transition shadow-lg shadow-lime-950/30"
           >
             <Share2 className="w-3.5 h-3.5" /> STIX 2.1 JSON
           </button>
@@ -113,7 +113,7 @@ export const IocExtractorTab: React.FC<Props> = ({ ioc, reportId }) => {
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search indicator values..."
-            className="w-full bg-slate-950 border border-white/[0.08] rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-rose-500/60 font-mono"
+            className="w-full bg-slate-950 border border-lime-800/40 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-lime-400 font-mono"
           />
         </div>
 
@@ -124,7 +124,7 @@ export const IocExtractorTab: React.FC<Props> = ({ ioc, reportId }) => {
               onClick={() => setCategoryFilter(cat)}
               className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition ${
                 categoryFilter === cat 
-                  ? 'bg-rose-600 text-white font-black shadow-md shadow-rose-950/40' 
+                  ? 'bg-gradient-to-r from-lime-600 to-olive-600 text-slate-950 font-black shadow-md shadow-lime-950/40' 
                   : 'bg-slate-950 text-slate-400 hover:text-white border border-white/[0.06]'
               }`}
             >
@@ -156,7 +156,7 @@ export const IocExtractorTab: React.FC<Props> = ({ ioc, reportId }) => {
                       <span className="text-[10px] text-slate-500">{item.category}</span>
                     </td>
                     <td className="p-3.5">
-                      <span className="text-rose-300 font-bold select-all break-all">{item.value}</span>
+                      <span className="text-lime-300 font-bold select-all break-all">{item.value}</span>
                       {item.threat_intel?.virustotal_ratio && (
                         <div className="text-[10px] text-slate-500 mt-0.5">
                           VT: <span className="text-rose-400">{item.threat_intel.virustotal_ratio}</span>
@@ -164,7 +164,7 @@ export const IocExtractorTab: React.FC<Props> = ({ ioc, reportId }) => {
                       )}
                     </td>
                     <td className="p-3.5">
-                      <span className="px-2 py-0.5 rounded-md bg-rose-950/80 text-rose-300 border border-rose-800/40 text-[10px] font-bold">
+                      <span className="px-2 py-0.5 rounded-md bg-olive-950/80 text-lime-300 border border-lime-800/40 text-[10px] font-bold">
                         {item.confidence}%
                       </span>
                     </td>
@@ -180,7 +180,7 @@ export const IocExtractorTab: React.FC<Props> = ({ ioc, reportId }) => {
                     <td className="p-3.5 text-right">
                       <button
                         onClick={() => copyToClipboard(item.value, idx)}
-                        className="p-1.5 bg-slate-900 hover:bg-rose-600 hover:text-white text-slate-400 rounded-xl transition border border-white/[0.06]"
+                        className="p-1.5 bg-slate-900 hover:bg-lime-500 hover:text-slate-950 text-slate-400 rounded-xl transition border border-white/[0.06]"
                         title="Copy Indicator Value"
                       >
                         {copiedIndex === idx ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}

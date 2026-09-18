@@ -51,6 +51,7 @@ export interface StaticAnalysis {
       publisher: string;
     };
   };
+  suspicious_imports?: ImportInfo[];
   strings: {
     ascii: string[];
     ascii_total: number;
@@ -67,12 +68,16 @@ export interface YaraMatch {
   severity: string;
   description: string;
   matched_strings: string[];
+  strings_matched?: string[];
   threat_level: number;
+  meta?: { author?: string; [key: string]: any };
 }
 
 export interface YaraScan {
   matches: YaraMatch[];
   match_count: number;
+  total_matches?: number;
+  scan_duration_ms?: number;
   total_rules_scanned: number;
 }
 
@@ -99,9 +104,9 @@ export interface ApiCall {
 export interface BehavioralAnalysis {
   process_tree: ProcessNode;
   api_call_stream: ApiCall[];
-  filesystem_activity: { action: string; path: string; size: string }[];
-  registry_activity: { action: string; key: string; value?: string }[];
-  network_activity: { proto: string; destination: string; domain: string; type: string; bytes_sent: number }[];
+  filesystem_activity: { action: string; path: string; size?: string; size_bytes?: number }[];
+  registry_activity: { action: string; key: string; value?: string; value_name?: string; data?: string }[];
+  network_activity: { proto?: string; protocol?: string; destination: string; domain?: string; type?: string; bytes_sent?: number }[];
   total_api_calls: number;
   execution_time_seconds: number;
 }
@@ -125,6 +130,9 @@ export interface MitreTechnique {
   tactic_name: string;
   technique_id: string;
   technique_name: string;
+  name?: string;
+  description?: string;
+  url?: string;
   evidence: string;
   confidence: string;
 }
@@ -133,6 +141,8 @@ export interface MitreMapping {
   tactics: { id: string; name: string }[];
   mapped_techniques: MitreTechnique[];
   total_mapped_techniques: number;
+  total_techniques_mapped?: number;
+  detected_tactics?: any[];
   navigator_layer: any;
 }
 
@@ -141,6 +151,8 @@ export interface ThreatScoring {
   verdict: string;
   severity: string;
   color: string;
+  confidence?: number;
+  high_priority_flags?: string[];
   score_breakdown: {
     static_score: number;
     yara_score: number;

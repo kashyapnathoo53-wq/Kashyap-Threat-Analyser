@@ -48,7 +48,7 @@ export const MitreAttackTab: React.FC<Props> = ({ mitre }) => {
               <Layers className="w-5 h-5 text-purple-400" /> MITRE ATT&amp;CK Enterprise Matrix (v14+)
             </h3>
             <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-md bg-purple-950/80 text-purple-300 border border-purple-800">
-              {mitre.total_techniques_mapped} Techniques Active
+              {mitre.total_techniques_mapped ?? mitre.total_mapped_techniques} Techniques Active
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
@@ -107,7 +107,7 @@ export const MitreAttackTab: React.FC<Props> = ({ mitre }) => {
                         {tech.technique_id}
                       </div>
                       <div className="text-[10px] text-slate-400 truncate leading-tight mt-0.5">
-                        {tech.name}
+                        {tech.name || tech.technique_name}
                       </div>
                     </button>
                   ))}
@@ -134,7 +134,7 @@ export const MitreAttackTab: React.FC<Props> = ({ mitre }) => {
                   </span>
                   <span className="text-xs uppercase font-bold text-slate-400">{selectedTechnique.tactic_name}</span>
                 </div>
-                <h4 className="text-base font-extrabold text-white mt-1">{selectedTechnique.name}</h4>
+                <h4 className="text-base font-extrabold text-white mt-1">{selectedTechnique.name || selectedTechnique.technique_name}</h4>
               </div>
               <button
                 onClick={() => setSelectedTechnique(null)}
@@ -145,7 +145,7 @@ export const MitreAttackTab: React.FC<Props> = ({ mitre }) => {
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              {selectedTechnique.description}
+              {selectedTechnique.description || `Adversary technique representing ${selectedTechnique.technique_name} (${selectedTechnique.technique_id}) under ${selectedTechnique.tactic_name}.`}
             </p>
 
             <div className="bg-slate-950 p-3.5 rounded-xl border border-white/[0.06] space-y-1 text-xs">
@@ -155,10 +155,10 @@ export const MitreAttackTab: React.FC<Props> = ({ mitre }) => {
 
             <div className="flex justify-between items-center text-xs pt-2">
               <a
-                href={selectedTechnique.url}
+                href={selectedTechnique.url || `https://attack.mitre.org/techniques/${selectedTechnique.technique_id.replace('.', '/')}`}
                 target="_blank"
                 rel="noreferrer"
-                className="text-rose-400 hover:underline flex items-center gap-1 font-mono text-[11px]"
+                className="text-lime-400 hover:underline flex items-center gap-1 font-mono text-[11px]"
               >
                 View MITRE ATT&CK Matrix Docs <ExternalLink className="w-3 h-3" />
               </a>

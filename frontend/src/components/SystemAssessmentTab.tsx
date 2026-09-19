@@ -18,15 +18,15 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
 
   if (loading) {
     return (
-      <div className="glass-panel p-16 rounded-3xl flex flex-col items-center justify-center space-y-6 shadow-2xl relative overflow-hidden border border-lime-500/30">
-        <div className="absolute inset-0 bg-gradient-to-b from-olive-600/15 via-lime-900/10 to-transparent animate-pulse" />
+      <div className="glass-panel p-16 rounded-3xl flex flex-col items-center justify-center space-y-6 shadow-2xl relative overflow-hidden border border-orange-500/30">
+        <div className="absolute inset-0 bg-gradient-to-b from-orange-600/15 via-amber-900/10 to-transparent animate-pulse" />
         <div className="relative">
-          <div className="w-20 h-20 rounded-full border-4 border-lime-500/20 border-t-lime-400 animate-spin flex items-center justify-center shadow-xl shadow-lime-950/50" />
-          <Radio className="w-8 h-8 text-lime-400 absolute inset-0 m-auto animate-ping opacity-75" />
+          <div className="w-20 h-20 rounded-full border-4 border-orange-500/20 border-t-orange-400 animate-spin flex items-center justify-center shadow-xl shadow-orange-950/50" />
+          <Radio className="w-8 h-8 text-orange-400 absolute inset-0 m-auto animate-ping opacity-75" />
         </div>
         <div className="text-center space-y-1.5 z-10">
           <div className="text-lg font-black tracking-wide text-white">Performing Deep Host Security Auto-Assessment...</div>
-          <div className="text-xs text-lime-300/80 font-mono">
+          <div className="text-xs text-orange-300/80 font-mono">
             Scanning runtime processes, registry persistence keys, and auditing installed packages against NVD CVEs...
           </div>
         </div>
@@ -41,7 +41,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
         <div className="text-lg font-bold text-slate-200">No Assessment Data Available</div>
         <button
           onClick={onRescan}
-          className="px-5 py-2.5 bg-gradient-to-r from-lime-600 via-olive-600 to-lime-500 hover:from-lime-500 hover:to-lime-400 text-slate-950 font-black text-xs rounded-xl transition shadow-lg shadow-lime-950/50"
+          className="px-5 py-2.5 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 hover:from-orange-500 hover:to-amber-500 text-white font-black text-xs rounded-xl transition shadow-lg shadow-orange-950/50"
         >
           Initiate Auto-Assessment Now
         </button>
@@ -63,22 +63,22 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
       <SectionGuide
         title="System Auto-Assessment &amp; Live Host Posture"
         badge="Live Endpoint Defense"
-        whatItDoes="Automatically analyzes the machine on which Kashyap Threat Analyser is executing. It performs non-intrusive runtime inspection of running operating system processes, checks Windows Registry startup RunKeys for hidden persistence payloads, audits all installed third-party software packages against known National Vulnerability Database (NVD) CVE entries, and builds a predictive attack forecast."
+        whatItDoes="Automatically analyzes the machine on which PASHA Threat Analyser is executing. It performs non-intrusive runtime inspection of running operating system processes, checks Windows Registry startup RunKeys for hidden persistence payloads, audits all installed third-party software packages against known National Vulnerability Database (NVD) CVE entries, and builds a predictive attack forecast."
         howItHelps="Unlike traditional malware tools where you must manually find and upload suspicious files, this engine acts as an immediate self-auditor. It proactively alerts you if background coinminers, unpatched browser zero-days, or persistence backdoors are already active on your PC before they can cause data exfiltration or ransomware encryption."
         keyIndicators={[
           { label: "Health Score < 60", detail: "Indicates critical active risks such as suspicious temp processes or high CVSS CVEs", severity: "critical" },
           { label: "Temp Executables", detail: "Processes executing from AppData\\Local\\Temp or Downloads indicate dropped trojans", severity: "critical" },
-          { label: "CVSS >= 9.0 (RCE)", detail: "Remote Code Execution bugs in browsers or archivers allow zero-click compromise", severity: "high" },
-          { label: "Suspicious RunKeys", detail: "Registry entries pointing to VBS/PS1 or temp paths signify unauthorized persistence", severity: "high" },
-          { label: "Predictive Forecast", detail: "Projects likely attack scenarios tailored to your machine's exact software versions", severity: "info" }
+          { label: "High CVSS CVEs", detail: "Installed browsers or runtimes with active public exploits in the NVD catalog", severity: "high" },
+          { label: "RunKey Persistence", detail: "Software configuring registry autostart without administrative signing", severity: "high" },
+          { label: "Clean Host (Score > 85)", detail: "No anomaly processes, patched software packages, and minimal attack surface", severity: "info" }
         ]}
-        analystTip="Click 'Re-scan Host' whenever you install new software, update patches, or suspect abnormal fan activity or network sluggishness."
+        analystTip="Click 'Re-scan Host' at any time to re-evaluate system integrity in <1.1 seconds after applying patches or terminating suspicious tasks."
         defaultExpanded={false}
       />
 
-      {/* Host Posture Hero Banner */}
+      {/* Hero Health Banner */}
       <div 
-        className="glass-panel p-6 sm:p-8 rounded-3xl relative overflow-hidden border border-white/[0.1] shadow-2xl transition-all"
+        className="glass-panel p-6 sm:p-7 rounded-3xl relative overflow-hidden border border-white/[0.1] shadow-2xl transition-all"
         style={{
           boxShadow: `0 0 45px ${status_color}20`
         }}
@@ -89,9 +89,9 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
         />
 
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
-          <div className="flex items-start sm:items-center gap-6">
-            {/* SVG Health Ring */}
-            <div className="relative w-28 h-28 shrink-0 flex items-center justify-center">
+          <div className="flex items-start sm:items-center gap-5">
+            {/* Health Score Radial Circle */}
+            <div className="relative w-24 h-24 shrink-0 flex items-center justify-center">
               <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
                 <circle
                   cx="50"
@@ -115,28 +115,29 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
                 />
               </svg>
               <div className="absolute flex flex-col items-center justify-center text-center">
-                <span className="text-2xl font-black font-mono tracking-tight text-white">
+                <span className="text-xl font-black font-mono tracking-tight text-white">
                   {health_score}
                 </span>
-                <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest">
+                <span className="text-[8px] font-mono text-slate-400 uppercase tracking-widest">
                   / 100
                 </span>
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <div className="flex flex-wrap items-center gap-2.5">
+            {/* Health Verdict Information */}
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
                 <span 
-                  className="px-3 py-1 text-xs font-black uppercase rounded-full tracking-wider text-slate-950 shadow-md"
+                  className="px-2.5 py-0.5 text-xs font-black uppercase rounded-full tracking-wider text-slate-950 shadow-md"
                   style={{ backgroundColor: status_color }}
                 >
                   {status}
                 </span>
-                <span className="text-xs font-mono text-slate-300 bg-slate-900/90 px-2.5 py-0.5 rounded-lg border border-white/[0.06]">
-                  Target: {host_info.hostname}
+                <span className="text-xs font-mono text-slate-400 bg-slate-900/90 px-2.5 py-0.5 rounded-lg border border-white/[0.06]">
+                  HOST: {host_info.hostname}
                 </span>
-                <span className="text-xs font-mono text-slate-500">
-                  {host_info.architecture}
+                <span className="text-xs text-slate-500 font-mono">
+                  ARCH: {host_info.architecture}
                 </span>
               </div>
 
@@ -145,14 +146,14 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
               </h2>
 
               <p className="text-xs text-slate-400 font-medium">
-                Operating System: <strong className="text-slate-200">{host_info.os}</strong> &bull; Scanned: <strong className="text-lime-400">{summary.total_processes_scanned} Processes</strong> &bull; <strong className="text-amber-300">{summary.installed_software_scanned} Software Packages</strong>
+                Operating System: <strong className="text-slate-200">{host_info.os}</strong> &bull; Scanned: <strong className="text-orange-400">{summary.total_processes_scanned} Processes</strong> &bull; <strong className="text-amber-300">{summary.installed_software_scanned} Software Packages</strong>
               </p>
             </div>
           </div>
 
           <button
             onClick={onRescan}
-            className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-lime-600 via-olive-600 to-lime-500 hover:from-lime-500 hover:to-lime-400 text-slate-950 font-black text-xs rounded-xl transition shadow-lg shadow-lime-950/50 shrink-0"
+            className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 hover:from-orange-500 hover:to-amber-500 text-white font-black text-xs rounded-xl transition shadow-lg shadow-orange-950/50 shrink-0"
           >
             <RefreshCw className="w-4 h-4" /> Re-scan Host
           </button>
@@ -163,11 +164,11 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div 
           onClick={() => setActiveSubTab('processes')}
-          className="glass-card p-4 rounded-2xl cursor-pointer group hover:border-lime-500/50 hover:shadow-lime-950/30"
+          className="glass-card p-4 rounded-2xl cursor-pointer group hover:border-orange-500/50 hover:shadow-orange-950/30"
         >
           <div className="flex justify-between items-center text-slate-400 text-xs font-bold uppercase mb-1">
-            <span className="group-hover:text-lime-400 transition">Running Processes</span>
-            <Cpu className="w-4 h-4 text-lime-400" />
+            <span className="group-hover:text-orange-400 transition">Running Processes</span>
+            <Cpu className="w-4 h-4 text-orange-400" />
           </div>
           <div className="text-2xl font-black font-mono text-white">
             {summary.total_processes_scanned}
@@ -231,7 +232,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
       </div>
 
       {/* Sub-Navigation Buttons */}
-      <div className="flex flex-wrap gap-2 glass-panel p-1.5 rounded-2xl border border-lime-900/40 text-xs font-bold shadow-lg">
+      <div className="flex flex-wrap gap-2 glass-panel p-1.5 rounded-2xl border border-orange-900/40 text-xs font-bold shadow-lg">
         {[
           { id: 'overview', label: 'Overview & Alerts', icon: ShieldCheck },
           { id: 'vulns', label: `Software CVEs (${software_audit.vulnerability_count})`, icon: Package },
@@ -247,7 +248,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
               onClick={() => setActiveSubTab(tab.id as any)}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
                 isActive
-                  ? 'bg-gradient-to-r from-lime-600 via-olive-600 to-lime-700 text-slate-950 font-black shadow-md shadow-lime-950/50'
+                  ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white font-black shadow-md shadow-orange-950/50'
                   : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
               }`}
             >
@@ -397,7 +398,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
                 Cross-referenced against NIST NVD and Known Exploited Vulnerabilities catalog
               </p>
             </div>
-            <span className="text-xs font-mono text-lime-300 font-bold bg-lime-950/80 px-3 py-1 rounded-xl border border-lime-800/50">
+            <span className="text-xs font-mono text-orange-300 font-bold bg-orange-950/80 px-3 py-1 rounded-xl border border-orange-800/50">
               {software_audit.total_software_found} Packages Audited
             </span>
           </div>
@@ -417,7 +418,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
                 {software_audit.installed_software.map((app, idx) => (
                   <tr key={idx} className="hover:bg-slate-900/60 transition">
                     <td className="p-3.5 font-bold text-slate-200">{app.name}</td>
-                    <td className="p-3.5 text-lime-300 font-semibold">{app.version}</td>
+                    <td className="p-3.5 text-orange-300 font-semibold">{app.version}</td>
                     <td className="p-3.5 text-slate-400">{app.publisher}</td>
                     <td className="p-3.5">
                       {app.has_cve ? (
@@ -449,7 +450,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
       {activeSubTab === 'processes' && (
         <div className="glass-card p-6 rounded-3xl space-y-4">
           <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-            <Cpu className="w-4 h-4 text-lime-400" /> Monitored Host Processes
+            <Cpu className="w-4 h-4 text-orange-400" /> Monitored Host Processes
           </h3>
           <div className="overflow-x-auto border border-white/[0.06] rounded-2xl">
             <table className="w-full text-left font-mono text-xs">
@@ -457,29 +458,32 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
                 <tr>
                   <th className="p-3.5">PID</th>
                   <th className="p-3.5">Process Name</th>
-                  <th className="p-3.5">Binary Path</th>
+                  <th className="p-3.5">Path</th>
+                  <th className="p-3.5">Audit Assessment</th>
                   <th className="p-3.5">Status</th>
-                  <th className="p-3.5">Anomaly Assessment</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.04] bg-slate-950/40">
-                {safeThreats.length > 0 && safeThreats.map((p, idx) => (
-                  <tr key={`sus-${idx}`} className="bg-rose-950/20 hover:bg-rose-950/30">
-                    <td className="p-3.5 text-rose-300 font-bold">{p.pid}</td>
-                    <td className="p-3.5 text-rose-200 font-bold">{p.name}</td>
-                    <td className="p-3.5 text-slate-300 break-all">{p.path}</td>
-                    <td className="p-3.5">
-                      <span className="px-2 py-0.5 bg-rose-900 text-rose-100 text-[10px] font-bold rounded">
-                        SUSPICIOUS
-                      </span>
-                    </td>
-                    <td className="p-3.5 text-rose-300">{p.anomaly_reason}</td>
-                  </tr>
-                ))}
-                {safeThreats.length === 0 && (
+                {safeThreats.length > 0 ? (
+                  safeThreats.map((proc: any, idx: number) => (
+                    <tr key={idx} className="hover:bg-slate-900/60 transition">
+                      <td className="p-3.5 text-slate-400">{proc.pid}</td>
+                      <td className="p-3.5 font-bold text-slate-200">{proc.name}</td>
+                      <td className="p-3.5 text-slate-400 font-mono text-[11px] truncate max-w-xs">{proc.path || 'N/A'}</td>
+                      <td className="p-3.5 text-orange-300">{proc.anomaly_reason || 'Verified system process'}</td>
+                      <td className="p-3.5">
+                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${
+                          proc.is_suspicious ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                        }`}>
+                          {proc.is_suspicious ? 'SUSPICIOUS' : 'RUNNING'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
                   <tr>
-                    <td colSpan={5} className="p-6 text-center text-emerald-400">
-                      All active process binaries verified against known OS signatures.
+                    <td colSpan={5} className="p-6 text-center text-slate-500 italic">
+                      No anomalous processes detected. All running host processes verified safe.
                     </td>
                   </tr>
                 )}
@@ -494,17 +498,17 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
         <div className="glass-card p-6 rounded-3xl space-y-4">
           <div>
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-purple-400" /> Predictive Threat &amp; Attack Surface Forecast
+              <TrendingUp className="w-4 h-4 text-orange-400" /> Predictive Threat Forecast & Attack Vectors
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Forecasts likely adversary techniques targeting this machine's specific configuration and software versions
+              Heuristic projection of host vulnerability exploitation risks based on system topology
             </p>
           </div>
 
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {threat_forecast.map((fc, idx) => (
-              <div key={idx} className="bg-slate-950/80 p-4 rounded-2xl border border-white/[0.05] space-y-2">
-                <div className="flex justify-between items-center">
+              <div key={idx} className="glass-panel p-5 rounded-2xl border border-white/[0.06] space-y-3">
+                <div className="flex justify-between items-start">
                   <div className="font-bold text-white text-sm flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: fc.probability === 'CRITICAL' ? '#ef4444' : fc.probability === 'HIGH' ? '#f59e0b' : '#22c55e' }} />
                     {fc.vector}
@@ -523,7 +527,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
 
                 <p className="text-xs text-slate-300">{fc.reasoning}</p>
 
-                <div className="bg-slate-900/90 p-3 rounded-xl border border-white/[0.04] text-xs font-mono text-lime-300">
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-white/[0.04] text-xs font-mono text-orange-300">
                   <strong className="text-slate-400">Preemptive Defense:</strong> {fc.mitigation}
                 </div>
               </div>
@@ -554,7 +558,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
                 <div key={idx} className="bg-slate-950/80 p-4 rounded-2xl border border-white/[0.05] flex justify-between items-start gap-4">
                   <div className="space-y-1">
                     <div className="font-bold text-white text-sm flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-full bg-lime-950 text-lime-400 border border-lime-800/60 text-xs flex items-center justify-center font-mono font-bold">
+                      <span className="w-5 h-5 rounded-full bg-orange-950 text-orange-400 border border-orange-800/60 text-xs flex items-center justify-center font-mono font-bold">
                         {idx + 1}
                       </span>
                       {item.action}

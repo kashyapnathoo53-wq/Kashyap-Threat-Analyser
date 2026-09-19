@@ -100,21 +100,21 @@ export const SampleSelectorModal: React.FC<Props> = ({ onSelectPreset, onFileUpl
         aria-hidden="true"
       />
 
-      <div className="bg-[#0b1407]/95 border border-lime-600/40 w-full max-w-2xl rounded-3xl p-6 sm:p-7 shadow-2xl shadow-lime-950/60 space-y-6 relative overflow-hidden">
-        {/* Olive Top Glow Line */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-lime-400 to-transparent" />
+      <div className="bg-[#140b06]/95 border border-orange-600/40 w-full max-w-2xl rounded-3xl p-6 sm:p-7 shadow-2xl shadow-orange-950/80 space-y-6 relative overflow-hidden">
+        {/* Cyber Orange Top Glow Line */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent" />
 
         {/* Header */}
-        <div className="flex justify-between items-center border-b border-lime-900/30 pb-4">
+        <div className="flex justify-between items-center border-b border-orange-900/40 pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-lime-950/80 border border-lime-500/40 flex items-center justify-center text-lime-400 shadow-md">
+            <div className="w-10 h-10 rounded-2xl bg-orange-950/80 border border-orange-500/40 flex items-center justify-center text-orange-400 shadow-md">
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-lg font-black text-white flex items-center gap-2">
                 Submit Sample for Deep Threat Analysis
               </h3>
-              <p className="text-xs text-lime-300/70 mt-0.5">
+              <p className="text-xs text-orange-300/70 mt-0.5">
                 Zero-lag forensic pipeline &bull; Upload any executable, archive or script
               </p>
             </div>
@@ -122,7 +122,7 @@ export const SampleSelectorModal: React.FC<Props> = ({ onSelectPreset, onFileUpl
           <button 
             type="button"
             onClick={onClose} 
-            className="text-slate-400 hover:text-white text-xl font-bold w-8 h-8 rounded-xl hover:bg-lime-950/60 flex items-center justify-center transition cursor-pointer border border-transparent hover:border-lime-800"
+            className="text-slate-400 hover:text-white text-xl font-bold w-8 h-8 rounded-xl hover:bg-orange-950/60 flex items-center justify-center transition cursor-pointer border border-transparent hover:border-orange-700"
           >
             <X className="w-4 h-4" />
           </button>
@@ -144,18 +144,18 @@ export const SampleSelectorModal: React.FC<Props> = ({ onSelectPreset, onFileUpl
           onDrop={handleDrop}
           className={`border-2 border-dashed rounded-2xl p-7 text-center transition-all duration-200 flex flex-col items-center justify-center relative cursor-pointer select-none ${
             isDragActive 
-              ? 'border-lime-400 bg-lime-950/40 scale-[1.01] shadow-xl shadow-lime-950/40' 
-              : 'border-lime-800/60 hover:border-lime-400 bg-[#0e1909]/80 hover:bg-[#14230b]'
+              ? 'border-orange-400 bg-orange-950/40 scale-[1.01] shadow-xl shadow-orange-950/60' 
+              : 'border-orange-800/60 hover:border-orange-400 bg-[#1a0e07]/80 hover:bg-[#24130a]'
           }`}
         >
-          <div className="w-14 h-14 rounded-2xl bg-lime-950/80 border border-lime-500/40 flex items-center justify-center text-lime-300 mb-3 shadow-inner">
+          <div className="w-14 h-14 rounded-2xl bg-orange-950/80 border border-orange-500/40 flex items-center justify-center text-orange-300 mb-3 shadow-inner">
             <Upload className="w-7 h-7" />
           </div>
 
           <div className="text-sm font-bold text-white tracking-wide">
             {isDragActive ? "Release payload here to analyze immediately!" : "Drag & Drop File Payload Here or Click Anywhere"}
           </div>
-          <div className="text-xs text-lime-300/70 mt-1">
+          <div className="text-xs text-orange-300/70 mt-1">
             Supports Windows PE (EXE, DLL), Linux (ELF), Scripts (PS1, BAT, VBS, PY, PHP), PDF, ZIP
           </div>
 
@@ -166,7 +166,7 @@ export const SampleSelectorModal: React.FC<Props> = ({ onSelectPreset, onFileUpl
                 e.stopPropagation();
                 triggerFileInput();
               }}
-              className="px-6 py-2.5 bg-gradient-to-r from-lime-600 via-olive-600 to-lime-500 hover:from-lime-500 hover:to-lime-400 text-slate-950 font-black text-xs rounded-xl transition shadow-lg shadow-lime-950/50 cursor-pointer"
+              className="px-6 py-2.5 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 hover:from-orange-500 hover:to-amber-500 text-white font-black text-xs rounded-xl transition shadow-lg shadow-orange-950/50 cursor-pointer"
             >
               Browse From Computer
             </button>
@@ -176,9 +176,9 @@ export const SampleSelectorModal: React.FC<Props> = ({ onSelectPreset, onFileUpl
 
         {/* Preset Sample Selector */}
         <div>
-          <div className="flex items-center justify-between text-xs font-bold text-lime-300/70 uppercase tracking-wider mb-2.5">
+          <div className="flex items-center justify-between text-xs font-bold text-orange-300/70 uppercase tracking-wider mb-2.5">
             <span>Or Choose Benchmark Malware Family</span>
-            <span className="text-[10px] text-lime-400 font-mono">Instant Emulation</span>
+            <span className="text-[10px] text-orange-400 font-mono">Instant Emulation</span>
           </div>
           <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
             {loading ? (
@@ -188,12 +188,12 @@ export const SampleSelectorModal: React.FC<Props> = ({ onSelectPreset, onFileUpl
                 <div
                   key={p.id}
                   onClick={() => onSelectPreset(p.id)}
-                  className="bg-[#0e1909]/90 p-3 rounded-xl border border-lime-900/40 hover:border-lime-500/60 hover:bg-[#15250c] cursor-pointer transition flex justify-between items-center group shadow-sm"
+                  className="bg-[#1a0e07]/90 p-3 rounded-xl border border-orange-900/50 hover:border-orange-400/60 hover:bg-[#28150c] cursor-pointer transition flex justify-between items-center group shadow-sm"
                 >
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-lime-200 text-xs group-hover:text-white transition">{p.name}</span>
-                      <span className="px-2 py-0.5 text-[9px] uppercase font-mono font-bold rounded bg-lime-950 text-lime-300 border border-lime-800/60">
+                      <span className="font-mono font-bold text-orange-200 text-xs group-hover:text-white transition">{p.name}</span>
+                      <span className="px-2 py-0.5 text-[9px] uppercase font-mono font-bold rounded bg-orange-950 text-orange-300 border border-orange-800/60">
                         {p.type}
                       </span>
                     </div>
@@ -202,7 +202,7 @@ export const SampleSelectorModal: React.FC<Props> = ({ onSelectPreset, onFileUpl
 
                   <button 
                     type="button"
-                    className="px-3.5 py-1.5 bg-lime-950/80 group-hover:bg-lime-500 text-lime-200 group-hover:text-slate-950 text-xs font-bold rounded-lg transition flex items-center gap-1 shrink-0 ml-2 border border-lime-900/60 group-hover:border-lime-500 shadow-sm"
+                    className="px-3.5 py-1.5 bg-orange-950/80 group-hover:bg-orange-500 text-orange-200 group-hover:text-slate-950 text-xs font-bold rounded-lg transition flex items-center gap-1 shrink-0 ml-2 border border-orange-900/60 group-hover:border-orange-400 shadow-sm"
                   >
                     <Play className="w-3.5 h-3.5" /> Analyze
                   </button>

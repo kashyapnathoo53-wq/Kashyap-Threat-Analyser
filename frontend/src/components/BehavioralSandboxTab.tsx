@@ -44,13 +44,13 @@ export const BehavioralSandboxTab: React.FC<Props> = ({ behavioral }) => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-              <Terminal className="w-4 h-4 text-lime-400" /> Interactive Virtual Process Hierarchy Tree
+              <Terminal className="w-4 h-4 text-orange-400" /> Interactive Virtual Process Hierarchy Tree
             </h3>
             <p className="text-xs text-slate-400">
               Parent-to-child process spawn hierarchy observed inside the execution sandbox
             </p>
           </div>
-          <span className="text-[11px] font-mono text-lime-300 bg-olive-950/80 px-2.5 py-1 rounded-lg border border-lime-800/50">
+          <span className="text-[11px] font-mono text-orange-300 bg-orange-950/80 px-2.5 py-1 rounded-lg border border-orange-800/50">
             PID Root: {behavioral.process_tree.pid}
           </span>
         </div>
@@ -65,7 +65,7 @@ export const BehavioralSandboxTab: React.FC<Props> = ({ behavioral }) => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div>
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-              <Activity className="w-4 h-4 text-lime-400" /> Kernel &amp; Win32 Syscall Event Stream
+              <Activity className="w-4 h-4 text-orange-400" /> Kernel &amp; Win32 Syscall Event Stream
             </h3>
             <p className="text-xs text-slate-400">
               Chronological API execution trace intercepted by sandbox hook engine
@@ -80,7 +80,7 @@ export const BehavioralSandboxTab: React.FC<Props> = ({ behavioral }) => {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search API calls..."
-                className="w-full bg-slate-950 border border-lime-800/40 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-lime-400 font-mono"
+                className="w-full bg-slate-950 border border-orange-800/40 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-orange-400 font-mono"
               />
             </div>
 
@@ -90,7 +90,7 @@ export const BehavioralSandboxTab: React.FC<Props> = ({ behavioral }) => {
                   key={level}
                   onClick={() => setRiskFilter(level)}
                   className={`px-2.5 py-1 rounded-lg transition text-[11px] ${
-                    riskFilter === level ? 'bg-gradient-to-r from-lime-600 to-olive-600 text-slate-950 font-black shadow-md shadow-lime-950/40' : 'text-slate-400 hover:text-white'
+                    riskFilter === level ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white font-black shadow-md shadow-orange-950/40' : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   {level}
@@ -108,7 +108,7 @@ export const BehavioralSandboxTab: React.FC<Props> = ({ behavioral }) => {
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] text-slate-500">[{call.timestamp || `+${idx * 15}ms`}]</span>
                     <span className="text-white font-bold">{call.api}</span>
-                    <span className="text-[10px] text-lime-300 bg-olive-950/60 px-1.5 py-0.2 rounded border border-lime-800/40">
+                    <span className="text-[10px] text-orange-300 bg-orange-950/60 px-1.5 py-0.2 rounded border border-orange-800/40">
                       PID {call.pid} ({call.process})
                     </span>
                   </div>
@@ -143,16 +143,16 @@ export const BehavioralSandboxTab: React.FC<Props> = ({ behavioral }) => {
         <div className="glass-card p-5 rounded-3xl">
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-              <FilePlus className="w-3.5 h-3.5 text-lime-400" /> Filesystem Drops
+              <FilePlus className="w-3.5 h-3.5 text-orange-400" /> Filesystem Drops
             </h4>
-            <span className="text-[10px] font-mono text-lime-400 bg-olive-950/60 px-2 py-0.5 rounded border border-lime-800/50">
+            <span className="text-[10px] font-mono text-orange-400 bg-orange-950/60 px-2 py-0.5 rounded border border-orange-800/50">
               {behavioral.filesystem_activity.length} Files
             </span>
           </div>
           <div className="space-y-2 max-h-52 overflow-y-auto pr-1 text-xs font-mono">
             {behavioral.filesystem_activity.map((f, i) => (
               <div key={i} className="p-2 bg-slate-950/80 rounded-xl border border-white/[0.04]">
-                <div className="text-lime-300 font-bold truncate select-all">{f.path}</div>
+                <div className="text-orange-300 font-bold truncate select-all">{f.path}</div>
                 <div className="text-[10px] text-slate-500 mt-0.5">{f.action} &bull; {f.size_bytes ? `${f.size_bytes}B` : (f.size || 'Created')}</div>
               </div>
             ))}

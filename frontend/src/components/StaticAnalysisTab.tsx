@@ -61,13 +61,13 @@ export const StaticAnalysisTab: React.FC<Props> = ({ staticAnalysis }) => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-              <FileCode className="w-4 h-4 text-lime-400" /> Cryptographic File Fingerprints
+              <FileCode className="w-4 h-4 text-orange-400" /> Cryptographic File Fingerprints
             </h3>
             <p className="text-xs text-slate-400">
               Immutable cryptographic hashes for threat intelligence cross-referencing and chain of custody
             </p>
           </div>
-          <span className="text-[11px] font-mono text-lime-300 bg-olive-950/80 px-2.5 py-1 rounded-lg border border-lime-800/50">
+          <span className="text-[11px] font-mono text-orange-300 bg-orange-950/80 px-2.5 py-1 rounded-lg border border-orange-800/50">
             {staticAnalysis.hashes.size_bytes} Bytes ({ (staticAnalysis.hashes.size_bytes / 1024).toFixed(1) } KB)
           </span>
         </div>
@@ -81,19 +81,19 @@ export const StaticAnalysisTab: React.FC<Props> = ({ staticAnalysis }) => {
           ].map((h, i) => (
             <div 
               key={i} 
-              className="bg-slate-950/80 p-3.5 rounded-2xl border border-white/[0.05] flex items-center justify-between gap-3 group hover:border-lime-500/40 transition shadow-sm"
+              className="bg-slate-950/80 p-3.5 rounded-2xl border border-white/[0.05] flex items-center justify-between gap-3 group hover:border-orange-500/40 transition shadow-sm"
             >
               <div className="truncate">
                 <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-sans font-bold mb-0.5">
                   {h.label}
                 </span>
-                <span className="text-slate-300 text-xs truncate block select-all group-hover:text-lime-300 transition">
+                <span className="text-slate-300 text-xs truncate block select-all group-hover:text-orange-300 transition">
                   {h.val}
                 </span>
               </div>
               <button
                 onClick={() => copyToClipboard(h.val, h.label)}
-                className="p-2 bg-slate-900 hover:bg-lime-500 hover:text-slate-950 text-slate-400 rounded-xl transition shrink-0 border border-white/[0.06]"
+                className="p-2 bg-slate-900 hover:bg-orange-500 hover:text-slate-950 text-slate-400 rounded-xl transition shrink-0 border border-white/[0.06]"
                 title="Copy hash to clipboard"
               >
                 {copiedHash === h.label ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -110,7 +110,7 @@ export const StaticAnalysisTab: React.FC<Props> = ({ staticAnalysis }) => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-                <Cpu className="w-4 h-4 text-lime-400" /> Section Shannon Entropy Curve
+                <Cpu className="w-4 h-4 text-orange-400" /> Section Shannon Entropy Curve
               </h3>
               <p className="text-xs text-slate-400">
                 Values &gt; 7.0 indicate high randomness (packing, encryption, or compression)
@@ -128,23 +128,23 @@ export const StaticAnalysisTab: React.FC<Props> = ({ staticAnalysis }) => {
               <AreaChart data={entropyData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="entropyGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#84cc16" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#65a30d" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#f97316" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#c2410c" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <XAxis dataKey="name" stroke="#64748b" fontSize={11} fontStyle="monospace" />
                 <YAxis domain={[0, 8]} stroke="#64748b" fontSize={11} fontStyle="monospace" />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#060904', borderColor: '#4d7c0f', borderRadius: '12px', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: '#140c07', borderColor: '#ea580c', borderRadius: '12px', fontSize: '12px' }}
                   formatter={(val: any) => [`${val} / 8.0`, 'Entropy']}
                 />
-                <Area type="monotone" dataKey="entropy" stroke="#84cc16" strokeWidth={2} fillOpacity={1} fill="url(#entropyGradient)" />
+                <Area type="monotone" dataKey="entropy" stroke="#f97316" strokeWidth={2} fillOpacity={1} fill="url(#entropyGradient)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
 
           <div className="mt-4 pt-3 border-t border-white/[0.06] text-xs text-slate-400 flex items-center justify-between font-mono">
-            <span>Overall File Entropy: <strong className="text-lime-300">{staticAnalysis.file_info.entropy}</strong></span>
+            <span>Overall File Entropy: <strong className="text-orange-300">{staticAnalysis.file_info.entropy}</strong></span>
             <span>Packer: <span className="text-amber-300">{staticAnalysis.pe_structure.packer || "None Detected"}</span></span>
           </div>
         </div>
@@ -188,7 +188,7 @@ export const StaticAnalysisTab: React.FC<Props> = ({ staticAnalysis }) => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div>
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-              <Binary className="w-4 h-4 text-lime-400" /> Extracted Strings &amp; Auto-Decoded Streams
+              <Binary className="w-4 h-4 text-orange-400" /> Extracted Strings &amp; Auto-Decoded Streams
             </h3>
             <p className="text-xs text-slate-400">
               Recovered ASCII, UTF-16LE Unicode, Base64, and XOR decoded telemetry
@@ -204,26 +204,26 @@ export const StaticAnalysisTab: React.FC<Props> = ({ staticAnalysis }) => {
                 value={stringFilter}
                 onChange={e => setStringFilter(e.target.value)}
                 placeholder="Filter strings..."
-                className="w-full bg-slate-950 border border-lime-800/40 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-lime-400 font-mono"
+                className="w-full bg-slate-950 border border-orange-800/40 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-orange-400 font-mono"
               />
             </div>
 
             <div className="flex rounded-xl bg-slate-950 p-1 border border-white/[0.08] text-xs font-bold font-mono">
               <button
                 onClick={() => setStringTab('decoded')}
-                className={`px-3 py-1 rounded-lg transition ${stringTab === 'decoded' ? 'bg-gradient-to-r from-lime-600 to-olive-600 text-slate-950 font-black shadow-md shadow-lime-950/40' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1 rounded-lg transition ${stringTab === 'decoded' ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white font-black shadow-md shadow-orange-950/40' : 'text-slate-400 hover:text-white'}`}
               >
                 Decoded ({staticAnalysis.strings.decoded.length})
               </button>
               <button
                 onClick={() => setStringTab('ascii')}
-                className={`px-3 py-1 rounded-lg transition ${stringTab === 'ascii' ? 'bg-gradient-to-r from-lime-600 to-olive-600 text-slate-950 font-black shadow-md shadow-lime-950/40' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1 rounded-lg transition ${stringTab === 'ascii' ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white font-black shadow-md shadow-orange-950/40' : 'text-slate-400 hover:text-white'}`}
               >
                 ASCII ({staticAnalysis.strings.ascii_total})
               </button>
               <button
                 onClick={() => setStringTab('unicode')}
-                className={`px-3 py-1 rounded-lg transition ${stringTab === 'unicode' ? 'bg-gradient-to-r from-lime-600 to-olive-600 text-slate-950 font-black shadow-md shadow-lime-950/40' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1 rounded-lg transition ${stringTab === 'unicode' ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white font-black shadow-md shadow-orange-950/40' : 'text-slate-400 hover:text-white'}`}
               >
                 Unicode ({staticAnalysis.strings.unicode_total})
               </button>
@@ -239,8 +239,8 @@ export const StaticAnalysisTab: React.FC<Props> = ({ staticAnalysis }) => {
                 filteredDecoded.map((s, idx) => (
                   <div key={idx} className="p-2.5 bg-slate-900/80 rounded-xl border border-white/[0.05] flex items-center justify-between gap-3">
                     <div className="truncate">
-                      <span className="text-[10px] uppercase font-bold text-lime-400 block">{s.type}</span>
-                      <span className="text-lime-300 font-bold text-xs select-all">{s.decoded}</span>
+                      <span className="text-[10px] uppercase font-bold text-orange-400 block">{s.type}</span>
+                      <span className="text-orange-300 font-bold text-xs select-all">{s.decoded}</span>
                     </div>
                     <span className="text-[10px] text-slate-500 truncate max-w-[120px]">{s.original}</span>
                   </div>
@@ -269,7 +269,7 @@ export const StaticAnalysisTab: React.FC<Props> = ({ staticAnalysis }) => {
             <div className="space-y-1">
               {filteredUnicode.length > 0 ? (
                 filteredUnicode.map((s, idx) => (
-                  <div key={idx} className="py-1 px-2 hover:bg-slate-900 rounded text-lime-300 select-all truncate border-b border-slate-900/50">
+                  <div key={idx} className="py-1 px-2 hover:bg-slate-900 rounded text-orange-300 select-all truncate border-b border-slate-900/50">
                     {s}
                   </div>
                 ))

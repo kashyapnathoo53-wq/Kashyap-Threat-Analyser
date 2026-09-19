@@ -66,7 +66,7 @@ class Reporter:
         hashes = static_res.get("hashes", {})
         f_info = static_res.get("file_info", {})
         
-        md = f"""# Kashyap Threat Analyser - Malware Analysis Report
+        md = f"""# PASHA Threat Analyser - Malware Analysis Report
 **Sample Target:** `{sample_name}`
 **Analysis Date:** 2026-09-18
 **Threat Score:** {threat_res.get('threat_score')}/100 (**{threat_res.get('verdict')}**)
@@ -119,24 +119,25 @@ class Reporter:
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Kashyap Threat Analyser - {sample_name}</title>
+    <title>PASHA Threat Analyser - {sample_name}</title>
     <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 30px; line-height: 1.6; }}
-        .header {{ display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #334155; padding-bottom: 20px; margin-bottom: 30px; }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #080502; color: #f8fafc; padding: 30px; line-height: 1.6; }}
+        .header {{ display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #7c2d12; padding-bottom: 20px; margin-bottom: 30px; }}
         .badge {{ background: {threat_res.get('color')}; color: white; padding: 6px 16px; border-radius: 20px; font-weight: bold; font-size: 1.1em; }}
-        .card {{ background: #1e293b; border-radius: 10px; padding: 20px; margin-bottom: 25px; border: 1px solid #334155; }}
-        h2 {{ color: #38bdf8; margin-top: 0; }}
+        .card {{ background: #140c07; border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 1px solid #7c2d12; }}
+        h1 {{ color: #ffffff; margin: 0; }}
+        h2 {{ color: #f97316; margin-top: 0; }}
         table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
-        th, td {{ padding: 12px; text-align: left; border-bottom: 1px solid #334155; }}
-        th {{ background: #0f172a; color: #94a3b8; }}
-        code {{ background: #0f172a; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #f43f5e; }}
+        th, td {{ padding: 12px; text-align: left; border-bottom: 1px solid #431407; }}
+        th {{ background: #0f0804; color: #fdba74; }}
+        code {{ background: #1c0d06; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #fb923c; }}
     </style>
 </head>
 <body>
     <div class="header">
         <div>
-            <h1>Kashyap Threat Analyser - Analysis Report</h1>
-            <p style="color: #94a3b8">Target Sample: <strong>{sample_name}</strong> | Generated: 2026-09-18</p>
+            <h1>PASHA Threat Analyser - Analysis Report</h1>
+            <p style="color: #fdba74">Target Sample: <strong>{sample_name}</strong> | Generated: 2026-09-18</p>
         </div>
         <div class="badge">{threat_res.get('threat_score')}/100 - {threat_res.get('verdict')}</div>
     </div>

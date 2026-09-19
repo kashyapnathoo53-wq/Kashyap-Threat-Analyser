@@ -153,67 +153,67 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen cyber-bg text-slate-100 font-sans flex flex-col selection:bg-lime-600 selection:text-slate-950 relative">
-      {/* Topmost Enterprise Status Bar in Tactical Olive Green */}
-      <div className="bg-[#080e05]/95 border-b border-lime-900/40 px-4 py-1.5 text-[11px] font-mono flex flex-wrap items-center justify-between text-slate-400 gap-2">
+    <div className="min-h-screen cyber-bg text-slate-100 font-sans flex flex-col selection:bg-orange-600 selection:text-white relative">
+      {/* Topmost Enterprise Status Bar in Cyber Orange */}
+      <div className="bg-[#100905]/95 border-b border-orange-900/40 px-4 py-1.5 text-[11px] font-mono flex flex-wrap items-center justify-between text-slate-400 gap-2">
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-lime-400 font-bold bg-lime-950/80 px-2 py-0.5 rounded border border-lime-800/50">
-            <span className="w-2 h-2 rounded-full bg-lime-400 animate-ping inline-block" />
+          <span className="flex items-center gap-1.5 text-orange-400 font-bold bg-orange-950/80 px-2 py-0.5 rounded border border-orange-800/60">
+            <span className="w-2 h-2 rounded-full bg-orange-400 animate-ping inline-block" />
             LIVE DEFENSE GRID
           </span>
 
-          {/* Equalizer Live Activity Bars */}
+          {/* Equalizer Live Activity Bars in Cyber Orange/Amber */}
           <div className="flex items-center gap-0.5 h-4 px-1" title="Real-time telemetry stream active">
-            <span className="w-0.5 bg-lime-400 rounded-full animate-bar-1" />
-            <span className="w-0.5 bg-lime-300 rounded-full animate-bar-2" />
-            <span className="w-0.5 bg-lime-500 rounded-full animate-bar-3" />
-            <span className="w-0.5 bg-lime-400 rounded-full animate-bar-4" />
-            <span className="w-0.5 bg-lime-200 rounded-full animate-bar-5" />
+            <span className="w-0.5 bg-orange-400 rounded-full animate-bar-1" />
+            <span className="w-0.5 bg-amber-400 rounded-full animate-bar-2" />
+            <span className="w-0.5 bg-orange-300 rounded-full animate-bar-3" />
+            <span className="w-0.5 bg-amber-500 rounded-full animate-bar-4" />
+            <span className="w-0.5 bg-orange-500 rounded-full animate-bar-5" />
           </div>
 
-          <span className="hidden md:inline text-lime-400 font-semibold transition-all duration-500">
+          <span className="hidden md:inline text-orange-300 font-semibold transition-all duration-500">
             {telemetryFeed[telemetryIndex]}
           </span>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="hidden sm:inline text-slate-400">HOST: <strong className="text-lime-200">{hostAssessment?.host_info?.hostname || 'LOCAL_ENDPOINT'}</strong></span>
-          <span className="hidden sm:inline text-lime-900 font-bold">|</span>
-          <span className="px-2 py-0.5 rounded bg-lime-950 text-lime-300 border border-lime-700/60 text-[10px] font-bold tracking-wider">
-            TACTICAL LEVEL 4
+          <span className="hidden sm:inline text-slate-400">HOST: <strong className="text-orange-200">{hostAssessment?.host_info?.hostname || 'LOCAL_ENDPOINT'}</strong></span>
+          <span className="hidden sm:inline text-orange-900 font-bold">|</span>
+          <span className="px-2 py-0.5 rounded bg-orange-950 text-orange-300 border border-orange-700/60 text-[10px] font-bold tracking-wider">
+            ORANGE COMMAND LEVEL 4
           </span>
-          <span className="text-lime-400 font-mono font-bold text-[11px] flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
+          <span className="text-orange-400 font-mono font-bold text-[11px] flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-orange-400 inline-block animate-pulse" />
             {currentTime} UTC
           </span>
         </div>
       </div>
 
       {/* Main Command Header */}
-      <header className="glass-panel sticky top-0 z-40 border-b border-lime-900/30">
+      <header className="glass-panel sticky top-0 z-40 border-b border-orange-900/40">
         <div className="max-w-7xl mx-auto px-4 py-3.5 flex justify-between items-center gap-4">
           {/* Brand & Logo */}
           <div className="flex items-center gap-3.5">
             <div className="relative group cursor-pointer">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-lime-600 via-olive-600 to-emerald-700 p-[1.5px] shadow-lg shadow-lime-950/60 transition-transform duration-300 group-hover:scale-105">
-                <div className="w-full h-full bg-[#0d1708] rounded-2xl flex items-center justify-center">
-                  <Shield className="w-6 h-6 text-lime-400" />
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-orange-600 via-amber-600 to-orange-400 p-[1.5px] shadow-lg shadow-orange-950/80 transition-transform duration-300 group-hover:scale-105">
+                <div className="w-full h-full bg-[#1a0e07] rounded-2xl flex items-center justify-center">
+                  <Shield className="w-6 h-6 text-orange-400" />
                 </div>
               </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-lime-400 border-2 border-slate-950 animate-pulse" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-orange-400 border-2 border-slate-950 animate-pulse" />
             </div>
 
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-lg font-black tracking-tight text-white flex items-center gap-2">
-                  KASHYAP <span className="gradient-text-olive font-extrabold">THREAT ANALYSER</span>
+                  PASHA <span className="gradient-text-orange font-extrabold">THREAT ANALYSER</span>
                 </h1>
-                <span className="text-[10px] font-mono font-extrabold px-2 py-0.5 bg-gradient-to-r from-olive-950 to-lime-950 text-lime-300 border border-lime-800/60 rounded-md">
-                  OLIVE DEFENSE GRID
+                <span className="text-[10px] font-mono font-extrabold px-2 py-0.5 bg-gradient-to-r from-orange-950 to-amber-950 text-orange-300 border border-orange-700/60 rounded-md">
+                  CYBER ORANGE COMMAND
                 </span>
               </div>
               <p className="text-xs text-slate-400 font-medium">
-                Autonomous Malware Reversing &amp; Tactical Endpoint Security Matrix
+                Autonomous Malware Reversing &amp; Enterprise Orange Defense Grid
               </p>
             </div>
           </div>
@@ -223,9 +223,9 @@ export const App: React.FC = () => {
             {hostAssessment && (
               <button 
                 onClick={() => setActiveTab('host')}
-                className="hidden lg:flex items-center gap-2.5 bg-[#101b0a]/90 hover:bg-[#16270e] px-3.5 py-2 rounded-xl border border-lime-900/40 hover:border-lime-500/50 transition shadow-inner group cursor-pointer"
+                className="hidden lg:flex items-center gap-2.5 bg-[#140b06]/90 hover:bg-[#20110a] px-3.5 py-2 rounded-xl border border-orange-900/50 hover:border-orange-400/50 transition shadow-inner group cursor-pointer"
               >
-                <MonitorCheck className="w-4 h-4 text-lime-400 group-hover:animate-bounce" />
+                <MonitorCheck className="w-4 h-4 text-orange-400 group-hover:animate-bounce" />
                 <div className="text-left text-xs">
                   <div className="text-[10px] text-slate-400 leading-none">Endpoint Health</div>
                   <div className="font-mono font-black text-slate-200 leading-tight">
@@ -241,19 +241,19 @@ export const App: React.FC = () => {
             {report && (
               <button 
                 onClick={() => setActiveTab('overview')}
-                className="hidden md:flex items-center gap-2.5 bg-[#101b0a]/90 hover:bg-[#16270e] px-3.5 py-2 rounded-xl border border-lime-900/40 hover:border-lime-500/50 text-xs font-mono shadow-inner transition cursor-pointer"
+                className="hidden md:flex items-center gap-2.5 bg-[#140b06]/90 hover:bg-[#20110a] px-3.5 py-2 rounded-xl border border-orange-900/50 hover:border-orange-400/50 text-xs font-mono shadow-inner transition cursor-pointer"
                 title="Click to view Executive Overview"
               >
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: report.threat_scoring.color }} />
                 <div className="text-left">
                   <div className="text-[10px] text-slate-400 leading-none">Sample</div>
-                  <div className="font-bold text-lime-200 max-w-[130px] truncate leading-tight" title={report.sample_name}>
+                  <div className="font-bold text-orange-200 max-w-[130px] truncate leading-tight" title={report.sample_name}>
                     {report.sample_name}
                   </div>
                 </div>
                 {(report as any).analysis_duration_ms && (
-                  <span className="text-[10px] text-slate-400 border-l border-lime-900/60 pl-2 flex items-center gap-1">
-                    <Zap className="w-3 h-3 text-lime-400" />
+                  <span className="text-[10px] text-slate-400 border-l border-orange-900/60 pl-2 flex items-center gap-1">
+                    <Zap className="w-3 h-3 text-orange-400" />
                     {(report as any).analysis_duration_ms}ms
                   </span>
                 )}
@@ -262,7 +262,7 @@ export const App: React.FC = () => {
 
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-lime-600 via-olive-600 to-lime-500 hover:from-lime-500 hover:to-lime-400 text-slate-950 font-black rounded-xl text-xs transition-all duration-300 shadow-xl shadow-lime-950/50 hover:shadow-lime-900/70 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 hover:from-orange-500 hover:to-amber-500 text-white font-black rounded-xl text-xs transition-all duration-300 shadow-xl shadow-orange-950/60 hover:shadow-orange-900/80 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
               <Upload className="w-4 h-4 stroke-[2.5]" />
               <span>Submit Payload</span>
@@ -298,20 +298,20 @@ export const App: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('overview')}
-              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-lime-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
-                activeTab === 'overview' ? 'border-lime-500/60 ring-1 ring-lime-500/30 shadow-lime-950/40' : ''
+              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-orange-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
+                activeTab === 'overview' ? 'border-orange-500/60 ring-1 ring-orange-500/30 shadow-orange-950/40' : ''
               }`}
             >
               <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span className="font-bold group-hover:text-lime-300 transition">Threat Verdict</span>
-                <ShieldAlert className="w-4 h-4 text-lime-400 group-hover:scale-110 transition" />
+                <span className="font-bold group-hover:text-orange-300 transition">Threat Verdict</span>
+                <ShieldAlert className="w-4 h-4 text-orange-400 group-hover:scale-110 transition" />
               </div>
               <div className="text-xl font-black font-mono tracking-tight" style={{ color: report.threat_scoring.color }}>
                 {report.threat_scoring.severity}
               </div>
               <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
                 <span>Score: <strong className="text-white font-mono">{report.threat_scoring.threat_score}/100</strong></span>
-                <span className="text-[10px] text-lime-400 font-mono flex items-center gap-0.5">Open &rarr;</span>
+                <span className="text-[10px] text-orange-400 font-mono flex items-center gap-0.5">Open &rarr;</span>
               </div>
             </button>
 
@@ -361,60 +361,60 @@ export const App: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('static')}
-              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-lime-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
-                activeTab === 'static' ? 'border-lime-500/60 ring-1 ring-lime-500/30 shadow-lime-950/40' : ''
+              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-amber-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
+                activeTab === 'static' ? 'border-amber-500/60 ring-1 ring-amber-500/30 shadow-amber-950/40' : ''
               }`}
             >
               <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span className="font-bold group-hover:text-lime-300 transition">Execution Speed</span>
-                <Zap className="w-4 h-4 text-lime-400 group-hover:scale-110 transition" />
+                <span className="font-bold group-hover:text-amber-300 transition">Execution Speed</span>
+                <Zap className="w-4 h-4 text-amber-400 group-hover:scale-110 transition" />
               </div>
-              <div className="text-xl font-black font-mono tracking-tight text-lime-300">
+              <div className="text-xl font-black font-mono tracking-tight text-amber-300">
                 {(report as any).analysis_duration_ms || 18} ms
               </div>
               <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
                 <span>Streaming Engine</span>
-                <span className="text-[10px] text-lime-400 font-mono flex items-center gap-0.5">Open &rarr;</span>
+                <span className="text-[10px] text-amber-400 font-mono flex items-center gap-0.5">Open &rarr;</span>
               </div>
             </button>
           </div>
         )}
 
-        {/* Loading Spinner & Radar HUD in Olive */}
+        {/* Loading Spinner & Radar HUD in Cyber Orange */}
         {loading ? (
-          <div className="glass-panel rounded-3xl p-14 flex flex-col items-center justify-center space-y-6 shadow-2xl relative overflow-hidden my-12 border border-lime-500/30">
-            <div className="absolute inset-0 bg-gradient-to-b from-olive-600/15 via-lime-900/10 to-transparent animate-pulse" />
+          <div className="glass-panel rounded-3xl p-14 flex flex-col items-center justify-center space-y-6 shadow-2xl relative overflow-hidden my-12 border border-orange-500/30">
+            <div className="absolute inset-0 bg-gradient-to-b from-orange-600/15 via-amber-900/10 to-transparent animate-pulse" />
 
             <div className="relative">
-              <div className="w-24 h-24 rounded-full border-4 border-lime-500/20 border-t-lime-400 animate-spin flex items-center justify-center shadow-xl shadow-lime-950/60" />
-              <Radio className="w-10 h-10 text-lime-400 absolute inset-0 m-auto animate-ping opacity-75" />
+              <div className="w-24 h-24 rounded-full border-4 border-orange-500/20 border-t-orange-400 animate-spin flex items-center justify-center shadow-xl shadow-orange-950/80" />
+              <Radio className="w-10 h-10 text-orange-400 absolute inset-0 m-auto animate-ping opacity-75" />
             </div>
 
             <div className="text-center space-y-3 z-10 max-w-lg w-full">
               <div className="text-xl font-black tracking-wide text-white">
                 Zero-Lag Threat Engine Executing...
               </div>
-              <div className="text-xs font-mono text-lime-300 bg-[#0c1408]/90 py-2 px-4 rounded-xl border border-lime-900/40">
+              <div className="text-xs font-mono text-orange-300 bg-[#160c07]/90 py-2 px-4 rounded-xl border border-orange-900/50">
                 {loadingPhase}
               </div>
 
-              {/* Progress Bar in Olive & Lime */}
-              <div className="w-full bg-[#0a1106] rounded-full h-3 border border-lime-900/40 overflow-hidden mt-3 shadow-inner">
+              {/* Progress Bar in Cyber Orange & Amber */}
+              <div className="w-full bg-[#0f0804] rounded-full h-3 border border-orange-900/50 overflow-hidden mt-3 shadow-inner">
                 <div 
-                  className="bg-gradient-to-r from-olive-600 via-lime-500 to-emerald-400 h-full rounded-full transition-all duration-300 shadow-md shadow-lime-900/50"
+                  className="bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 h-full rounded-full transition-all duration-300 shadow-md shadow-orange-900/50"
                   style={{ width: `${loadingProgress}%` }}
                 />
               </div>
               <div className="flex justify-between text-[11px] font-mono text-slate-500 pt-1">
                 <span>Streaming Forensic Pipeline</span>
-                <span className="text-lime-400 font-bold">{loadingProgress}%</span>
+                <span className="text-orange-400 font-bold">{loadingProgress}%</span>
               </div>
             </div>
           </div>
         ) : report ? (
           <>
-            {/* Segmented Tab Navigation Rail in Tactical Olive */}
-            <div className="flex overflow-x-auto glass-panel p-1.5 rounded-2xl border border-lime-900/40 text-xs font-bold gap-1.5 shadow-2xl">
+            {/* Segmented Tab Navigation Rail in Cyber Orange */}
+            <div className="flex overflow-x-auto glass-panel p-1.5 rounded-2xl border border-orange-900/40 text-xs font-bold gap-1.5 shadow-2xl">
               {[
                 { id: 'host', label: 'System Auto-Assessment', icon: MonitorCheck, badge: hostAssessment ? `${hostAssessment.health_score}/100` : undefined, badgeColor: hostAssessment?.status_color },
                 { id: 'overview', label: 'Executive Overview', icon: ShieldAlert },
@@ -433,7 +433,7 @@ export const App: React.FC = () => {
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 whitespace-nowrap text-xs font-bold cursor-pointer ${
                       isActive 
-                        ? 'bg-gradient-to-r from-lime-600 via-olive-600 to-lime-700 text-slate-950 font-black shadow-lg shadow-lime-950/60 scale-[1.02] border border-lime-400/50' 
+                        ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white font-black shadow-lg shadow-orange-950/80 scale-[1.02] border border-orange-400/50' 
                         : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
                     }`}
                   >
@@ -442,7 +442,7 @@ export const App: React.FC = () => {
                     {tab.badge && (
                       <span 
                         className="px-2 py-0.5 text-[10px] font-mono font-black rounded-md text-slate-950 shadow-sm"
-                        style={{ backgroundColor: tab.badgeColor || '#84cc16' }}
+                        style={{ backgroundColor: tab.badgeColor || '#f97316' }}
                       >
                         {tab.badge}
                       </span>
@@ -472,7 +472,7 @@ export const App: React.FC = () => {
           </>
         ) : (
           <div className="text-center py-20 text-slate-500">
-            No active threat session. Click <strong className="text-lime-400">Submit Payload</strong> to begin.
+            No active threat session. Click <strong className="text-orange-400">Submit Payload</strong> to begin.
           </div>
         )}
       </main>
@@ -487,14 +487,14 @@ export const App: React.FC = () => {
       )}
 
       {/* High-End Enterprise Footer */}
-      <footer className="glass-panel border-t border-lime-900/40 mt-auto py-5 px-6">
+      <footer className="glass-panel border-t border-orange-900/40 mt-auto py-5 px-6">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
           <div className="flex items-center gap-3">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-lime-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-400"></span>
             </span>
-            <span className="text-slate-400 font-mono text-xs">KASHYAP THREAT ANALYSER &bull; <strong className="text-lime-400 font-black">TACTICAL OLIVE DEFENSE EDITION</strong></span>
+            <span className="text-slate-400 font-mono text-xs">PASHA THREAT ANALYSER &bull; <strong className="text-orange-400 font-black">CYBER ORANGE DEFENSE EDITION</strong></span>
           </div>
           <div className="flex items-center gap-4 text-[11px] font-mono text-slate-500">
             <span>STIX 2.1</span>

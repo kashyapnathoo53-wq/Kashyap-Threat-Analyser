@@ -16,7 +16,7 @@ from samples_generator import get_preset_samples, get_preset_sample_by_id
 from host_scanner import HostScanner
 
 app = FastAPI(
-    title="PASHA Threat Analyser - Automated Malware Static & Behavioral Analysis Platform",
+    title="Pasha - Automated Malware Static & Behavioral Analysis Platform",
     description="Full Threat Scoring, IOC Extraction, MITRE ATT&CK Mapping, YARA Engine & Reporting",
     version="2.0.0"
 )
@@ -55,7 +55,7 @@ class PresetAnalyzeRequest(BaseModel):
 
 @app.get("/")
 def root():
-    return {"status": "online", "platform": "PASHA Threat Analyser v2.0"}
+    return {"status": "online", "platform": "Pasha v2.0"}
 
 @app.get("/api/health")
 def health():

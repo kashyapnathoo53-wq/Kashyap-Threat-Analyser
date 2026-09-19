@@ -1,6 +1,6 @@
-# PASHA Threat Analyser 🛡️
+# Pasha 🛡️
 
-**PASHA Threat Analyser** is an automated platform for static and behavioral malware analysis with multi-factor threat risk scoring (0-100), automated IOC extraction, interactive MITRE ATT&CK Matrix (v14+) mapping, YARA signature rule workbench, process execution sandbox emulation, and executive report exports (PDF, HTML, STIX 2.1, MISP, Markdown).
+**Pasha** is an automated platform for static and behavioral malware analysis with multi-factor threat risk scoring (0-100), automated IOC extraction, interactive MITRE ATT&CK Matrix (v14+) mapping, YARA signature rule workbench, process execution sandbox emulation, and executive report exports (PDF, HTML, STIX 2.1, MISP, Markdown).
 
 ---
 

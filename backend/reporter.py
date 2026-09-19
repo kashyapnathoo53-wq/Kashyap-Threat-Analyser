@@ -66,7 +66,7 @@ class Reporter:
         hashes = static_res.get("hashes", {})
         f_info = static_res.get("file_info", {})
         
-        md = f"""# PASHA Threat Analyser - Malware Analysis Report
+        md = f"""# Pasha - Malware Analysis Report
 **Sample Target:** `{sample_name}`
 **Analysis Date:** 2026-09-18
 **Threat Score:** {threat_res.get('threat_score')}/100 (**{threat_res.get('verdict')}**)
@@ -119,7 +119,7 @@ class Reporter:
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PASHA Threat Analyser - {sample_name}</title>
+    <title>Pasha - {sample_name}</title>
     <style>
         body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #080502; color: #f8fafc; padding: 30px; line-height: 1.6; }}
         .header {{ display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #7c2d12; padding-bottom: 20px; margin-bottom: 30px; }}
@@ -136,7 +136,7 @@ class Reporter:
 <body>
     <div class="header">
         <div>
-            <h1>PASHA Threat Analyser - Analysis Report</h1>
+            <h1>Pasha - Analysis Report</h1>
             <p style="color: #fdba74">Target Sample: <strong>{sample_name}</strong> | Generated: 2026-09-18</p>
         </div>
         <div class="badge">{threat_res.get('threat_score')}/100 - {threat_res.get('verdict')}</div>

@@ -205,10 +205,10 @@ export const App: React.FC = () => {
 
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-black tracking-tight text-white flex items-center gap-2">
-                  PASHA <span className="gradient-text-orange font-extrabold">THREAT ANALYSER</span>
+                <h1 className="text-2xl font-black tracking-widest text-white flex items-center gap-2">
+                  <span className="gradient-text-orange font-black tracking-widest">PASHA</span>
                 </h1>
-                <span className="text-[10px] font-mono font-extrabold px-2 py-0.5 bg-gradient-to-r from-orange-950 to-amber-950 text-orange-300 border border-orange-700/60 rounded-md">
+                <span className="text-[10px] font-mono font-extrabold px-2.5 py-0.5 bg-gradient-to-r from-orange-950 to-amber-950 text-orange-300 border border-orange-700/60 rounded-md">
                   CYBER ORANGE COMMAND
                 </span>
               </div>
@@ -494,7 +494,7 @@ export const App: React.FC = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-400"></span>
             </span>
-            <span className="text-slate-400 font-mono text-xs">PASHA THREAT ANALYSER &bull; <strong className="text-orange-400 font-black">CYBER ORANGE DEFENSE EDITION</strong></span>
+            <span className="text-slate-400 font-mono text-xs">PASHA &bull; <strong className="text-orange-400 font-black">CYBER ORANGE DEFENSE EDITION</strong></span>
           </div>
           <div className="flex items-center gap-4 text-[11px] font-mono text-slate-500">
             <span>STIX 2.1</span>

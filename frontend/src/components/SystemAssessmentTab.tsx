@@ -63,7 +63,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
       <SectionGuide
         title="System Auto-Assessment &amp; Live Host Posture"
         badge="Live Endpoint Defense"
-        whatItDoes="Automatically analyzes the machine on which PASHA Threat Analyser is executing. It performs non-intrusive runtime inspection of running operating system processes, checks Windows Registry startup RunKeys for hidden persistence payloads, audits all installed third-party software packages against known National Vulnerability Database (NVD) CVE entries, and builds a predictive attack forecast."
+        whatItDoes="Automatically analyzes the machine on which Pasha is executing. It performs non-intrusive runtime inspection of running operating system processes, checks Windows Registry startup RunKeys for hidden persistence payloads, audits all installed third-party software packages against known National Vulnerability Database (NVD) CVE entries, and builds a predictive attack forecast."
         howItHelps="Unlike traditional malware tools where you must manually find and upload suspicious files, this engine acts as an immediate self-auditor. It proactively alerts you if background coinminers, unpatched browser zero-days, or persistence backdoors are already active on your PC before they can cause data exfiltration or ransomware encryption."
         keyIndicators={[
           { label: "Health Score < 60", detail: "Indicates critical active risks such as suspicious temp processes or high CVSS CVEs", severity: "critical" },

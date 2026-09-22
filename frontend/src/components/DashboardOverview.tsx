@@ -125,7 +125,7 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
               </h2>
 
               <p className="text-xs text-slate-400 font-medium">
-                Binary: <strong className="text-orange-400 font-mono">{report.sample_name}</strong> &bull; {report.static_analysis.file_info.type} &bull; Architecture: {report.static_analysis.file_info.architecture}
+                Binary: <strong className="text-cyan-400 font-mono">{report.sample_name}</strong> &bull; {report.static_analysis.file_info.type} &bull; Architecture: {report.static_analysis.file_info.architecture}
               </p>
             </div>
           </div>
@@ -135,18 +135,18 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
             <button
               onClick={() => navigateWithSound('report')}
               onMouseEnter={() => cyberAudio.playHover()}
-              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-orange-950/60 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-orange-500/40 text-xs font-bold transition shadow-sm active:scale-95"
+              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-cyan-950/60 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-cyan-500/40 text-xs font-bold transition shadow-sm active:scale-95"
             >
               <span>Executive Dossier</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-orange-400" />
+              <ArrowUpRight className="w-3.5 h-3.5 text-cyan-400" />
             </button>
             <button
               onClick={() => navigateWithSound('iocs')}
               onMouseEnter={() => cyberAudio.playHover()}
-              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-orange-950/60 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-orange-500/40 text-xs font-bold transition shadow-sm active:scale-95"
+              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-cyan-950/60 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-cyan-500/40 text-xs font-bold transition shadow-sm active:scale-95"
             >
               <span>Export STIX 2.1 IOCs</span>
-              <Database className="w-3.5 h-3.5 text-orange-400" />
+              <Database className="w-3.5 h-3.5 text-cyan-400" />
             </button>
           </div>
         </div>
@@ -158,18 +158,18 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
         <div 
           onClick={() => navigateWithSound('static')}
           onMouseEnter={() => cyberAudio.playHover()}
-          className="glass-card hud-corner p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-orange-500/40 hover:shadow-[0_0_25px_rgba(249,115,22,0.25)] transition duration-200 active:scale-[0.98]"
+          className="glass-card hud-corner p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-cyan-500/40 hover:shadow-[0_0_25px_rgba(6,182,212,0.25)] transition duration-200 active:scale-[0.98]"
         >
           <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-orange-400 transition">Static Analysis</span>
-            <HardDrive className="w-4 h-4 text-orange-400 group-hover:scale-110 transition" />
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-cyan-400 transition">Static Analysis</span>
+            <HardDrive className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition" />
           </div>
           <div className="text-xl font-black font-mono text-white">
             {report.static_analysis.pe_structure.is_packed ? "PACKED / CRYPT" : "UNPACKED PE"}
           </div>
           <div className="text-xs text-slate-400 mt-1 flex items-center justify-between">
-            <span>Entropy: <strong className="text-orange-300">{report.static_analysis.file_info.entropy}</strong></span>
-            <span className="text-[11px] text-orange-400 flex items-center gap-0.5">Explore <ArrowUpRight className="w-3 h-3" /></span>
+            <span>Entropy: <strong className="text-cyan-300">{report.static_analysis.file_info.entropy}</strong></span>
+            <span className="text-[11px] text-cyan-400 flex items-center gap-0.5">Explore <ArrowUpRight className="w-3 h-3" /></span>
           </div>
         </div>
 
@@ -177,18 +177,18 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
         <div 
           onClick={() => navigateWithSound('sandbox')}
           onMouseEnter={() => cyberAudio.playHover()}
-          className="glass-card hud-corner p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-orange-500/40 hover:shadow-[0_0_25px_rgba(249,115,22,0.25)] transition duration-200 active:scale-[0.98]"
+          className="glass-card hud-corner p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-teal-500/40 hover:shadow-[0_0_25px_rgba(20,184,166,0.25)] transition duration-200 active:scale-[0.98]"
         >
           <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-orange-300 transition">Sandbox Emulation</span>
-            <Terminal className="w-4 h-4 text-orange-400 group-hover:scale-110 transition" />
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-teal-300 transition">Sandbox Emulation</span>
+            <Terminal className="w-4 h-4 text-teal-400 group-hover:scale-110 transition" />
           </div>
           <div className="text-xl font-black font-mono text-white">
             {report.behavioral_analysis.api_call_stream.length} Syscalls Traced
           </div>
           <div className="text-xs text-slate-400 mt-1 flex items-center justify-between">
-            <span>Subprocesses: <strong className="text-orange-300">{report.behavioral_analysis.process_tree.children?.length || 0}</strong></span>
-            <span className="text-[11px] text-orange-400 flex items-center gap-0.5">View Tree <ArrowUpRight className="w-3 h-3" /></span>
+            <span>Subprocesses: <strong className="text-teal-300">{report.behavioral_analysis.process_tree.children?.length || 0}</strong></span>
+            <span className="text-[11px] text-teal-400 flex items-center gap-0.5">View Tree <ArrowUpRight className="w-3 h-3" /></span>
           </div>
         </div>
 
@@ -238,13 +238,13 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-extrabold text-white tracking-wide flex items-center gap-2">
-                <Activity className="w-4 h-4 text-orange-400" /> Multi-Factor Score Breakdown
+                <Activity className="w-4 h-4 text-cyan-400" /> Multi-Factor Score Breakdown
               </h3>
               <p className="text-xs text-slate-400">
                 Mathematical contribution of each analytical vector to the final score
               </p>
             </div>
-            <span className="text-xs font-mono font-bold text-orange-300 bg-orange-950/80 px-2.5 py-1 rounded-lg border border-orange-800/50">
+            <span className="text-xs font-mono font-bold text-cyan-300 bg-cyan-950/80 px-2.5 py-1 rounded-lg border border-cyan-800/50">
               Normalized (0-100)
             </span>
           </div>
@@ -255,7 +255,7 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
                 <XAxis type="number" domain={[0, 30]} stroke="#475569" fontSize={11} fontStyle="monospace" />
                 <YAxis dataKey="name" type="category" stroke="#cbd5e1" fontSize={12} fontStyle="monospace" width={80} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#140c07', borderColor: '#ea580c', borderRadius: '12px', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: '#070e1c', borderColor: '#06b6d4', borderRadius: '12px', fontSize: '12px' }}
                   formatter={(val: any) => [`${val} Points`, 'Score Weight']}
                 />
                 <Bar dataKey="score" radius={[0, 8, 8, 0]}>

@@ -10,7 +10,34 @@ interface Particle {
   color: string;
 }
 
-export const CyberParticleCanvas: React.FC = () => {
+interface Props {
+  theme?: 'ironman' | 'cyan' | 'emerald' | 'violet' | 'amber';
+}
+
+const THEME_PALETTES = {
+  ironman: {
+    particles: ['#fbbf24', '#f59e0b', '#dc2626', '#ef4444', '#00f2fe', '#fde047'],
+    filament: '#fbbf24'
+  },
+  cyan: {
+    particles: ['#00f2fe', '#06b6d4', '#38bdf8', '#22d3ee', '#67e8f9'],
+    filament: '#06b6d4'
+  },
+  emerald: {
+    particles: ['#10b981', '#059669', '#34d399', '#6ee7b7', '#00ff9d'],
+    filament: '#10b981'
+  },
+  violet: {
+    particles: ['#a855f7', '#8b5cf6', '#c084fc', '#d8b4fe', '#7c3aed'],
+    filament: '#a855f7'
+  },
+  amber: {
+    particles: ['#f97316', '#ea580c', '#fb923c', '#fdba74', '#f59e0b'],
+    filament: '#f97316'
+  }
+};
+
+export const CyberParticleCanvas: React.FC<Props> = ({ theme = 'ironman' }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -45,9 +72,10 @@ export const CyberParticleCanvas: React.FC = () => {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseleave', handleMouseLeave);
 
+    const currentPalette = THEME_PALETTES[theme] || THEME_PALETTES.cyan;
     const particleCount = Math.min(55, Math.floor((width * height) / 24000));
     const particles: Particle[] = [];
-    const colors = ['#f97316', '#ea580c', '#fb923c', '#fdba74', '#f59e0b'];
+    const colors = currentPalette.particles;
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
@@ -101,7 +129,7 @@ export const CyberParticleCanvas: React.FC = () => {
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = '#f97316';
+            ctx.strokeStyle = currentPalette.filament;
             ctx.globalAlpha = lineAlpha;
             ctx.lineWidth = 0.8;
             ctx.stroke();

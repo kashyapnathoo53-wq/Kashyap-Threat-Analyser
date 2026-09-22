@@ -75,20 +75,20 @@ export const LiveTelemetryTerminal: React.FC = () => {
   };
 
   return (
-    <div className="glass-panel border-t border-orange-900/50 shadow-2xl relative z-30 transition-all duration-300">
+    <div className="glass-panel border-t border-cyan-900/50 shadow-2xl relative z-30 transition-all duration-300">
       {/* Dock Bar */}
       <div 
         onClick={toggleOpen}
-        className="px-4 py-2.5 flex items-center justify-between cursor-pointer hover:bg-orange-950/30 transition select-none"
+        className="px-4 py-2.5 flex items-center justify-between cursor-pointer hover:bg-cyan-950/30 transition select-none"
       >
         <div className="flex items-center gap-2.5 text-xs font-mono">
           <span className="relative flex h-2 w-2">
             <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isPaused ? 'bg-amber-400' : 'bg-emerald-400'}`} />
             <span className={`relative inline-flex rounded-full h-2 w-2 ${isPaused ? 'bg-amber-400' : 'bg-emerald-400'}`} />
           </span>
-          <Terminal className="w-4 h-4 text-orange-400" />
+          <Terminal className="w-4 h-4 text-cyan-400" />
           <span className="font-extrabold text-white">LIVE FORENSIC TELEMETRY STREAM</span>
-          <span className="text-[10px] text-orange-400/80 bg-orange-950 px-2 py-0.5 rounded border border-orange-800/40 hidden sm:inline">
+          <span className="text-[10px] text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800/40 hidden sm:inline font-bold">
             {logs.length} EVENTS BUFFERED
           </span>
         </div>
@@ -99,7 +99,7 @@ export const LiveTelemetryTerminal: React.FC = () => {
             className={`p-1.5 rounded-lg border text-[11px] font-mono flex items-center gap-1 transition ${
               isPaused 
                 ? 'bg-amber-950/80 text-amber-300 border-amber-700/60 hover:bg-amber-900' 
-                : 'bg-orange-950/80 text-orange-300 border-orange-800/60 hover:bg-orange-900'
+                : 'bg-cyan-950/80 text-cyan-300 border-cyan-800/60 hover:bg-cyan-900'
             }`}
             title={isPaused ? "Resume Stream" : "Pause Stream"}
           >
@@ -123,7 +123,7 @@ export const LiveTelemetryTerminal: React.FC = () => {
 
       {/* Expanded Terminal View */}
       {isOpen && (
-        <div className="p-4 bg-[#0a0502]/95 border-t border-orange-900/30">
+        <div className="p-4 bg-[#040813]/95 border-t border-cyan-900/30">
           <div 
             ref={scrollRef}
             className="h-56 overflow-y-auto font-mono text-[11px] space-y-1.5 pr-2 custom-scrollbar"

@@ -12,6 +12,8 @@ import { SampleSelectorModal } from './components/SampleSelectorModal';
 import { CyberParticleCanvas } from './components/CyberParticleCanvas';
 import { HoloReactorCore } from './components/HoloReactorCore';
 import { LiveTelemetryTerminal } from './components/LiveTelemetryTerminal';
+import { JarvisVoiceBanner } from './components/JarvisVoiceBanner';
+import { JarvisAssistantModal } from './components/JarvisAssistantModal';
 import { FALLBACK_REPORTS, FALLBACK_HOST_ASSESSMENT } from './data/mockReports';
 import { analyzeFileClientSide } from './utils/clientAnalyzer';
 import { cyberAudio } from './utils/cyberAudio';
@@ -19,7 +21,7 @@ import {
   Shield, ShieldAlert, Cpu, Terminal, Layers, Database, Code2, FileText, 
   Upload, RefreshCw, Activity, AlertTriangle, MonitorCheck, Zap, 
   Sparkles, Globe2, Radio, Server, CheckCircle2, ChevronRight, Lock,
-  Volume2, VolumeX, Palette, ArrowUpRight, Flame
+  Volume2, VolumeX, Palette, ArrowUpRight, Flame, Bot
 } from 'lucide-react';
 
 export type Theme = 'ironman' | 'cyan' | 'emerald' | 'violet' | 'amber';
@@ -50,6 +52,7 @@ export const App: React.FC = () => {
   const [hostLoading, setHostLoading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>('host');
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [showJarvisModal, setShowJarvisModal] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(cyberAudio.getIsMuted());
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingPhase, setLoadingPhase] = useState<string>('Initializing forensic pipeline...');
@@ -398,6 +401,18 @@ export const App: React.FC = () => {
             <button
               onClick={() => {
                 cyberAudio.playClick();
+                setShowJarvisModal(true);
+              }}
+              className="flex items-center gap-2 px-3.5 py-2.5 bg-[#1a080a]/90 hover:bg-[#280c10] text-amber-300 hover:text-white border border-amber-500/50 hover:border-amber-400 rounded-xl text-xs font-bold transition-all duration-300 shadow-xl shadow-red-950/60 hover:scale-[1.02] active:scale-[0.98] cursor-pointer group"
+              title="Open J.A.R.V.I.S. Tactical AI Voice Guide"
+            >
+              <Bot className="w-4 h-4 text-cyan-400 group-hover:animate-bounce stroke-[2.5]" />
+              <span className="hidden sm:inline font-mono">J.A.R.V.I.S. Audio Guide</span>
+            </button>
+
+            <button
+              onClick={() => {
+                cyberAudio.playClick();
                 setShowModal(true);
               }}
               className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-600 via-amber-600 to-yellow-500 hover:from-red-500 hover:to-yellow-400 text-slate-950 font-black rounded-xl text-xs transition-all duration-300 shadow-xl shadow-red-950/80 hover:shadow-red-900/90 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
@@ -429,6 +444,15 @@ export const App: React.FC = () => {
 
       {/* Main Workspace */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6 relative z-10">
+        {/* J.A.R.V.I.S. Tactical AI Voice Assistant & Threat Guide Banner */}
+        {!loading && (report || hostAssessment) && (
+          <JarvisVoiceBanner
+            report={report}
+            hostAssessment={hostAssessment}
+            onOpenModal={() => setShowJarvisModal(true)}
+          />
+        )}
+
         {/* Legendary Holographic 3D Gyroscopic Reactor Core */}
         {!loading && report && (
           <HoloReactorCore 
@@ -665,6 +689,15 @@ export const App: React.FC = () => {
           onClose={() => setShowModal(false)}
         />
       )}
+
+      {/* J.A.R.V.I.S. Tactical AI Voice Assistant & Teleprompter Console Modal */}
+      <JarvisAssistantModal
+        report={report}
+        hostAssessment={hostAssessment}
+        isOpen={showJarvisModal}
+        onClose={() => setShowJarvisModal(false)}
+        onNavigateTab={handleOpenTab}
+      />
 
       {/* High-End Enterprise Footer */}
       <footer className="glass-panel border-t border-amber-900/40 mt-auto py-5 px-6">

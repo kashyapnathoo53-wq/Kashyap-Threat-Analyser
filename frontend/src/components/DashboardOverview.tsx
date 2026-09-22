@@ -2,9 +2,10 @@ import React from 'react';
 import { FullAnalysisReport } from '../types';
 import { SectionGuide } from './SectionGuide';
 import { cyberAudio } from '../utils/cyberAudio';
+import { jarvisVoice } from '../utils/jarvisVoice';
 import { 
   ShieldAlert, AlertTriangle, ShieldCheck, Activity, Terminal, Database, 
-  Layers, CheckCircle2, Zap, Clock, HardDrive, ArrowUpRight, Flame, Fingerprint, Eye
+  Layers, CheckCircle2, Zap, Clock, HardDrive, ArrowUpRight, Flame, Fingerprint, Eye, Bot
 } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 
@@ -39,7 +40,7 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
     <div className="space-y-6">
       {/* Comprehensive Section Guide */}
       <SectionGuide
-        title="Executive Threat Overview &amp; Multi-Vector Scoring"
+        title="Executive Threat Overview & Multi-Vector Scoring"
         badge="Enterprise Risk Engine"
         whatItDoes="Synthesizes all raw outputs from the static analyzer, YARA scanning engine, emulated behavioral sandbox, extracted indicators (IOCs), and MITRE ATT&CK mapping into a single weighted Threat Score from 0 to 100. It computes a categorical severity verdict (Clean, Low Risk, Suspicious, Malicious, or Critical) with an audit breakdown."
         howItHelps="Allows security operation centers (SOC), incident responders, and malware analysts to immediately prioritize triage. Instead of reading through thousands of lines of disassembly or API logs, the verdict instantly tells you whether a binary is safe, obfuscated, or an active ransomware/trojan threat."
@@ -133,9 +134,20 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
           {/* Quick SOC Actions */}
           <div className="flex flex-wrap lg:flex-col gap-2.5 w-full lg:w-auto shrink-0">
             <button
+              onClick={() => {
+                cyberAudio.playClick();
+                jarvisVoice.speak(jarvisVoice.generateFileScript(report), 'file');
+              }}
+              onMouseEnter={() => cyberAudio.playHover()}
+              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-600/30 via-amber-600/30 to-yellow-500/30 hover:from-red-600/50 hover:to-yellow-500/50 text-amber-200 hover:text-white rounded-xl border border-amber-500/50 hover:border-amber-400 text-xs font-bold transition shadow-sm active:scale-95 cursor-pointer"
+            >
+              <Bot className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Hear J.A.R.V.I.S. Verdict</span>
+            </button>
+            <button
               onClick={() => navigateWithSound('report')}
               onMouseEnter={() => cyberAudio.playHover()}
-              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-cyan-950/60 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-cyan-500/40 text-xs font-bold transition shadow-sm active:scale-95"
+              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-cyan-950/60 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-cyan-500/40 text-xs font-bold transition shadow-sm active:scale-95 cursor-pointer"
             >
               <span>Executive Dossier</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-cyan-400" />
@@ -143,7 +155,7 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
             <button
               onClick={() => navigateWithSound('iocs')}
               onMouseEnter={() => cyberAudio.playHover()}
-              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-cyan-950/60 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-cyan-500/40 text-xs font-bold transition shadow-sm active:scale-95"
+              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-cyan-950/60 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-cyan-500/40 text-xs font-bold transition shadow-sm active:scale-95 cursor-pointer"
             >
               <span>Export STIX 2.1 IOCs</span>
               <Database className="w-3.5 h-3.5 text-cyan-400" />

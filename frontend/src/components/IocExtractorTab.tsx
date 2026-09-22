@@ -40,11 +40,79 @@ export const IocExtractorTab: React.FC<Props> = ({ ioc, reportId }) => {
   };
 
   const downloadStix = async () => {
-    window.open(`/api/reports/${reportId}/export/stix`, '_blank');
+    try {
+      const res = await fetch(`/api/reports/${reportId}/export/stix`);
+      if (res.ok) {
+        const data = await res.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `stix2_bundle.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        return;
+      }
+    } catch {}
+
+    const stixBundle = {
+      type: "bundle",
+      id: "bundle--pasha-export",
+      spec_version: "2.1",
+      objects: ioc.iocs.map((i, idx) => ({
+        type: "indicator",
+        id: `indicator--${idx}-${i.type.toLowerCase()}`,
+        created: new Date().toISOString(),
+        name: `${i.type} IOC Indicator`,
+        pattern: `[${i.type.toLowerCase()}:value = '${i.value}']`,
+        pattern_type: "stix"
+      }))
+    };
+    const blob = new Blob([JSON.stringify(stixBundle, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `stix2_bundle.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const downloadMisp = async () => {
-    window.open(`/api/reports/${reportId}/export/misp`, '_blank');
+    try {
+      const res = await fetch(`/api/reports/${reportId}/export/misp`);
+      if (res.ok) {
+        const data = await res.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `misp_feed.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        return;
+      }
+    } catch {}
+
+    const mispEvent = {
+      Event: {
+        info: "Pasha Automated Forensic Threat Event",
+        date: new Date().toISOString().split('T')[0],
+        threat_level_id: "1",
+        Attribute: ioc.iocs.map(i => ({
+          type: i.type.toLowerCase().includes('ip') ? 'ip-dst' : 'other',
+          category: i.category,
+          value: i.value,
+          to_ids: true
+        }))
+      }
+    };
+    const blob = new Blob([JSON.stringify(mispEvent, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `misp_feed.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (

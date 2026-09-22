@@ -247,9 +247,6 @@ export const App: React.FC = () => {
                 <h1 className="text-2xl font-black tracking-widest text-white flex items-center gap-2">
                   <span className="gradient-text-orange font-black tracking-widest">PASHA</span>
                 </h1>
-                <span className="text-[10px] font-mono font-extrabold px-2.5 py-0.5 bg-gradient-to-r from-orange-950 to-amber-950 text-orange-300 border border-orange-700/60 rounded-md">
-                  CYBER ORANGE COMMAND
-                </span>
               </div>
               <p className="text-xs text-slate-400 font-medium">
                 Autonomous Malware Reversing &amp; Enterprise Orange Defense Grid

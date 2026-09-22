@@ -218,9 +218,6 @@ export const App: React.FC = () => {
         <div className="flex items-center gap-3">
           <span className="hidden sm:inline text-slate-400">HOST: <strong className="text-orange-200">{hostAssessment?.host_info?.hostname || 'LOCAL_ENDPOINT'}</strong></span>
           <span className="hidden sm:inline text-orange-900 font-bold">|</span>
-          <span className="px-2 py-0.5 rounded bg-orange-950 text-orange-300 border border-orange-700/60 text-[10px] font-bold tracking-wider">
-            ORANGE COMMAND LEVEL 4
-          </span>
           <span className="text-orange-400 font-mono font-bold text-[11px] flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-orange-400 inline-block animate-pulse" />
             {currentTime} UTC

@@ -29,8 +29,7 @@ export const HoloReactorCore: React.FC<Props> = ({ score, severity, verdict, col
       onMouseLeave={() => setIsHovered(false)}
       className="glass-panel hud-corner p-6 sm:p-7 rounded-3xl relative overflow-hidden border border-amber-500/40 shadow-2xl group transition-all duration-300 hover:border-red-500/80 bg-[#120506]/95 hover:shadow-[0_0_50px_rgba(220,38,38,0.25)]"
     >
-      {/* Corner HUD Reticles in Stark Titanium Gold */}
-      <div className="absolute top-2 left-2 text-[9px] font-mono text-amber-400/80 select-none">┌ [STARK_IND_MK85]</div>
+      {/* Corner HUD Reticles */}
       <div className="absolute top-2 right-2 text-[9px] font-mono text-amber-400/80 select-none">[ARC_REACTOR: OPTIMAL] ┐</div>
       <div className="absolute bottom-2 left-2 text-[9px] font-mono text-amber-400/80 select-none">└ PALLADIUM CORE</div>
       <div className="absolute bottom-2 right-2 text-[9px] font-mono text-amber-400/80 select-none">UNIBEAM 3.14 GJ/s ┘</div>
@@ -179,7 +178,7 @@ export const HoloReactorCore: React.FC<Props> = ({ score, severity, verdict, col
           </h2>
 
           <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
-            Real-time consensus synthesized from Shannon entropy, Win32 syscall hooks, YARA pattern matching, and MITRE ATT&amp;CK v14 tactics powered by Stark Industries Threat Core.
+            Real-time consensus synthesized from Shannon entropy, Win32 syscall hooks, YARA pattern matching, and MITRE ATT&amp;CK v14 tactics powered by Autonomous Threat Reactor Core.
           </p>
 
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-1 text-[11px] font-mono text-slate-300">

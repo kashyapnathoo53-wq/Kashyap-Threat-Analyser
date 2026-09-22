@@ -246,7 +246,7 @@ export const JarvisAssistantModal: React.FC<JarvisAssistantModalProps> = ({
                   ) : (
                     <>
                       <Play className="w-4 h-4 fill-slate-950" />
-                      <span>{speechState.isPaused ? 'Resume J.A.R.V.I.S.' : 'Hear J.A.R.V.I.S. Voice'}</span>
+                      <span>{speechState.isPaused ? 'Resume Audio' : 'Play Audio Briefing'}</span>
                     </>
                   )}
                 </button>

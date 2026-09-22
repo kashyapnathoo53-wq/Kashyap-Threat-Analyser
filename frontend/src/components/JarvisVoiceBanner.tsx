@@ -83,7 +83,7 @@ export const JarvisVoiceBanner: React.FC<JarvisVoiceBannerProps> = ({
             </div>
 
             <h3 className="text-sm sm:text-base font-black text-white mt-0.5 tracking-tight flex items-center gap-2">
-              <span>Hear Malicious File &amp; System Diagnosis in J.A.R.V.I.S. Voice</span>
+              <span>Hear Malicious File &amp; System Security Diagnosis</span>
               {speechState.isSpeaking && !speechState.isPaused && (
                 <span className="inline-flex items-center gap-0.5 text-cyan-400">
                   <span className="w-1 h-3 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -110,12 +110,12 @@ export const JarvisVoiceBanner: React.FC<JarvisVoiceBannerProps> = ({
             {speechState.isSpeaking && !speechState.isPaused ? (
               <>
                 <Pause className="w-3.5 h-3.5 fill-slate-950" />
-                <span>Pause Voice</span>
+                <span>Pause Briefing</span>
               </>
             ) : (
               <>
                 <Play className="w-3.5 h-3.5 fill-slate-950" />
-                <span>{speechState.isPaused ? 'Resume Voice' : '🎙️ Listen in J.A.R.V.I.S. Voice'}</span>
+                <span>{speechState.isPaused ? 'Resume Briefing' : '🎙️ Listen to Audio Briefing'}</span>
               </>
             )}
           </button>

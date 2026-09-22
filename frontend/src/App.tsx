@@ -259,11 +259,11 @@ export const App: React.FC = () => {
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-amber-400 font-black bg-red-950/80 px-2 py-0.5 rounded border border-amber-500/50 shadow-sm">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block" />
-            STARK DEFENSE GRID MK-85
+            AUTONOMOUS DEFENSE GRID MK-85
           </span>
 
-          {/* Equalizer Live Activity Bars in Stark Gold & Arc Cyan */}
-          <div className="flex items-center gap-0.5 h-4 px-1" title="Real-time Stark telemetry stream active">
+          {/* Equalizer Live Activity Bars */}
+          <div className="flex items-center gap-0.5 h-4 px-1" title="Real-time telemetry stream active">
             <span className="w-0.5 bg-red-500 rounded-full animate-bar-1" />
             <span className="w-0.5 bg-amber-400 rounded-full animate-bar-2" />
             <span className="w-0.5 bg-yellow-300 rounded-full animate-bar-3" />
@@ -351,7 +351,7 @@ export const App: React.FC = () => {
                 </h1>
               </div>
               <p className="text-xs text-slate-400 font-medium">
-                Autonomous Threat Reversing &amp; Stark Industries Armor Grid MK-85
+                Autonomous Threat Reversing &amp; Deep Behavioral Sandboxing
               </p>
             </div>
           </div>
@@ -707,7 +707,7 @@ export const App: React.FC = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span>
             </span>
-            <span className="text-slate-400 font-mono text-xs">PASHA &bull; <strong className="text-amber-400 font-black">STARK INDUSTRIES MARK-LXXXV ARMOR EDITION</strong></span>
+            <span className="text-slate-400 font-mono text-xs">PASHA &bull; <strong className="text-amber-400 font-black">ENTERPRISE CYBER DEFENSE PLATFORM</strong></span>
           </div>
           <div className="flex items-center gap-4 text-[11px] font-mono text-slate-500">
             <span>STIX 2.1</span>

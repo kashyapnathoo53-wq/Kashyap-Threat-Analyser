@@ -127,3 +127,67 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #ea580c;
 }
+
+/* Futuristic Gyroscopic & Hologram Animations */
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinReverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes scanlineSweep {
+  0% { transform: translateY(-100%); opacity: 0.1; }
+  50% { opacity: 0.45; }
+  100% { transform: translateY(1000%); opacity: 0.1; }
+}
+
+@keyframes laserPulse {
+  0%, 100% { opacity: 0.4; filter: drop-shadow(0 0 4px #f97316); }
+  50% { opacity: 0.9; filter: drop-shadow(0 0 12px #fb923c); }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 12s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spinReverse 12s linear infinite;
+}
+
+.animate-scanline {
+  animation: scanlineSweep 4.5s ease-in-out infinite;
+}
+
+.animate-laser {
+  animation: laserPulse 2.2s ease-in-out infinite;
+}
+
+/* Cyber Corner Brackets */
+.hud-corner {
+  position: relative;
+}
+.hud-corner::before,
+.hud-corner::after {
+  content: '';
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  pointer-events: none;
+}
+.hud-corner::before {
+  top: 0;
+  left: 0;
+  border-top: 2px solid #f97316;
+  border-left: 2px solid #f97316;
+}
+.hud-corner::after {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid #f97316;
+  border-right: 2px solid #f97316;
+}
+

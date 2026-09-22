@@ -1,6 +1,7 @@
 import React from 'react';
 import { FullAnalysisReport } from '../types';
 import { SectionGuide } from './SectionGuide';
+import { cyberAudio } from '../utils/cyberAudio';
 import { 
   ShieldAlert, AlertTriangle, ShieldCheck, Activity, Terminal, Database, 
   Layers, CheckCircle2, Zap, Clock, HardDrive, ArrowUpRight, Flame, Fingerprint, Eye
@@ -15,6 +16,11 @@ interface Props {
 export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) => {
   const threat = report.threat_scoring;
   const score = threat.threat_score;
+
+  const navigateWithSound = (tab: string) => {
+    cyberAudio.playClick();
+    onNavigateTab(tab);
+  };
 
   const scoreData = [
     { name: 'Static', score: threat.score_breakdown.static_score, max: 25, color: '#38bdf8' },
@@ -50,7 +56,7 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
 
       {/* Hero Threat Verdict Glass Banner */}
       <div 
-        className="glass-panel p-6 sm:p-8 rounded-3xl relative overflow-hidden border border-white/[0.1] shadow-2xl transition-all"
+        className="glass-panel hud-corner p-6 sm:p-8 rounded-3xl relative overflow-hidden border border-white/[0.1] shadow-2xl transition-all"
         style={{
           boxShadow: `0 0 45px ${threat.color}20`
         }}
@@ -127,15 +133,17 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
           {/* Quick SOC Actions */}
           <div className="flex flex-wrap lg:flex-col gap-2.5 w-full lg:w-auto shrink-0">
             <button
-              onClick={() => onNavigateTab('report')}
-              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-orange-950/60 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-orange-500/40 text-xs font-bold transition shadow-sm"
+              onClick={() => navigateWithSound('report')}
+              onMouseEnter={() => cyberAudio.playHover()}
+              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-orange-950/60 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-orange-500/40 text-xs font-bold transition shadow-sm active:scale-95"
             >
               <span>Executive Dossier</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-orange-400" />
             </button>
             <button
-              onClick={() => onNavigateTab('iocs')}
-              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-orange-950/60 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-orange-500/40 text-xs font-bold transition shadow-sm"
+              onClick={() => navigateWithSound('iocs')}
+              onMouseEnter={() => cyberAudio.playHover()}
+              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900/90 hover:bg-orange-950/60 text-slate-200 hover:text-white rounded-xl border border-white/[0.08] hover:border-orange-500/40 text-xs font-bold transition shadow-sm active:scale-95"
             >
               <span>Export STIX 2.1 IOCs</span>
               <Database className="w-3.5 h-3.5 text-orange-400" />
@@ -148,8 +156,9 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Static Card */}
         <div 
-          onClick={() => onNavigateTab('static')}
-          className="glass-card p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-orange-500/40 transition"
+          onClick={() => navigateWithSound('static')}
+          onMouseEnter={() => cyberAudio.playHover()}
+          className="glass-card hud-corner p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-orange-500/40 hover:shadow-[0_0_25px_rgba(249,115,22,0.25)] transition duration-200 active:scale-[0.98]"
         >
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-orange-400 transition">Static Analysis</span>
@@ -166,8 +175,9 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
 
         {/* Behavioral Card */}
         <div 
-          onClick={() => onNavigateTab('sandbox')}
-          className="glass-card p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-orange-500/40 transition"
+          onClick={() => navigateWithSound('sandbox')}
+          onMouseEnter={() => cyberAudio.playHover()}
+          className="glass-card hud-corner p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-orange-500/40 hover:shadow-[0_0_25px_rgba(249,115,22,0.25)] transition duration-200 active:scale-[0.98]"
         >
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-orange-300 transition">Sandbox Emulation</span>
@@ -184,8 +194,9 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
 
         {/* MITRE Card */}
         <div 
-          onClick={() => onNavigateTab('mitre')}
-          className="glass-card p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-purple-500/40 transition"
+          onClick={() => navigateWithSound('mitre')}
+          onMouseEnter={() => cyberAudio.playHover()}
+          className="glass-card hud-corner p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-purple-500/40 hover:shadow-[0_0_25px_rgba(168,85,247,0.25)] transition duration-200 active:scale-[0.98]"
         >
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-purple-300 transition">MITRE ATT&amp;CK</span>
@@ -202,8 +213,9 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
 
         {/* YARA Card */}
         <div 
-          onClick={() => onNavigateTab('yara')}
-          className="glass-card p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-amber-500/40 transition"
+          onClick={() => navigateWithSound('yara')}
+          onMouseEnter={() => cyberAudio.playHover()}
+          className="glass-card hud-corner p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-amber-500/40 hover:shadow-[0_0_25px_rgba(245,158,11,0.25)] transition duration-200 active:scale-[0.98]"
         >
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-amber-300 transition">YARA Matches</span>
@@ -222,7 +234,7 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
       {/* Analytics Breakdown & High-Priority Alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Threat Score Breakdown Chart */}
-        <div className="lg:col-span-2 glass-card p-6 rounded-3xl">
+        <div className="lg:col-span-2 glass-card hud-corner p-6 rounded-3xl">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-extrabold text-white tracking-wide flex items-center gap-2">
@@ -257,7 +269,7 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
         </div>
 
         {/* High-Priority Detection Flags */}
-        <div className="glass-card p-6 rounded-3xl flex flex-col justify-between">
+        <div className="glass-card hud-corner p-6 rounded-3xl flex flex-col justify-between">
           <div>
             <h3 className="text-sm font-extrabold text-white tracking-wide flex items-center gap-2 mb-1">
               <Flame className="w-4 h-4 text-rose-400" /> Critical Indicators

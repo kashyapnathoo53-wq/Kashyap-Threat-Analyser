@@ -9,12 +9,17 @@ import { YaraWorkbenchTab } from './components/YaraWorkbenchTab';
 import { ReportGeneratorTab } from './components/ReportGeneratorTab';
 import { SystemAssessmentTab } from './components/SystemAssessmentTab';
 import { SampleSelectorModal } from './components/SampleSelectorModal';
+import { CyberParticleCanvas } from './components/CyberParticleCanvas';
+import { HoloReactorCore } from './components/HoloReactorCore';
+import { LiveTelemetryTerminal } from './components/LiveTelemetryTerminal';
 import { FALLBACK_REPORTS, FALLBACK_HOST_ASSESSMENT } from './data/mockReports';
 import { analyzeFileClientSide } from './utils/clientAnalyzer';
+import { cyberAudio } from './utils/cyberAudio';
 import { 
   Shield, ShieldAlert, Cpu, Terminal, Layers, Database, Code2, FileText, 
   Upload, RefreshCw, Activity, AlertTriangle, MonitorCheck, Zap, 
-  Sparkles, Globe2, Radio, Server, CheckCircle2, ChevronRight, Lock
+  Sparkles, Globe2, Radio, Server, CheckCircle2, ChevronRight, Lock,
+  Volume2, VolumeX
 } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -23,6 +28,7 @@ export const App: React.FC = () => {
   const [hostLoading, setHostLoading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>('host');
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(cyberAudio.getIsMuted());
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingPhase, setLoadingPhase] = useState<string>('Initializing forensic pipeline...');
   const [loadingProgress, setLoadingProgress] = useState<number>(100);
@@ -112,9 +118,15 @@ export const App: React.FC = () => {
     };
   };
 
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    cyberAudio.playTabSwitch();
+  };
+
   const loadPresetSample = async (presetId: string) => {
     setLoading(true);
     setErrorMessage(null);
+    cyberAudio.playDataStream();
     const cancelSim = simulateProgress();
     try {
       const res = await fetch('/api/analyze/preset', {
@@ -126,6 +138,11 @@ export const App: React.FC = () => {
         const data = await res.json();
         setLoadingProgress(100);
         setReport(data);
+        if (data.threat_scoring?.threat_score >= 70) {
+          cyberAudio.playAlarm();
+        } else {
+          cyberAudio.playRadarSweep();
+        }
         cancelSim();
         setLoading(false);
         setShowModal(false);
@@ -140,6 +157,11 @@ export const App: React.FC = () => {
       const fallback = FALLBACK_REPORTS[presetId] || FALLBACK_REPORTS['sample_wannacry'];
       if (fallback) {
         setReport(fallback);
+        if (fallback.threat_scoring?.threat_score >= 70) {
+          cyberAudio.playAlarm();
+        } else {
+          cyberAudio.playRadarSweep();
+        }
       }
       cancelSim();
       setLoading(false);
@@ -150,6 +172,7 @@ export const App: React.FC = () => {
   const handleFileUpload = async (file: File) => {
     setLoading(true);
     setErrorMessage(null);
+    cyberAudio.playDataStream();
     const cancelSim = simulateProgress();
     try {
       const formData = new FormData();
@@ -163,6 +186,11 @@ export const App: React.FC = () => {
         setLoadingProgress(100);
         setReport(data);
         setActiveTab('overview');
+        if (data.threat_scoring?.threat_score >= 70) {
+          cyberAudio.playAlarm();
+        } else {
+          cyberAudio.playRadarSweep();
+        }
         cancelSim();
         setLoading(false);
         setShowModal(false);
@@ -179,6 +207,11 @@ export const App: React.FC = () => {
         setLoadingProgress(100);
         setReport(clientReport);
         setActiveTab('overview');
+        if (clientReport.threat_scoring?.threat_score >= 70) {
+          cyberAudio.playAlarm();
+        } else {
+          cyberAudio.playRadarSweep();
+        }
         cancelSim();
         setLoading(false);
         setShowModal(false);
@@ -192,9 +225,12 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen cyber-bg text-slate-100 font-sans flex flex-col selection:bg-orange-600 selection:text-white relative">
+    <div className="min-h-screen cyber-bg text-slate-100 font-sans flex flex-col selection:bg-orange-600 selection:text-white relative overflow-hidden">
+      {/* Interactive 60fps Cyber Particle & Filament Canvas */}
+      <CyberParticleCanvas />
+
       {/* Topmost Enterprise Status Bar in Cyber Orange */}
-      <div className="bg-[#100905]/95 border-b border-orange-900/40 px-4 py-1.5 text-[11px] font-mono flex flex-wrap items-center justify-between text-slate-400 gap-2">
+      <div className="bg-[#100905]/95 border-b border-orange-900/40 px-4 py-1.5 text-[11px] font-mono flex flex-wrap items-center justify-between text-slate-400 gap-2 relative z-20">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-orange-400 font-bold bg-orange-950/80 px-2 py-0.5 rounded border border-orange-800/60">
             <span className="w-2 h-2 rounded-full bg-orange-400 animate-ping inline-block" />
@@ -215,7 +251,19 @@ export const App: React.FC = () => {
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => {
+              const muted = cyberAudio.toggleMute();
+              setIsMuted(muted);
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border text-[10px] font-mono font-bold transition cursor-pointer bg-orange-950/70 border-orange-800/60 hover:bg-orange-900 text-orange-300 hover:text-white shadow-sm"
+            title="Toggle Synthesized Sci-Fi Sound FX"
+          >
+            {isMuted ? <VolumeX className="w-3.5 h-3.5 text-slate-400" /> : <Volume2 className="w-3.5 h-3.5 text-orange-400 animate-pulse" />}
+            <span className="hidden sm:inline">AUDIO: {isMuted ? 'MUTED' : 'ONLINE'}</span>
+          </button>
+          <span className="hidden sm:inline text-orange-900 font-bold">|</span>
           <span className="hidden sm:inline text-slate-400">HOST: <strong className="text-orange-200">{hostAssessment?.host_info?.hostname || 'LOCAL_ENDPOINT'}</strong></span>
           <span className="hidden sm:inline text-orange-900 font-bold">|</span>
           <span className="text-orange-400 font-mono font-bold text-[11px] flex items-center gap-1">
@@ -294,7 +342,10 @@ export const App: React.FC = () => {
             )}
 
             <button
-              onClick={() => setShowModal(true)}
+              onClick={() => {
+                cyberAudio.playClick();
+                setShowModal(true);
+              }}
               className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 hover:from-orange-500 hover:to-amber-500 text-white font-black rounded-xl text-xs transition-all duration-300 shadow-xl shadow-orange-950/60 hover:shadow-orange-900/80 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
               <Upload className="w-4 h-4 stroke-[2.5]" />
@@ -323,7 +374,18 @@ export const App: React.FC = () => {
       )}
 
       {/* Main Workspace */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6 relative z-10">
+        {/* Legendary Holographic 3D Gyroscopic Reactor Core */}
+        {!loading && report && (
+          <HoloReactorCore 
+            score={report.threat_scoring.threat_score}
+            severity={report.threat_scoring.severity}
+            verdict={report.threat_scoring.verdict}
+            color={report.threat_scoring.color}
+            sampleName={report.sample_name}
+          />
+        )}
+
         {/* Executive KPI Ribbon (Clickable jump cards) */}
         {!loading && report && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
@@ -463,7 +525,7 @@ export const App: React.FC = () => {
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => handleTabChange(tab.id)}
                     className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 whitespace-nowrap text-xs font-bold cursor-pointer ${
                       isActive 
                         ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white font-black shadow-lg shadow-orange-950/80 scale-[1.02] border border-orange-400/50' 
@@ -509,6 +571,9 @@ export const App: React.FC = () => {
           </div>
         )}
       </main>
+
+      {/* Real-Time Live Telemetry Matrix Terminal HUD */}
+      <LiveTelemetryTerminal />
 
       {/* Submit Sample Modal */}
       {showModal && (

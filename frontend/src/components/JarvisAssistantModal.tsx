@@ -15,6 +15,7 @@ interface JarvisAssistantModalProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigateTab?: (tabId: string) => void;
+  onOpenChat?: (prompt?: string) => void;
 }
 
 type Topic = 'full' | 'file' | 'system' | 'solution';
@@ -24,7 +25,8 @@ export const JarvisAssistantModal: React.FC<JarvisAssistantModalProps> = ({
   hostAssessment,
   isOpen,
   onClose,
-  onNavigateTab
+  onNavigateTab,
+  onOpenChat
 }) => {
   const [activeTopic, setActiveTopic] = useState<Topic>('full');
   const [speechState, setSpeechState] = useState<JarvisSpeechState>(jarvisVoice.getState());
@@ -571,17 +573,34 @@ export const JarvisAssistantModal: React.FC<JarvisAssistantModalProps> = ({
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
             <span>J.A.R.V.I.S. VOCAL NEURAL SYNTHESIZER ONLINE</span>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              cyberAudio.playClick();
-              jarvisVoice.stop();
-              onClose();
-            }}
-            className="px-4 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-white/10 hover:border-amber-400/50 text-xs font-bold transition cursor-pointer"
-          >
-            Dismiss Guide
-          </button>
+          <div className="flex items-center gap-2.5">
+            {onOpenChat && (
+              <button
+                type="button"
+                onClick={() => {
+                  cyberAudio.playClick();
+                  jarvisVoice.stop();
+                  onClose();
+                  onOpenChat();
+                }}
+                className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-red-600/30 via-amber-600/30 to-cyan-500/30 hover:from-red-600/50 hover:to-cyan-500/50 text-cyan-300 hover:text-white border border-cyan-500/40 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <Bot className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Talk to J.A.R.V.I.S. (Q&amp;A)</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                cyberAudio.playClick();
+                jarvisVoice.stop();
+                onClose();
+              }}
+              className="px-4 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-white/10 hover:border-amber-400/50 text-xs font-bold transition cursor-pointer"
+            >
+              Dismiss Guide
+            </button>
+          </div>
         </div>
       </div>
     </div>

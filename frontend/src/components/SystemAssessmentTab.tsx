@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { HostAssessment } from '../types';
+import { FullAnalysisReport, HostAssessment } from '../types';
 import { SectionGuide } from './SectionGuide';
+import { MalwareEradicationRoadmap } from './MalwareEradicationRoadmap';
 import { jarvisVoice } from '../utils/jarvisVoice';
 import { cyberAudio } from '../utils/cyberAudio';
 import { 
@@ -13,9 +14,17 @@ interface Props {
   assessment: HostAssessment | null;
   loading: boolean;
   onRescan: () => void;
+  report?: FullAnalysisReport | null;
+  onOpenJarvisChat?: (promptText?: string) => void;
 }
 
-export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRescan }) => {
+export const SystemAssessmentTab: React.FC<Props> = ({ 
+  assessment, 
+  loading, 
+  onRescan,
+  report,
+  onOpenJarvisChat
+}) => {
   const [activeSubTab, setActiveSubTab] = useState<'overview' | 'vulns' | 'processes' | 'forecast' | 'remediation'>('overview');
 
   if (loading) {
@@ -553,28 +562,36 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
 
       {/* Viewport: Remediation Plan */}
       {activeSubTab === 'remediation' && (
-        <div className="glass-card p-6 rounded-3xl space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-                <Wrench className="w-4 h-4 text-emerald-400" /> Actionable Vulnerability Remediation Plan
-              </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Step-by-step instructions to harden this host against detected vulnerabilities and active risks
-              </p>
-            </div>
+        <div className="space-y-6">
+          {/* Complete AI Flowchart Roadmap for Host & File Malware Removal */}
+          <MalwareEradicationRoadmap
+            report={report || null}
+            hostAssessment={assessment}
+            onOpenJarvisChat={onOpenJarvisChat}
+          />
 
-            <button
-              onClick={() => {
-                cyberAudio.playClick();
-                jarvisVoice.speak(jarvisVoice.generateSolutionScript(null, assessment), 'solution');
-              }}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600/30 via-teal-600/30 to-cyan-600/30 hover:from-emerald-600/50 hover:to-cyan-600/50 text-emerald-200 hover:text-white border border-emerald-500/50 hover:border-emerald-400 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer shrink-0"
-            >
-              <Bot className="w-4 h-4 text-emerald-400" />
-              <span>Hear J.A.R.V.I.S. Remediation Guide</span>
-            </button>
-          </div>
+          <div className="glass-card p-6 rounded-3xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+                  <Wrench className="w-4 h-4 text-emerald-400" /> Actionable Vulnerability Remediation Plan
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Step-by-step instructions to harden this host against detected vulnerabilities and active risks
+                </p>
+              </div>
+
+              <button
+                onClick={() => {
+                  cyberAudio.playClick();
+                  jarvisVoice.speak(jarvisVoice.generateSolutionScript(null, assessment), 'solution');
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600/30 via-teal-600/30 to-cyan-600/30 hover:from-emerald-600/50 hover:to-cyan-600/50 text-emerald-200 hover:text-white border border-emerald-500/50 hover:border-emerald-400 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer shrink-0"
+              >
+                <Bot className="w-4 h-4 text-emerald-400" />
+                <span>Hear J.A.R.V.I.S. Remediation Guide</span>
+              </button>
+            </div>
 
           <div className="space-y-3">
             {remediation_plan.length === 0 ? (
@@ -605,6 +622,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({ assessment, loading, onRe
               ))
             )}
           </div>
+        </div>
         </div>
       )}
     </div>

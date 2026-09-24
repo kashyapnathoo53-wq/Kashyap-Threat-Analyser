@@ -14,6 +14,7 @@ from threat_scorer import ThreatScorer
 from reporter import Reporter
 from samples_generator import get_preset_samples, get_preset_sample_by_id
 from host_scanner import HostScanner
+from ai_assistant import ai_assistant
 
 app = FastAPI(
     title="Pasha - Automated Malware Static & Behavioral Analysis Platform",
@@ -53,6 +54,16 @@ class CustomYaraRequest(BaseModel):
 class PresetAnalyzeRequest(BaseModel):
     sample_id: str
 
+class RoadmapRequest(BaseModel):
+    report: Optional[Dict[str, Any]] = None
+    host_assessment: Optional[Dict[str, Any]] = None
+
+class JarvisChatRequest(BaseModel):
+    message: str
+    report: Optional[Dict[str, Any]] = None
+    host_assessment: Optional[Dict[str, Any]] = None
+    history: Optional[List[Dict[str, str]]] = None
+
 @app.get("/")
 def root():
     return {"status": "online", "platform": "Pasha v2.0"}
@@ -85,6 +96,15 @@ def get_system_quick_status():
 @app.get("/api/samples/presets")
 def list_presets():
     return get_preset_samples()
+
+@app.post("/api/ai/eradication-roadmap")
+def get_eradication_roadmap(req: RoadmapRequest):
+    return ai_assistant.generate_eradication_roadmap(req.report, req.host_assessment)
+
+@app.post("/api/jarvis/chat")
+def chat_with_jarvis(req: JarvisChatRequest):
+    reply = ai_assistant.chat(req.message, req.report, req.host_assessment, req.history)
+    return {"reply": reply}
 
 def run_full_analysis(filename: str, content: bytes) -> Dict[str, Any]:
     import time

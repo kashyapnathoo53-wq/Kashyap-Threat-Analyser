@@ -14,6 +14,7 @@ import { HoloReactorCore } from './components/HoloReactorCore';
 import { LiveTelemetryTerminal } from './components/LiveTelemetryTerminal';
 import { JarvisVoiceBanner } from './components/JarvisVoiceBanner';
 import { JarvisAssistantModal } from './components/JarvisAssistantModal';
+import { JarvisChatModal } from './components/JarvisChatModal';
 import { FALLBACK_REPORTS, FALLBACK_HOST_ASSESSMENT } from './data/mockReports';
 import { analyzeFileClientSide } from './utils/clientAnalyzer';
 import { cyberAudio } from './utils/cyberAudio';
@@ -21,7 +22,7 @@ import {
   Shield, ShieldAlert, Cpu, Terminal, Layers, Database, Code2, FileText, 
   Upload, RefreshCw, Activity, AlertTriangle, MonitorCheck, Zap, 
   Sparkles, Globe2, Radio, Server, CheckCircle2, ChevronRight, Lock,
-  Volume2, VolumeX, Palette, ArrowUpRight, Flame, Bot
+  Volume2, VolumeX, Palette, ArrowUpRight, Flame, Bot, MessageSquare
 } from 'lucide-react';
 
 export type Theme = 'ironman' | 'cyan' | 'emerald' | 'violet' | 'amber';
@@ -53,6 +54,13 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('host');
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showJarvisModal, setShowJarvisModal] = useState<boolean>(false);
+  const [showChatModal, setShowChatModal] = useState<boolean>(false);
+  const [chatInitialPrompt, setChatInitialPrompt] = useState<string>('');
+
+  const handleOpenJarvisChat = (prompt?: string) => {
+    setChatInitialPrompt(prompt || '');
+    setShowChatModal(true);
+  };
   const [isMuted, setIsMuted] = useState<boolean>(cyberAudio.getIsMuted());
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingPhase, setLoadingPhase] = useState<string>('Initializing forensic pipeline...');
@@ -413,6 +421,18 @@ export const App: React.FC = () => {
             <button
               onClick={() => {
                 cyberAudio.playClick();
+                handleOpenJarvisChat();
+              }}
+              className="flex items-center gap-2 px-3.5 py-2.5 bg-gradient-to-r from-red-600/25 via-amber-600/25 to-cyan-500/25 hover:from-red-600/40 hover:to-cyan-500/40 text-cyan-300 hover:text-white border border-cyan-500/50 hover:border-cyan-400 rounded-xl text-xs font-bold transition-all duration-300 shadow-xl shadow-cyan-950/60 hover:scale-[1.02] active:scale-[0.98] cursor-pointer group"
+              title="Ask J.A.R.V.I.S. questions about malware removal & remediation"
+            >
+              <MessageSquare className="w-4 h-4 text-cyan-400 group-hover:scale-110 stroke-[2.5]" />
+              <span className="hidden sm:inline font-mono">Talk to J.A.R.V.I.S.</span>
+            </button>
+
+            <button
+              onClick={() => {
+                cyberAudio.playClick();
                 setShowModal(true);
               }}
               className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-600 via-amber-600 to-yellow-500 hover:from-red-500 hover:to-yellow-400 text-slate-950 font-black rounded-xl text-xs transition-all duration-300 shadow-xl shadow-red-950/80 hover:shadow-red-900/90 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
@@ -450,6 +470,7 @@ export const App: React.FC = () => {
             report={report}
             hostAssessment={hostAssessment}
             onOpenModal={() => setShowJarvisModal(true)}
+            onOpenChat={handleOpenJarvisChat}
           />
         )}
 
@@ -660,6 +681,8 @@ export const App: React.FC = () => {
                   assessment={hostAssessment} 
                   loading={hostLoading} 
                   onRescan={runHostAutoAssessment} 
+                  report={report}
+                  onOpenJarvisChat={handleOpenJarvisChat}
                 />
               )}
               {activeTab === 'overview' && <DashboardOverview report={report} onNavigateTab={setActiveTab} />}
@@ -697,6 +720,16 @@ export const App: React.FC = () => {
         isOpen={showJarvisModal}
         onClose={() => setShowJarvisModal(false)}
         onNavigateTab={handleOpenTab}
+        onOpenChat={handleOpenJarvisChat}
+      />
+
+      {/* J.A.R.V.I.S. Interactive Q&A Assistant Chat Modal */}
+      <JarvisChatModal
+        report={report}
+        hostAssessment={hostAssessment}
+        isOpen={showChatModal}
+        onClose={() => setShowChatModal(false)}
+        initialPrompt={chatInitialPrompt}
       />
 
       {/* High-End Enterprise Footer */}

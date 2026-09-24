@@ -11,12 +11,14 @@ interface JarvisVoiceBannerProps {
   report: FullAnalysisReport | null;
   hostAssessment: HostAssessment | null;
   onOpenModal: () => void;
+  onOpenChat?: (prompt?: string) => void;
 }
 
 export const JarvisVoiceBanner: React.FC<JarvisVoiceBannerProps> = ({
   report,
   hostAssessment,
-  onOpenModal
+  onOpenModal,
+  onOpenChat
 }) => {
   const [speechState, setSpeechState] = useState<JarvisSpeechState>(jarvisVoice.getState());
 
@@ -182,12 +184,28 @@ export const JarvisVoiceBanner: React.FC<JarvisVoiceBannerProps> = ({
               cyberAudio.playClick();
               onOpenModal();
             }}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-950/60 hover:bg-amber-900/70 border border-amber-500/40 text-amber-300 hover:text-white text-xs font-bold transition active:scale-95 cursor-pointer ml-auto lg:ml-0"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-950/60 hover:bg-amber-900/70 border border-amber-500/40 text-amber-300 hover:text-white text-xs font-bold transition active:scale-95 cursor-pointer"
             title="Open J.A.R.V.I.S. Audio Guide & Teleprompter Console"
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>Full Guide Console</span>
+            <span>Voice Guide</span>
           </button>
+
+          {/* Talk to J.A.R.V.I.S. Q&A */}
+          {onOpenChat && (
+            <button
+              type="button"
+              onClick={() => {
+                cyberAudio.playClick();
+                onOpenChat();
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-red-600/30 via-amber-600/30 to-cyan-500/30 hover:from-red-600/50 hover:to-cyan-500/50 border border-cyan-500/40 text-cyan-300 hover:text-white text-xs font-bold transition active:scale-95 cursor-pointer ml-auto lg:ml-0"
+              title="Ask J.A.R.V.I.S. questions about malware remediation"
+            >
+              <Bot className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Talk to J.A.R.V.I.S.</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

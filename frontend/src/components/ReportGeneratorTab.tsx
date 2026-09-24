@@ -151,9 +151,9 @@ export const ReportGeneratorTab: React.FC<Props> = ({ report }) => {
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-base font-extrabold text-white flex items-center gap-2">
-              <FileText className="w-5 h-5 text-orange-400" /> Executive &amp; Technical Threat Dossier
+              <FileText className="w-5 h-5 text-cyan-400" /> Executive &amp; Technical Threat Dossier
             </h3>
-            <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-md bg-orange-950/80 text-orange-300 border border-orange-800/60">
+            <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-md bg-cyan-950/80 text-cyan-300 border border-cyan-800/60">
               CISO Ready
             </span>
           </div>
@@ -165,7 +165,7 @@ export const ReportGeneratorTab: React.FC<Props> = ({ report }) => {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={handlePrintPdf}
-            className="flex items-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white font-black rounded-xl text-xs transition shadow-lg shadow-orange-950/50"
+            className="flex items-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-cyan-950/50"
           >
             <Printer className="w-4 h-4" /> Print / Save as PDF
           </button>
@@ -189,7 +189,7 @@ export const ReportGeneratorTab: React.FC<Props> = ({ report }) => {
             onClick={() => setReportFormat(fmt.id as any)}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition font-mono ${
               reportFormat === fmt.id
-                ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white font-black shadow-md shadow-orange-950/40'
+                ? 'bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-slate-950 font-black shadow-md shadow-cyan-950/40'
                 : 'glass-card text-slate-400 hover:text-white'
             }`}
           >
@@ -223,7 +223,7 @@ export const ReportGeneratorTab: React.FC<Props> = ({ report }) => {
             </span>
             <button
               onClick={copyMarkdown}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white font-black rounded-lg text-xs transition shadow-md shadow-orange-950/40"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black rounded-lg text-xs transition shadow-md shadow-cyan-950/40"
             >
               {copiedMd ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
               {copiedMd ? "Copied to Clipboard!" : "Copy Markdown"}

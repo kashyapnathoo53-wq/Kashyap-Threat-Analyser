@@ -23,7 +23,7 @@ export const ProcessTreeGraph: React.FC<ProcessTreeProps> = ({ node, depth = 0 }
         className={`flex items-center gap-2 p-2.5 rounded-lg border transition-all ${
           isMaliciousProc 
             ? 'bg-rose-950/30 border-rose-500/40 text-rose-200' 
-            : 'bg-slate-900/60 border-orange-900/30 text-slate-200 hover:border-orange-500/50'
+            : 'bg-slate-900/60 border-cyan-900/30 text-slate-200 hover:border-cyan-500/50'
         }`}
       >
         {hasChildren ? (
@@ -40,12 +40,12 @@ export const ProcessTreeGraph: React.FC<ProcessTreeProps> = ({ node, depth = 0 }
         {isMaliciousProc ? (
           <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
         ) : (
-          <Cpu className="w-4 h-4 text-orange-400 shrink-0" />
+          <Cpu className="w-4 h-4 text-cyan-400 shrink-0" />
         )}
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className={`font-mono font-bold text-sm ${isMaliciousProc ? 'text-rose-300' : 'text-orange-300'}`}>{node.name}</span>
+            <span className={`font-mono font-bold text-sm ${isMaliciousProc ? 'text-rose-300' : 'text-cyan-300'}`}>{node.name}</span>
             <span className="px-1.5 py-0.5 text-xs font-mono bg-slate-800 text-slate-400 rounded">PID: {node.pid}</span>
             <span className={`px-1.5 py-0.5 text-xs font-mono rounded ${node.integrity === 'SYSTEM' || node.integrity === 'High' ? 'bg-amber-900/50 text-amber-300' : 'bg-slate-800 text-slate-400'}`}>
               Integrity: {node.integrity}

@@ -202,7 +202,7 @@ export const SampleSelectorModal: React.FC<Props> = ({ onSelectPreset, onFileUpl
 
                   <button 
                     type="button"
-                    className="px-3.5 py-1.5 bg-orange-950/80 group-hover:bg-orange-500 text-orange-200 group-hover:text-slate-950 text-xs font-bold rounded-lg transition flex items-center gap-1 shrink-0 ml-2 border border-orange-900/60 group-hover:border-orange-400 shadow-sm"
+                    className="px-3.5 py-1.5 bg-cyan-950/80 group-hover:bg-cyan-400 text-cyan-200 group-hover:text-slate-950 text-xs font-bold rounded-lg transition flex items-center gap-1 shrink-0 ml-2 border border-cyan-800/60 group-hover:border-cyan-300 shadow-sm"
                   >
                     <Play className="w-3.5 h-3.5" /> Analyze
                   </button>

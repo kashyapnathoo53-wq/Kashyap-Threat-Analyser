@@ -123,13 +123,13 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-              <Code2 className="w-4 h-4 text-orange-400" /> Interactive YARA Signature Authoring &amp; Compiler
+              <Code2 className="w-4 h-4 text-cyan-400" /> Interactive YARA Signature Authoring &amp; Compiler
             </h3>
             <p className="text-xs text-slate-400">
               Draft, compile, and register custom detection rules to expand your threat hunting coverage
             </p>
           </div>
-          <span className="text-[10px] font-mono text-orange-400 bg-orange-950/80 px-2.5 py-1 rounded-lg border border-orange-800/50">
+          <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/80 px-2.5 py-1 rounded-lg border border-cyan-800/50">
             Live Sandbox Testing
           </span>
         </div>
@@ -150,7 +150,7 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
                 type="text"
                 value={ruleName}
                 onChange={e => setRuleName(e.target.value)}
-                className="w-full bg-slate-950 border border-orange-800/40 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-orange-400"
+                className="w-full bg-slate-950 border border-cyan-800/40 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-cyan-400"
               />
             </div>
             <div>
@@ -160,7 +160,7 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
               <select
                 value={category}
                 onChange={e => setCategory(e.target.value)}
-                className="w-full bg-slate-950 border border-orange-800/40 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-orange-400"
+                className="w-full bg-slate-950 border border-cyan-800/40 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-cyan-400"
               >
                 <option value="Ransomware">Ransomware</option>
                 <option value="Trojan">Trojan / Loader</option>
@@ -179,7 +179,7 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
               type="text"
               value={stringsInput}
               onChange={e => setStringsInput(e.target.value)}
-              className="w-full bg-slate-950 border border-orange-800/40 rounded-xl px-3 py-2 text-xs font-mono text-orange-300 focus:outline-none focus:border-orange-400"
+              className="w-full bg-slate-950 border border-cyan-800/40 rounded-xl px-3 py-2 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-400"
             />
           </div>
 
@@ -191,15 +191,15 @@ export const YaraWorkbenchTab: React.FC<Props> = ({ yaraScan }) => {
               type="text"
               value={conditionInput}
               onChange={e => setConditionInput(e.target.value)}
-              className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-purple-300 focus:outline-none focus:border-orange-400"
+              className="w-full bg-slate-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono text-purple-300 focus:outline-none focus:border-cyan-400"
             />
           </div>
 
           <button
             type="submit"
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 hover:from-orange-500 hover:to-amber-500 text-white font-black rounded-xl text-xs transition shadow-lg shadow-orange-950/50"
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-cyan-950/50 cursor-pointer"
           >
-            <Play className="w-3.5 h-3.5 fill-white text-white" /> Compile &amp; Save YARA Rule
+            <Play className="w-3.5 h-3.5 fill-slate-950 text-slate-950" /> Compile &amp; Save YARA Rule
           </button>
         </form>
       </div>

@@ -11,17 +11,17 @@ interface Particle {
 }
 
 interface Props {
-  theme?: 'ironman' | 'cyan' | 'emerald' | 'violet' | 'amber';
+  theme?: 'cyan' | 'cobalt' | 'emerald' | 'violet' | 'crimson' | 'carbon' | 'ironman';
 }
 
 const THEME_PALETTES = {
-  ironman: {
-    particles: ['#fbbf24', '#f59e0b', '#dc2626', '#ef4444', '#00f2fe', '#fde047'],
-    filament: '#fbbf24'
-  },
   cyan: {
     particles: ['#00f2fe', '#06b6d4', '#38bdf8', '#22d3ee', '#67e8f9'],
     filament: '#06b6d4'
+  },
+  cobalt: {
+    particles: ['#3b82f6', '#2563eb', '#60a5fa', '#93c5fd', '#1d4ed8'],
+    filament: '#3b82f6'
   },
   emerald: {
     particles: ['#10b981', '#059669', '#34d399', '#6ee7b7', '#00ff9d'],
@@ -31,13 +31,21 @@ const THEME_PALETTES = {
     particles: ['#a855f7', '#8b5cf6', '#c084fc', '#d8b4fe', '#7c3aed'],
     filament: '#a855f7'
   },
-  amber: {
-    particles: ['#f97316', '#ea580c', '#fb923c', '#fdba74', '#f59e0b'],
-    filament: '#f97316'
+  crimson: {
+    particles: ['#ef4444', '#dc2626', '#f87171', '#fca5a5', '#b91c1c'],
+    filament: '#ef4444'
+  },
+  carbon: {
+    particles: ['#94a3b8', '#cbd5e1', '#64748b', '#e2e8f0', '#475569'],
+    filament: '#94a3b8'
+  },
+  ironman: {
+    particles: ['#00f2fe', '#ef4444', '#dc2626', '#38bdf8', '#fbbf24'],
+    filament: '#00f2fe'
   }
 };
 
-export const CyberParticleCanvas: React.FC<Props> = ({ theme = 'ironman' }) => {
+export const CyberParticleCanvas: React.FC<Props> = ({ theme = 'cyan' }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {

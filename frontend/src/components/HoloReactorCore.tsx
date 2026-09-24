@@ -27,15 +27,15 @@ export const HoloReactorCore: React.FC<Props> = ({ score, severity, verdict, col
     <div 
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setIsHovered(false)}
-      className="glass-panel hud-corner p-6 sm:p-7 rounded-3xl relative overflow-hidden border border-amber-500/40 shadow-2xl group transition-all duration-300 hover:border-red-500/80 bg-[#120506]/95 hover:shadow-[0_0_50px_rgba(220,38,38,0.25)]"
+      className="glass-panel hud-corner p-6 sm:p-7 rounded-3xl relative overflow-hidden border border-cyan-500/30 shadow-2xl group transition-all duration-300 hover:border-cyan-400/70 bg-[#051024]/95 hover:shadow-[0_0_50px_rgba(0,242,254,0.25)]"
     >
       {/* Corner HUD Reticles */}
-      <div className="absolute top-2 right-2 text-[9px] font-mono text-amber-400/80 select-none">[ARC_REACTOR: OPTIMAL] ┐</div>
-      <div className="absolute bottom-2 left-2 text-[9px] font-mono text-amber-400/80 select-none">└ PALLADIUM CORE</div>
-      <div className="absolute bottom-2 right-2 text-[9px] font-mono text-amber-400/80 select-none">UNIBEAM 3.14 GJ/s ┘</div>
+      <div className="absolute top-2 right-2 text-[9px] font-mono text-cyan-400/80 select-none">[ARC_REACTOR: OPTIMAL] ┐</div>
+      <div className="absolute bottom-2 left-2 text-[9px] font-mono text-cyan-400/80 select-none">└ PALLADIUM CORE</div>
+      <div className="absolute bottom-2 right-2 text-[9px] font-mono text-cyan-400/80 select-none">UNIBEAM 3.14 GJ/s ┘</div>
 
-      {/* Crimson & Gold Scanning Laser */}
-      <div className="absolute inset-0 bg-gradient-to-b from-red-600/10 via-transparent to-transparent pointer-events-none animate-scanline opacity-60" />
+      {/* Cyber Cyan Scanning Laser */}
+      <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 via-transparent to-transparent pointer-events-none animate-scanline opacity-60" />
 
       <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
         {/* Left: Authentic Iron Man Arc Reactor */}
@@ -167,14 +167,14 @@ export const HoloReactorCore: React.FC<Props> = ({ score, severity, verdict, col
             >
               <ShieldAlert className="w-3.5 h-3.5" /> {severity} VERDICT
             </span>
-            <span className="px-2.5 py-1 rounded-xl text-xs font-mono font-black bg-amber-950/80 text-amber-300 border border-amber-500/50 shadow-sm flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-amber-400" />
+            <span className="px-2.5 py-1 rounded-xl text-xs font-mono font-black bg-cyan-950/80 text-cyan-300 border border-cyan-500/40 shadow-sm flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-cyan-400" />
               TARGET: {sampleName}
             </span>
           </div>
 
           <h2 className="text-lg md:text-xl font-black text-white tracking-wide">
-            Autonomous Arc Reactor: <span className="gradient-text-stark">{verdict}</span>
+            Autonomous Arc Reactor: <span className="gradient-text-arc">{verdict}</span>
           </h2>
 
           <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
@@ -182,13 +182,13 @@ export const HoloReactorCore: React.FC<Props> = ({ score, severity, verdict, col
           </p>
 
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-1 text-[11px] font-mono text-slate-300">
-            <span className="flex items-center gap-1.5 bg-red-950/60 px-2.5 py-1 rounded-lg border border-red-800/40">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            <span className="flex items-center gap-1.5 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-700/50">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
               JARVIS PROTOCOL: <strong className="text-white">ENGAGED</strong>
             </span>
-            <span className="flex items-center gap-1.5 bg-amber-950/60 px-2.5 py-1 rounded-lg border border-amber-800/40">
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
-              UNIBEAM FLUX: <strong className="text-amber-300">3.14 GJ/s</strong>
+            <span className="flex items-center gap-1.5 bg-cyan-950/60 px-2.5 py-1 rounded-lg border border-cyan-800/40">
+              <Zap className="w-3.5 h-3.5 text-cyan-400" />
+              UNIBEAM FLUX: <strong className="text-cyan-300">3.14 GJ/s</strong>
             </span>
             <span className="flex items-center gap-1.5 bg-cyan-950/60 px-2.5 py-1 rounded-lg border border-cyan-800/40">
               <Radio className="w-3.5 h-3.5 text-cyan-400" />
@@ -197,17 +197,17 @@ export const HoloReactorCore: React.FC<Props> = ({ score, severity, verdict, col
           </div>
         </div>
 
-        {/* Right: Real-time Live Reactor Metrics in Stark Armor Styling */}
+        {/* Right: Real-time Live Reactor Metrics in Cyber HUD Styling */}
         <div className="grid grid-cols-2 gap-2.5 w-full sm:w-auto shrink-0 font-mono text-xs">
-          <div className="bg-[#1e0a0d]/90 p-3.5 rounded-2xl border border-amber-500/40 text-center shadow-md">
-            <div className="text-[10px] text-amber-400/80 font-bold uppercase">Entropy Index</div>
-            <div className="text-base font-black text-amber-300 mt-0.5">5.248 bit/B</div>
+          <div className="bg-[#071630]/90 p-3.5 rounded-2xl border border-cyan-500/30 text-center shadow-md">
+            <div className="text-[10px] text-cyan-400/80 font-bold uppercase">Entropy Index</div>
+            <div className="text-base font-black text-cyan-200 mt-0.5">5.248 bit/B</div>
             <div className="text-[9px] text-emerald-400 font-bold mt-0.5">&bull; UNPACKED</div>
           </div>
-          <div className="bg-[#1e0a0d]/90 p-3.5 rounded-2xl border border-amber-500/40 text-center shadow-md">
-            <div className="text-[10px] text-amber-400/80 font-bold uppercase">Core Flux</div>
+          <div className="bg-[#071630]/90 p-3.5 rounded-2xl border border-cyan-500/30 text-center shadow-md">
+            <div className="text-[10px] text-cyan-400/80 font-bold uppercase">Core Flux</div>
             <div className="text-base font-black text-cyan-300 mt-0.5">PALLADIUM</div>
-            <div className="text-[9px] text-amber-400 font-bold mt-0.5">5 VECTORS</div>
+            <div className="text-[9px] text-cyan-400 font-bold mt-0.5">5 VECTORS</div>
           </div>
         </div>
       </div>

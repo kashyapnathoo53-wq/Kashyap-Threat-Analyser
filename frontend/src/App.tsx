@@ -22,22 +22,63 @@ import {
   Shield, ShieldAlert, Cpu, Terminal, Layers, Database, Code2, FileText, 
   Upload, RefreshCw, Activity, AlertTriangle, MonitorCheck, Zap, 
   Sparkles, Globe2, Radio, Server, CheckCircle2, ChevronRight, Lock,
-  Volume2, VolumeX, Palette, ArrowUpRight, Flame, Bot, MessageSquare
+  Volume2, VolumeX, Palette, ArrowUpRight, Flame, Bot, MessageSquare, Sliders
 } from 'lucide-react';
+import { ThemeSelectorModal, ThemeId, THEME_OPTIONS } from './components/ThemeSelectorModal';
 
-export type Theme = 'ironman' | 'cyan' | 'emerald' | 'violet' | 'amber';
+export type Theme = ThemeId;
 
 export const App: React.FC = () => {
   const [theme, setTheme] = useState<Theme>(() => {
-    return (localStorage.getItem('pasha_theme') as Theme) || 'ironman';
+    const saved = localStorage.getItem('pasha_theme');
+    if (saved === 'amber' || saved === 'ironman' || !saved) {
+      return 'cyan';
+    }
+    return (saved as Theme) || 'cyan';
   });
+
+  const [customColor, setCustomColor] = useState<string | null>(() => {
+    return localStorage.getItem('pasha_custom_color') || null;
+  });
+
+  const [showThemeModal, setShowThemeModal] = useState<boolean>(false);
 
   const workspaceRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('pasha_theme', theme);
-  }, [theme]);
+    if (customColor) {
+      document.documentElement.style.setProperty('--cyber-accent', customColor);
+      document.documentElement.style.setProperty('--cyber-accent-glow', `${customColor}60`);
+      document.documentElement.style.setProperty('--cyber-border', `${customColor}45`);
+      document.documentElement.style.setProperty('--cyber-laser', customColor);
+    } else {
+      document.documentElement.style.removeProperty('--cyber-accent');
+      document.documentElement.style.removeProperty('--cyber-accent-glow');
+      document.documentElement.style.removeProperty('--cyber-border');
+      document.documentElement.style.removeProperty('--cyber-laser');
+    }
+  }, [theme, customColor]);
+
+  const handleApplyCustomColor = (hex: string) => {
+    setCustomColor(hex);
+    localStorage.setItem('pasha_custom_color', hex);
+    document.documentElement.style.setProperty('--cyber-accent', hex);
+    document.documentElement.style.setProperty('--cyber-accent-glow', `${hex}60`);
+    document.documentElement.style.setProperty('--cyber-border', `${hex}45`);
+    document.documentElement.style.setProperty('--cyber-laser', hex);
+  };
+
+  const handleResetDefaultTheme = () => {
+    setCustomColor(null);
+    localStorage.removeItem('pasha_custom_color');
+    document.documentElement.style.removeProperty('--cyber-accent');
+    document.documentElement.style.removeProperty('--cyber-accent-glow');
+    document.documentElement.style.removeProperty('--cyber-border');
+    document.documentElement.style.removeProperty('--cyber-laser');
+    setTheme('cyan');
+  };
 
   const handleOpenTab = (tabId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -266,55 +307,72 @@ export const App: React.FC = () => {
       <div className="bg-[#0b0304]/95 border-b border-amber-900/40 px-4 py-1.5 text-[11px] font-mono flex flex-wrap items-center justify-between text-slate-400 gap-2 relative z-20">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-amber-400 font-black bg-red-950/80 px-2 py-0.5 rounded border border-amber-500/50 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block" />
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping inline-block" />
             AUTONOMOUS DEFENSE GRID MK-85
           </span>
 
           {/* Equalizer Live Activity Bars */}
           <div className="flex items-center gap-0.5 h-4 px-1" title="Real-time telemetry stream active">
-            <span className="w-0.5 bg-red-500 rounded-full animate-bar-1" />
-            <span className="w-0.5 bg-amber-400 rounded-full animate-bar-2" />
-            <span className="w-0.5 bg-yellow-300 rounded-full animate-bar-3" />
-            <span className="w-0.5 bg-cyan-400 rounded-full animate-bar-4" />
-            <span className="w-0.5 bg-amber-500 rounded-full animate-bar-5" />
+            <span className="w-0.5 bg-cyan-400 rounded-full animate-bar-1" />
+            <span className="w-0.5 bg-sky-300 rounded-full animate-bar-2" />
+            <span className="w-0.5 bg-blue-500 rounded-full animate-bar-3" />
+            <span className="w-0.5 bg-teal-400 rounded-full animate-bar-4" />
+            <span className="w-0.5 bg-cyan-500 rounded-full animate-bar-5" />
           </div>
 
-          <span className="hidden md:inline text-amber-300 font-semibold transition-all duration-500">
+          <span className="hidden md:inline text-cyan-300 font-semibold transition-all duration-500">
             {telemetryFeed[telemetryIndex]}
           </span>
         </div>
 
         <div className="flex items-center gap-2.5">
-          {/* Dynamic Theme Palette Switcher */}
-          <div className="flex items-center bg-slate-950/90 border border-white/[0.08] p-0.5 rounded-lg text-[10px] font-mono gap-0.5">
-            <Palette className="w-3 h-3 text-amber-400 ml-1 mr-0.5" />
-            {[
-              { id: 'ironman', label: 'IRON MAN', color: '#dc2626' },
-              { id: 'cyan', label: 'ARC CYAN', color: '#06b6d4' },
-              { id: 'emerald', label: 'MATRIX', color: '#10b981' },
-              { id: 'violet', label: 'VIOLET', color: '#a855f7' },
-              { id: 'amber', label: 'AMBER', color: '#f59e0b' },
-            ].map(t => (
-              <button
-                key={t.id}
-                onClick={() => {
-                  setTheme(t.id as Theme);
-                  cyberAudio.playClick();
-                }}
-                className={`px-1.5 py-0.5 rounded flex items-center gap-1 transition cursor-pointer ${
-                  theme === t.id 
-                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 font-black shadow-sm' 
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title={`Switch theme to ${t.label}`}
-              >
-                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: t.color }} />
-                <span>{t.label}</span>
-              </button>
-            ))}
+          {/* Dynamic Theme Palette Switcher & Color Customizer Trigger */}
+          <div className="flex items-center bg-slate-950/90 border border-white/[0.08] p-0.5 rounded-lg text-[10px] font-mono gap-1">
+            <button
+              onClick={() => {
+                cyberAudio.playClick();
+                setShowThemeModal(true);
+              }}
+              className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-cyan-950/80 hover:bg-cyan-900/80 text-cyan-300 border border-cyan-500/40 hover:border-cyan-400 font-bold transition cursor-pointer shadow-sm"
+              title="Open Theme Studio & Color Customizer"
+            >
+              <Palette className="w-3 h-3 text-cyan-400 animate-spin-slow" />
+              <span>THEMES</span>
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: customColor || '#06b6d4' }} />
+            </button>
+
+            <div className="hidden sm:flex items-center gap-0.5">
+              {[
+                { id: 'cyan', label: 'CYAN', color: '#06b6d4' },
+                { id: 'cobalt', label: 'COBALT', color: '#3b82f6' },
+                { id: 'emerald', label: 'MATRIX', color: '#10b981' },
+                { id: 'violet', label: 'VIOLET', color: '#a855f7' },
+                { id: 'crimson', label: 'RED', color: '#ef4444' },
+                { id: 'carbon', label: 'CARBON', color: '#94a3b8' },
+              ].map(t => (
+                <button
+                  key={t.id}
+                  onClick={() => {
+                    setCustomColor(null);
+                    localStorage.removeItem('pasha_custom_color');
+                    setTheme(t.id as Theme);
+                    cyberAudio.playClick();
+                  }}
+                  className={`px-1.5 py-0.5 rounded flex items-center gap-1 transition cursor-pointer ${
+                    theme === t.id && !customColor
+                      ? 'bg-white/15 text-white border border-white/30 font-black shadow-sm' 
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                  title={`Switch theme to ${t.label}`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: t.color }} />
+                  <span>{t.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          <span className="hidden sm:inline text-amber-900 font-bold">|</span>
+          <span className="hidden sm:inline text-slate-700 font-bold">|</span>
 
           {/* Audio Synthesizer Toggle */}
           <button
@@ -322,31 +380,31 @@ export const App: React.FC = () => {
               const muted = cyberAudio.toggleMute();
               setIsMuted(muted);
             }}
-            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border text-[10px] font-mono font-bold transition cursor-pointer bg-red-950/70 border-amber-500/40 hover:bg-red-900 text-amber-300 hover:text-white shadow-sm"
+            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border text-[10px] font-mono font-bold transition cursor-pointer bg-slate-900/80 border-cyan-500/30 hover:bg-slate-800 text-cyan-300 hover:text-white shadow-sm"
             title="Toggle Synthesized Sci-Fi Sound FX"
           >
-            {isMuted ? <VolumeX className="w-3.5 h-3.5 text-slate-400" /> : <Volume2 className="w-3.5 h-3.5 text-amber-400 animate-pulse" />}
+            {isMuted ? <VolumeX className="w-3.5 h-3.5 text-slate-400" /> : <Volume2 className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />}
             <span className="hidden sm:inline">JARVIS AUDIO: {isMuted ? 'MUTED' : 'ONLINE'}</span>
           </button>
-          <span className="hidden sm:inline text-amber-900 font-bold">|</span>
-          <span className="hidden sm:inline text-slate-400">ARMOR: <strong className="text-amber-300">{hostAssessment?.host_info?.hostname || 'SUIT_ONLINE'}</strong></span>
-          <span className="hidden sm:inline text-amber-900 font-bold">|</span>
-          <span className="text-amber-400 font-mono font-bold text-[11px] flex items-center gap-1">
+          <span className="hidden sm:inline text-slate-700 font-bold">|</span>
+          <span className="hidden sm:inline text-slate-400">ARMOR: <strong className="text-cyan-300">{hostAssessment?.host_info?.hostname || 'SUIT_ONLINE'}</strong></span>
+          <span className="hidden sm:inline text-slate-700 font-bold">|</span>
+          <span className="text-cyan-400 font-mono font-bold text-[11px] flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block animate-pulse" />
             {currentTime} UTC
           </span>
         </div>
       </div>
 
-      {/* Main Command Header in Stark Industries Aesthetic */}
-      <header className="glass-panel sticky top-0 z-40 border-b border-amber-900/40">
+      {/* Main Command Header in High-Tech Cyber Aesthetic */}
+      <header className="glass-panel sticky top-0 z-40 border-b border-cyan-500/20">
         <div className="max-w-7xl mx-auto px-4 py-3.5 flex justify-between items-center gap-4">
           {/* Brand & Logo */}
           <div className="flex items-center gap-3.5">
-            <div className="relative group cursor-pointer">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-red-600 via-amber-600 to-yellow-400 p-[1.5px] shadow-lg shadow-red-950/80 transition-transform duration-300 group-hover:scale-105">
-                <div className="w-full h-full bg-[#160608] rounded-2xl flex items-center justify-center">
-                  <Shield className="w-6 h-6 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
+            <div className="relative group cursor-pointer" onClick={() => setShowThemeModal(true)} title="Click to customize theme & colors">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 via-sky-500 to-blue-600 p-[1.5px] shadow-lg shadow-cyan-950/80 transition-transform duration-300 group-hover:scale-105">
+                <div className="w-full h-full bg-[#040d1e] rounded-2xl flex items-center justify-center">
+                  <Shield className="w-6 h-6 text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]" />
                 </div>
               </div>
               <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-cyan-400 border-2 border-slate-950 animate-pulse" />
@@ -355,7 +413,7 @@ export const App: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-black tracking-widest text-white flex items-center gap-2">
-                  <span className="gradient-text-stark font-black tracking-widest">PASHA</span>
+                  <span className="gradient-text-arc font-black tracking-widest">PASHA</span>
                 </h1>
               </div>
               <p className="text-xs text-slate-400 font-medium">
@@ -369,7 +427,7 @@ export const App: React.FC = () => {
             {hostAssessment && (
               <button 
                 onClick={() => handleOpenTab('host')}
-                className="hidden lg:flex items-center gap-2.5 bg-[#1a080a]/90 hover:bg-[#250d10] px-3.5 py-2 rounded-xl border border-amber-900/50 hover:border-amber-400/50 transition shadow-inner group cursor-pointer"
+                className="hidden lg:flex items-center gap-2.5 bg-[#040d1e]/90 hover:bg-[#071630] px-3.5 py-2 rounded-xl border border-cyan-900/50 hover:border-cyan-400/50 transition shadow-inner group cursor-pointer"
               >
                 <MonitorCheck className="w-4 h-4 text-emerald-400 group-hover:animate-bounce" />
                 <div className="text-left text-xs">
@@ -387,19 +445,19 @@ export const App: React.FC = () => {
             {report && (
               <button 
                 onClick={() => handleOpenTab('overview')}
-                className="hidden md:flex items-center gap-2.5 bg-[#1a080a]/90 hover:bg-[#250d10] px-3.5 py-2 rounded-xl border border-amber-900/50 hover:border-amber-400/50 text-xs font-mono shadow-inner transition cursor-pointer"
+                className="hidden md:flex items-center gap-2.5 bg-[#040d1e]/90 hover:bg-[#071630] px-3.5 py-2 rounded-xl border border-cyan-900/50 hover:border-cyan-400/50 text-xs font-mono shadow-inner transition cursor-pointer"
                 title="Click to view Executive Overview"
               >
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: report.threat_scoring.color }} />
                 <div className="text-left">
                   <div className="text-[10px] text-slate-400 leading-none">Sample</div>
-                  <div className="font-bold text-amber-200 max-w-[130px] truncate leading-tight" title={report.sample_name}>
+                  <div className="font-bold text-cyan-200 max-w-[130px] truncate leading-tight" title={report.sample_name}>
                     {report.sample_name}
                   </div>
                 </div>
                 {(report as any).analysis_duration_ms && (
-                  <span className="text-[10px] text-slate-400 border-l border-amber-900/60 pl-2 flex items-center gap-1">
-                    <Zap className="w-3 h-3 text-amber-400" />
+                  <span className="text-[10px] text-slate-400 border-l border-cyan-900/60 pl-2 flex items-center gap-1">
+                    <Zap className="w-3 h-3 text-cyan-400" />
                     {(report as any).analysis_duration_ms}ms
                   </span>
                 )}
@@ -411,7 +469,7 @@ export const App: React.FC = () => {
                 cyberAudio.playClick();
                 setShowJarvisModal(true);
               }}
-              className="flex items-center gap-2 px-3.5 py-2.5 bg-[#1a080a]/90 hover:bg-[#280c10] text-amber-300 hover:text-white border border-amber-500/50 hover:border-amber-400 rounded-xl text-xs font-bold transition-all duration-300 shadow-xl shadow-red-950/60 hover:scale-[1.02] active:scale-[0.98] cursor-pointer group"
+              className="flex items-center gap-2 px-3.5 py-2.5 bg-[#040d1e]/90 hover:bg-[#071630] text-cyan-300 hover:text-white border border-cyan-500/40 hover:border-cyan-400 rounded-xl text-xs font-bold transition-all duration-300 shadow-xl shadow-cyan-950/60 hover:scale-[1.02] active:scale-[0.98] cursor-pointer group"
               title="Open J.A.R.V.I.S. Tactical AI Voice Guide"
             >
               <Bot className="w-4 h-4 text-cyan-400 group-hover:animate-bounce stroke-[2.5]" />
@@ -423,7 +481,7 @@ export const App: React.FC = () => {
                 cyberAudio.playClick();
                 handleOpenJarvisChat();
               }}
-              className="flex items-center gap-2 px-3.5 py-2.5 bg-gradient-to-r from-red-600/25 via-amber-600/25 to-cyan-500/25 hover:from-red-600/40 hover:to-cyan-500/40 text-cyan-300 hover:text-white border border-cyan-500/50 hover:border-cyan-400 rounded-xl text-xs font-bold transition-all duration-300 shadow-xl shadow-cyan-950/60 hover:scale-[1.02] active:scale-[0.98] cursor-pointer group"
+              className="flex items-center gap-2 px-3.5 py-2.5 bg-gradient-to-r from-cyan-600/25 via-sky-600/25 to-blue-500/25 hover:from-cyan-600/40 hover:to-blue-500/40 text-cyan-300 hover:text-white border border-cyan-500/50 hover:border-cyan-400 rounded-xl text-xs font-bold transition-all duration-300 shadow-xl shadow-cyan-950/60 hover:scale-[1.02] active:scale-[0.98] cursor-pointer group"
               title="Ask J.A.R.V.I.S. questions about malware removal & remediation"
             >
               <MessageSquare className="w-4 h-4 text-cyan-400 group-hover:scale-110 stroke-[2.5]" />
@@ -435,7 +493,7 @@ export const App: React.FC = () => {
                 cyberAudio.playClick();
                 setShowModal(true);
               }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-600 via-amber-600 to-yellow-500 hover:from-red-500 hover:to-yellow-400 text-slate-950 font-black rounded-xl text-xs transition-all duration-300 shadow-xl shadow-red-950/80 hover:shadow-red-900/90 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black rounded-xl text-xs transition-all duration-300 shadow-xl shadow-cyan-950/80 hover:shadow-cyan-900/90 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
               <Upload className="w-4 h-4 stroke-[2.5]" />
               <span>Submit Payload</span>
@@ -492,7 +550,7 @@ export const App: React.FC = () => {
             <div
               onClick={() => handleOpenTab('overview')}
               className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-red-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
-                activeTab === 'overview' ? 'border-red-500/60 ring-1 ring-red-500/30 shadow-red-950/40' : 'border-amber-900/30'
+                activeTab === 'overview' ? 'border-red-500/60 ring-1 ring-red-500/30 shadow-red-950/40' : 'border-white/[0.08]'
               }`}
             >
               <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
@@ -519,7 +577,7 @@ export const App: React.FC = () => {
             <div
               onClick={() => handleOpenTab('host')}
               className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-cyan-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
-                activeTab === 'host' ? 'border-cyan-500/60 ring-1 ring-cyan-500/30 shadow-cyan-950/40' : 'border-amber-900/30'
+                activeTab === 'host' ? 'border-cyan-500/60 ring-1 ring-cyan-500/30 shadow-cyan-950/40' : 'border-white/[0.08]'
               }`}
             >
               <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
@@ -545,15 +603,15 @@ export const App: React.FC = () => {
             {/* KPI 3 - Forensic Extraction */}
             <div
               onClick={() => handleOpenTab('iocs')}
-              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-amber-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
-                activeTab === 'iocs' ? 'border-amber-500/60 ring-1 ring-amber-500/30 shadow-amber-950/40' : 'border-amber-900/30'
+              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-sky-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
+                activeTab === 'iocs' ? 'border-sky-500/60 ring-1 ring-sky-500/30 shadow-sky-950/40' : 'border-white/[0.08]'
               }`}
             >
               <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span className="font-bold group-hover:text-amber-300 transition">Forensic Extraction</span>
-                <Database className="w-4 h-4 text-amber-400 group-hover:scale-110 transition" />
+                <span className="font-bold group-hover:text-sky-300 transition">Forensic Extraction</span>
+                <Database className="w-4 h-4 text-sky-400 group-hover:scale-110 transition" />
               </div>
-              <div className="text-xl font-black font-mono tracking-tight text-amber-300">
+              <div className="text-xl font-black font-mono tracking-tight text-sky-300">
                 {report.ioc_extraction.total_extracted} Indicators
               </div>
               <div className="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
@@ -561,7 +619,7 @@ export const App: React.FC = () => {
                 <button
                   type="button"
                   onClick={(e) => handleOpenTab('iocs', e)}
-                  className="text-[11px] font-mono font-bold text-amber-300 hover:text-white bg-amber-950/70 hover:bg-amber-800/80 px-2.5 py-0.5 rounded-md border border-amber-500/40 hover:border-amber-400 transition flex items-center gap-1 cursor-pointer shadow-sm active:scale-95"
+                  className="text-[11px] font-mono font-bold text-sky-300 hover:text-white bg-sky-950/70 hover:bg-sky-800/80 px-2.5 py-0.5 rounded-md border border-sky-500/40 hover:border-sky-400 transition flex items-center gap-1 cursor-pointer shadow-sm active:scale-95"
                 >
                   <span>Open</span>
                   <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -572,15 +630,15 @@ export const App: React.FC = () => {
             {/* KPI 4 - Execution Speed */}
             <div
               onClick={() => handleOpenTab('static')}
-              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-yellow-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
-                activeTab === 'static' ? 'border-yellow-500/60 ring-1 ring-yellow-500/30 shadow-yellow-950/40' : 'border-amber-900/30'
+              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-teal-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
+                activeTab === 'static' ? 'border-teal-500/60 ring-1 ring-teal-500/30 shadow-teal-950/40' : 'border-white/[0.08]'
               }`}
             >
               <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span className="font-bold group-hover:text-yellow-300 transition">Execution Speed</span>
-                <Zap className="w-4 h-4 text-yellow-400 group-hover:scale-110 transition" />
+                <span className="font-bold group-hover:text-teal-300 transition">Execution Speed</span>
+                <Zap className="w-4 h-4 text-teal-400 group-hover:scale-110 transition" />
               </div>
-              <div className="text-xl font-black font-mono tracking-tight text-yellow-300">
+              <div className="text-xl font-black font-mono tracking-tight text-teal-300">
                 {(report as any).analysis_duration_ms || 18} ms
               </div>
               <div className="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
@@ -588,7 +646,7 @@ export const App: React.FC = () => {
                 <button
                   type="button"
                   onClick={(e) => handleOpenTab('static', e)}
-                  className="text-[11px] font-mono font-bold text-yellow-300 hover:text-white bg-yellow-950/70 hover:bg-yellow-800/80 px-2.5 py-0.5 rounded-md border border-yellow-500/40 hover:border-yellow-400 transition flex items-center gap-1 cursor-pointer shadow-sm active:scale-95"
+                  className="text-[11px] font-mono font-bold text-teal-300 hover:text-white bg-teal-950/70 hover:bg-teal-800/80 px-2.5 py-0.5 rounded-md border border-teal-500/40 hover:border-teal-400 transition flex items-center gap-1 cursor-pointer shadow-sm active:scale-95"
                 >
                   <span>Open</span>
                   <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -635,7 +693,7 @@ export const App: React.FC = () => {
             <div 
               ref={workspaceRef}
               id="workspace-tabs"
-              className="flex overflow-x-auto glass-panel p-1.5 rounded-2xl border border-amber-900/40 text-xs font-bold gap-1.5 shadow-2xl scroll-mt-20"
+              className="flex overflow-x-auto glass-panel p-1.5 rounded-2xl border border-cyan-500/20 text-xs font-bold gap-1.5 shadow-2xl scroll-mt-20"
             >
               {[
                 { id: 'host', label: 'System Auto-Assessment', icon: MonitorCheck, badge: hostAssessment ? `${hostAssessment.health_score}/100` : undefined, badgeColor: hostAssessment?.status_color },
@@ -655,7 +713,7 @@ export const App: React.FC = () => {
                     onClick={() => handleTabChange(tab.id)}
                     className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 whitespace-nowrap text-xs font-bold cursor-pointer ${
                       isActive 
-                        ? 'bg-gradient-to-r from-red-600 via-amber-600 to-yellow-500 text-slate-950 font-black shadow-lg shadow-red-950/80 scale-[1.02] border border-yellow-400/50' 
+                        ? 'bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-slate-950 font-black shadow-lg shadow-cyan-950/80 scale-[1.02] border border-cyan-400/50' 
                         : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
                     }`}
                   >
@@ -732,15 +790,30 @@ export const App: React.FC = () => {
         initialPrompt={chatInitialPrompt}
       />
 
+      {/* Theme Studio & Accent Color Customizer Modal */}
+      <ThemeSelectorModal
+        currentTheme={theme}
+        isOpen={showThemeModal}
+        onClose={() => setShowThemeModal(false)}
+        onSelectTheme={(t) => {
+          setTheme(t as Theme);
+          setCustomColor(null);
+          localStorage.removeItem('pasha_custom_color');
+        }}
+        onApplyCustomColor={handleApplyCustomColor}
+        activeCustomColor={customColor}
+        onResetDefault={handleResetDefaultTheme}
+      />
+
       {/* High-End Enterprise Footer */}
-      <footer className="glass-panel border-t border-amber-900/40 mt-auto py-5 px-6">
+      <footer className="glass-panel border-t border-cyan-500/20 mt-auto py-5 px-6">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
           <div className="flex items-center gap-3">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span>
             </span>
-            <span className="text-slate-400 font-mono text-xs">PASHA &bull; <strong className="text-amber-400 font-black">ENTERPRISE CYBER DEFENSE PLATFORM</strong></span>
+            <span className="text-slate-400 font-mono text-xs">PASHA &bull; <strong className="text-cyan-400 font-black">ENTERPRISE CYBER DEFENSE PLATFORM</strong></span>
           </div>
           <div className="flex items-center gap-4 text-[11px] font-mono text-slate-500">
             <span>STIX 2.1</span>

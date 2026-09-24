@@ -139,7 +139,7 @@ export const LiveTelemetryTerminal: React.FC = () => {
                     log.source === 'KERNEL' ? 'bg-indigo-950 text-indigo-300 border border-indigo-800/40' :
                     log.source === 'MEMORY' ? 'bg-rose-950 text-rose-300 border border-rose-800/40' :
                     log.source === 'NETWORK' ? 'bg-cyan-950 text-cyan-300 border border-cyan-800/40' :
-                    log.source === 'YARA' ? 'bg-orange-950 text-orange-300 border border-orange-800/40' :
+                    log.source === 'YARA' ? 'bg-purple-950 text-purple-300 border border-purple-800/40' :
                     'bg-slate-800 text-slate-300'
                   }`}>
                     {log.source}

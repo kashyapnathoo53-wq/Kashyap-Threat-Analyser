@@ -29,15 +29,15 @@ export const SystemAssessmentTab: React.FC<Props> = ({
 
   if (loading) {
     return (
-      <div className="glass-panel p-16 rounded-3xl flex flex-col items-center justify-center space-y-6 shadow-2xl relative overflow-hidden border border-orange-500/30">
-        <div className="absolute inset-0 bg-gradient-to-b from-orange-600/15 via-amber-900/10 to-transparent animate-pulse" />
+      <div className="glass-panel p-16 rounded-3xl flex flex-col items-center justify-center space-y-6 shadow-2xl relative overflow-hidden border border-cyan-500/30">
+        <div className="absolute inset-0 bg-gradient-to-b from-cyan-600/15 via-blue-900/10 to-transparent animate-pulse" />
         <div className="relative">
-          <div className="w-20 h-20 rounded-full border-4 border-orange-500/20 border-t-orange-400 animate-spin flex items-center justify-center shadow-xl shadow-orange-950/50" />
-          <Radio className="w-8 h-8 text-orange-400 absolute inset-0 m-auto animate-ping opacity-75" />
+          <div className="w-20 h-20 rounded-full border-4 border-cyan-500/20 border-t-cyan-400 animate-spin flex items-center justify-center shadow-xl shadow-cyan-950/50" />
+          <Radio className="w-8 h-8 text-cyan-400 absolute inset-0 m-auto animate-ping opacity-75" />
         </div>
         <div className="text-center space-y-1.5 z-10">
           <div className="text-lg font-black tracking-wide text-white">Performing Deep Host Security Auto-Assessment...</div>
-          <div className="text-xs text-orange-300/80 font-mono">
+          <div className="text-xs text-cyan-300/80 font-mono">
             Scanning runtime processes, registry persistence keys, and auditing installed packages against NVD CVEs...
           </div>
         </div>
@@ -48,11 +48,11 @@ export const SystemAssessmentTab: React.FC<Props> = ({
   if (!assessment) {
     return (
       <div className="glass-card p-12 rounded-3xl text-center space-y-4">
-        <AlertTriangle className="w-12 h-12 text-amber-400 mx-auto" />
+        <AlertTriangle className="w-12 h-12 text-cyan-400 mx-auto" />
         <div className="text-lg font-bold text-slate-200">No Assessment Data Available</div>
         <button
           onClick={onRescan}
-          className="px-5 py-2.5 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 hover:from-orange-500 hover:to-amber-500 text-white font-black text-xs rounded-xl transition shadow-lg shadow-orange-950/50"
+          className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs rounded-xl transition shadow-lg shadow-cyan-950/50"
         >
           Initiate Auto-Assessment Now
         </button>
@@ -157,7 +157,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
               </h2>
 
               <p className="text-xs text-slate-400 font-medium">
-                Operating System: <strong className="text-slate-200">{host_info.os}</strong> &bull; Scanned: <strong className="text-orange-400">{summary.total_processes_scanned} Processes</strong> &bull; <strong className="text-amber-300">{summary.installed_software_scanned} Software Packages</strong>
+                Operating System: <strong className="text-slate-200">{host_info.os}</strong> &bull; Scanned: <strong className="text-cyan-400">{summary.total_processes_scanned} Processes</strong> &bull; <strong className="text-sky-300">{summary.installed_software_scanned} Software Packages</strong>
               </p>
             </div>
           </div>
@@ -168,7 +168,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                 cyberAudio.playClick();
                 jarvisVoice.speak(jarvisVoice.generateSystemScript(assessment), 'system');
               }}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-600/30 via-amber-600/30 to-cyan-500/30 hover:from-red-600/50 hover:to-cyan-500/50 text-amber-200 hover:text-white font-bold text-xs rounded-xl border border-amber-500/50 hover:border-amber-400 transition shadow-lg shadow-red-950/40 cursor-pointer"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-600/30 via-sky-600/30 to-blue-500/30 hover:from-cyan-600/50 hover:to-blue-500/50 text-cyan-200 hover:text-white font-bold text-xs rounded-xl border border-cyan-500/50 hover:border-cyan-400 transition shadow-lg shadow-cyan-950/40 cursor-pointer"
             >
               <Bot className="w-4 h-4 text-cyan-400" />
               <span>Hear J.A.R.V.I.S. Host Diagnosis</span>
@@ -176,7 +176,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
 
             <button
               onClick={onRescan}
-              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-600 via-amber-600 to-yellow-500 hover:from-red-500 hover:to-yellow-400 text-slate-950 font-black text-xs rounded-xl transition shadow-lg shadow-red-950/60 shrink-0 cursor-pointer"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs rounded-xl transition shadow-lg shadow-cyan-950/60 shrink-0 cursor-pointer"
             >
               <RefreshCw className="w-4 h-4" /> <span>Re-scan Host</span>
             </button>
@@ -188,11 +188,11 @@ export const SystemAssessmentTab: React.FC<Props> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div 
           onClick={() => setActiveSubTab('processes')}
-          className="glass-card p-4 rounded-2xl cursor-pointer group hover:border-orange-500/50 hover:shadow-orange-950/30"
+          className="glass-card p-4 rounded-2xl cursor-pointer group hover:border-cyan-500/50 hover:shadow-cyan-950/30"
         >
           <div className="flex justify-between items-center text-slate-400 text-xs font-bold uppercase mb-1">
-            <span className="group-hover:text-orange-400 transition">Running Processes</span>
-            <Cpu className="w-4 h-4 text-orange-400" />
+            <span className="group-hover:text-cyan-400 transition">Running Processes</span>
+            <Cpu className="w-4 h-4 text-cyan-400" />
           </div>
           <div className="text-2xl font-black font-mono text-white">
             {summary.total_processes_scanned}
@@ -256,7 +256,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
       </div>
 
       {/* Sub-Navigation Buttons */}
-      <div className="flex flex-wrap gap-2 glass-panel p-1.5 rounded-2xl border border-orange-900/40 text-xs font-bold shadow-lg">
+      <div className="flex flex-wrap gap-2 glass-panel p-1.5 rounded-2xl border border-cyan-500/20 text-xs font-bold shadow-lg">
         {[
           { id: 'overview', label: 'Overview & Alerts', icon: ShieldCheck },
           { id: 'vulns', label: `Software CVEs (${software_audit.vulnerability_count})`, icon: Package },
@@ -272,7 +272,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
               onClick={() => setActiveSubTab(tab.id as any)}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
                 isActive
-                  ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white font-black shadow-md shadow-orange-950/50'
+                  ? 'bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-slate-950 font-black shadow-md shadow-cyan-950/50'
                   : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
               }`}
             >
@@ -422,7 +422,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                 Cross-referenced against NIST NVD and Known Exploited Vulnerabilities catalog
               </p>
             </div>
-            <span className="text-xs font-mono text-orange-300 font-bold bg-orange-950/80 px-3 py-1 rounded-xl border border-orange-800/50">
+            <span className="text-xs font-mono text-cyan-300 font-bold bg-cyan-950/80 px-3 py-1 rounded-xl border border-cyan-800/50">
               {software_audit.total_software_found} Packages Audited
             </span>
           </div>
@@ -442,7 +442,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                 {software_audit.installed_software.map((app, idx) => (
                   <tr key={idx} className="hover:bg-slate-900/60 transition">
                     <td className="p-3.5 font-bold text-slate-200">{app.name}</td>
-                    <td className="p-3.5 text-orange-300 font-semibold">{app.version}</td>
+                    <td className="p-3.5 text-cyan-300 font-semibold">{app.version}</td>
                     <td className="p-3.5 text-slate-400">{app.publisher}</td>
                     <td className="p-3.5">
                       {app.has_cve ? (
@@ -474,7 +474,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
       {activeSubTab === 'processes' && (
         <div className="glass-card p-6 rounded-3xl space-y-4">
           <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-            <Cpu className="w-4 h-4 text-orange-400" /> Monitored Host Processes
+            <Cpu className="w-4 h-4 text-cyan-400" /> Monitored Host Processes
           </h3>
           <div className="overflow-x-auto border border-white/[0.06] rounded-2xl">
             <table className="w-full text-left font-mono text-xs">
@@ -494,7 +494,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                       <td className="p-3.5 text-slate-400">{proc.pid}</td>
                       <td className="p-3.5 font-bold text-slate-200">{proc.name}</td>
                       <td className="p-3.5 text-slate-400 font-mono text-[11px] truncate max-w-xs">{proc.path || 'N/A'}</td>
-                      <td className="p-3.5 text-orange-300">{proc.anomaly_reason || 'Verified system process'}</td>
+                      <td className="p-3.5 text-cyan-300">{proc.anomaly_reason || 'Verified system process'}</td>
                       <td className="p-3.5">
                         <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${
                           proc.is_suspicious ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'bg-emerald-950 text-emerald-300 border border-emerald-800'
@@ -522,7 +522,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
         <div className="glass-card p-6 rounded-3xl space-y-4">
           <div>
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-orange-400" /> Predictive Threat Forecast & Attack Vectors
+              <TrendingUp className="w-4 h-4 text-cyan-400" /> Predictive Threat Forecast &amp; Attack Vectors
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
               Heuristic projection of host vulnerability exploitation risks based on system topology
@@ -541,7 +541,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                     <span className="text-[10px] font-mono font-bold text-slate-400">PROBABILITY:</span>
                     <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded ${
                       fc.probability === 'CRITICAL' ? 'bg-rose-950 text-rose-300 border border-rose-800' :
-                      fc.probability === 'HIGH' ? 'bg-amber-950 text-amber-300 border border-amber-800' :
+                      fc.probability === 'HIGH' ? 'bg-purple-950 text-purple-300 border border-purple-800' :
                       'bg-emerald-950 text-emerald-300 border border-emerald-800'
                     }`}>
                       {fc.probability}
@@ -551,7 +551,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
 
                 <p className="text-xs text-slate-300">{fc.reasoning}</p>
 
-                <div className="bg-slate-900/90 p-3 rounded-xl border border-white/[0.04] text-xs font-mono text-orange-300">
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-white/[0.04] text-xs font-mono text-cyan-300">
                   <strong className="text-slate-400">Preemptive Defense:</strong> {fc.mitigation}
                 </div>
               </div>
@@ -603,7 +603,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                 <div key={idx} className="bg-slate-950/80 p-4 rounded-2xl border border-white/[0.05] flex justify-between items-start gap-4">
                   <div className="space-y-1">
                     <div className="font-bold text-white text-sm flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-full bg-orange-950 text-orange-400 border border-orange-800/60 text-xs flex items-center justify-center font-mono font-bold">
+                      <span className="w-5 h-5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800/60 text-xs flex items-center justify-center font-mono font-bold">
                         {idx + 1}
                       </span>
                       {item.action}

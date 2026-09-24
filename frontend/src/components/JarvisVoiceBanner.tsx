@@ -54,15 +54,15 @@ export const JarvisVoiceBanner: React.FC<JarvisVoiceBannerProps> = ({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-amber-500/40 bg-gradient-to-r from-[#170508]/95 via-[#23080e]/90 to-[#0e0306]/95 p-4 sm:p-5 shadow-2xl shadow-red-950/70 hud-corner">
+    <div className="relative overflow-hidden rounded-3xl border border-cyan-500/30 bg-gradient-to-r from-[#030d1d]/95 via-[#061833]/90 to-[#020914]/95 p-4 sm:p-5 shadow-2xl shadow-cyan-950/70 hud-corner">
       {/* Glow highlight */}
-      <div className="absolute top-0 right-1/4 w-96 h-28 bg-gradient-to-b from-amber-500/15 via-red-600/10 to-transparent pointer-events-none rounded-full blur-3xl" />
+      <div className="absolute top-0 right-1/4 w-96 h-28 bg-gradient-to-b from-cyan-500/15 via-blue-600/10 to-transparent pointer-events-none rounded-full blur-3xl" />
 
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 relative z-10">
         {/* Left info area */}
         <div className="flex items-center gap-3.5">
           <div className="relative shrink-0">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 via-amber-600 to-yellow-500 flex items-center justify-center text-slate-950 shadow-xl shadow-red-950/80">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 via-sky-500 to-blue-600 flex items-center justify-center text-slate-950 shadow-xl shadow-cyan-950/80">
               <Bot className="w-6 h-6 stroke-[2.5]" />
             </div>
             {speechState.isSpeaking && !speechState.isPaused && (
@@ -75,11 +75,11 @@ export const JarvisVoiceBanner: React.FC<JarvisVoiceBannerProps> = ({
 
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-mono font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+              <span className="text-[11px] font-mono font-black uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
                 <Radio className="w-3.5 h-3.5 text-cyan-400" />
                 J.A.R.V.I.S. TACTICAL AUDIO ASSISTANT &amp; GUIDE
               </span>
-              <span className="px-2 py-0.5 text-[9px] font-mono font-black uppercase rounded-full bg-red-950/90 text-red-300 border border-red-500/40">
+              <span className="px-2 py-0.5 text-[9px] font-mono font-black uppercase rounded-full bg-cyan-950/90 text-cyan-300 border border-cyan-500/40">
                 VOICE AI ONLINE
               </span>
             </div>
@@ -89,8 +89,8 @@ export const JarvisVoiceBanner: React.FC<JarvisVoiceBannerProps> = ({
               {speechState.isSpeaking && !speechState.isPaused && (
                 <span className="inline-flex items-center gap-0.5 text-cyan-400">
                   <span className="w-1 h-3 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-1 h-4 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-1 h-3 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <span className="w-1 h-4 bg-sky-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </span>
               )}
             </h3>
@@ -107,7 +107,7 @@ export const JarvisVoiceBanner: React.FC<JarvisVoiceBannerProps> = ({
           <button
             type="button"
             onClick={handlePauseResume}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 via-amber-600 to-yellow-500 hover:from-red-500 hover:to-yellow-400 text-slate-950 font-black text-xs transition shadow-lg shadow-red-950/80 active:scale-95 cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs transition shadow-lg shadow-cyan-950/80 active:scale-95 cursor-pointer"
           >
             {speechState.isSpeaking && !speechState.isPaused ? (
               <>
@@ -184,7 +184,7 @@ export const JarvisVoiceBanner: React.FC<JarvisVoiceBannerProps> = ({
               cyberAudio.playClick();
               onOpenModal();
             }}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-950/60 hover:bg-amber-900/70 border border-amber-500/40 text-amber-300 hover:text-white text-xs font-bold transition active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-cyan-950/60 hover:bg-cyan-900/70 border border-cyan-500/40 text-cyan-300 hover:text-white text-xs font-bold transition active:scale-95 cursor-pointer"
             title="Open J.A.R.V.I.S. Audio Guide & Teleprompter Console"
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -199,7 +199,7 @@ export const JarvisVoiceBanner: React.FC<JarvisVoiceBannerProps> = ({
                 cyberAudio.playClick();
                 onOpenChat();
               }}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-red-600/30 via-amber-600/30 to-cyan-500/30 hover:from-red-600/50 hover:to-cyan-500/50 border border-cyan-500/40 text-cyan-300 hover:text-white text-xs font-bold transition active:scale-95 cursor-pointer ml-auto lg:ml-0"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-cyan-600/30 via-sky-600/30 to-blue-600/30 hover:from-cyan-600/50 hover:to-blue-600/50 border border-cyan-500/50 text-cyan-300 hover:text-white text-xs font-bold transition active:scale-95 cursor-pointer ml-auto lg:ml-0 shadow-md shadow-cyan-950/40"
               title="Ask J.A.R.V.I.S. questions about malware remediation"
             >
               <Bot className="w-3.5 h-3.5 text-cyan-400" />

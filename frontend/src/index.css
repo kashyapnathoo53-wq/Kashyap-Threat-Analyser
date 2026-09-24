@@ -3,26 +3,66 @@
 @tailwind utilities;
 
 :root {
-  /* Default: Iron Man Suit (Hotrod Crimson, Stark Titanium Gold & Arc Reactor Cyan) */
-  --cyber-bg: #0b0304;
-  --cyber-panel-bg: rgba(22, 6, 8, 0.90);
-  --cyber-card-bg: rgba(30, 9, 12, 0.82);
-  --cyber-border: rgba(245, 158, 11, 0.35); /* Stark Titanium Gold border */
-  --cyber-border-hover: rgba(239, 68, 68, 0.75); /* Hotrod Crimson glow */
-  --cyber-accent: #fbbf24; /* Stark Gold */
-  --cyber-accent-light: #fde047;
-  --cyber-accent-dark: #b45309;
-  --cyber-accent-glow: rgba(245, 158, 11, 0.50);
-  --cyber-glow-1: rgba(220, 38, 38, 0.30); /* Hotrod Crimson Glow */
-  --cyber-glow-2: rgba(245, 158, 11, 0.25); /* Stark Gold Glow */
-  --cyber-glow-3: rgba(0, 242, 254, 0.20); /* Arc Reactor Cyan Glow */
-  --cyber-grid: rgba(245, 158, 11, 0.05); /* Gold Circuit Grid */
-  --cyber-card-glow: rgba(220, 38, 38, 0.35);
-  --cyber-laser: #00f2fe; /* Arc Reactor Cyan Laser */
+  /* Default: Cyber Arc Cyan & Deep Space Navy (Sleek, Electric, 0% Orange) */
+  --cyber-bg: #030712;
+  --cyber-panel-bg: rgba(6, 15, 33, 0.90);
+  --cyber-card-bg: rgba(9, 22, 48, 0.76);
+  --cyber-border: rgba(6, 182, 212, 0.28);
+  --cyber-border-hover: rgba(6, 182, 212, 0.70);
+  --cyber-accent: #06b6d4;
+  --cyber-accent-light: #67e8f9;
+  --cyber-accent-dark: #0e7490;
+  --cyber-accent-glow: rgba(6, 182, 212, 0.45);
+  --cyber-glow-1: rgba(6, 182, 212, 0.22);
+  --cyber-glow-2: rgba(59, 130, 246, 0.20);
+  --cyber-glow-3: rgba(14, 116, 144, 0.16);
+  --cyber-grid: rgba(6, 182, 212, 0.04);
+  --cyber-card-glow: rgba(6, 182, 212, 0.25);
+  --cyber-laser: #00f2fe;
   --cyber-laser-glow: #38bdf8;
-  --stark-gold: #fbbf24;
-  --stark-crimson: #dc2626;
   --arc-cyan: #00f2fe;
+}
+
+[data-theme="cyan"] {
+  /* Cyber Arc Cyan & Deep Navy */
+  --cyber-bg: #030712;
+  --cyber-panel-bg: rgba(6, 15, 33, 0.90);
+  --cyber-card-bg: rgba(9, 22, 48, 0.76);
+  --cyber-border: rgba(6, 182, 212, 0.28);
+  --cyber-border-hover: rgba(6, 182, 212, 0.70);
+  --cyber-accent: #06b6d4;
+  --cyber-accent-light: #67e8f9;
+  --cyber-accent-dark: #0e7490;
+  --cyber-accent-glow: rgba(6, 182, 212, 0.45);
+  --cyber-glow-1: rgba(6, 182, 212, 0.22);
+  --cyber-glow-2: rgba(59, 130, 246, 0.20);
+  --cyber-glow-3: rgba(14, 116, 144, 0.16);
+  --cyber-grid: rgba(6, 182, 212, 0.04);
+  --cyber-card-glow: rgba(6, 182, 212, 0.25);
+  --cyber-laser: #00f2fe;
+  --cyber-laser-glow: #38bdf8;
+  --arc-cyan: #00f2fe;
+}
+
+[data-theme="cobalt"] {
+  /* Tactical Cobalt Blue */
+  --cyber-bg: #020817;
+  --cyber-panel-bg: rgba(8, 20, 48, 0.90);
+  --cyber-card-bg: rgba(13, 31, 74, 0.76);
+  --cyber-border: rgba(59, 130, 246, 0.28);
+  --cyber-border-hover: rgba(59, 130, 246, 0.70);
+  --cyber-accent: #3b82f6;
+  --cyber-accent-light: #93c5fd;
+  --cyber-accent-dark: #1d4ed8;
+  --cyber-accent-glow: rgba(59, 130, 246, 0.45);
+  --cyber-glow-1: rgba(59, 130, 246, 0.22);
+  --cyber-glow-2: rgba(37, 99, 235, 0.22);
+  --cyber-glow-3: rgba(29, 78, 216, 0.16);
+  --cyber-grid: rgba(59, 130, 246, 0.04);
+  --cyber-card-glow: rgba(59, 130, 246, 0.25);
+  --cyber-laser: #3b82f6;
+  --cyber-laser-glow: #60a5fa;
+  --arc-cyan: #60a5fa;
 }
 
 [data-theme="emerald"] {
@@ -43,6 +83,7 @@
   --cyber-card-glow: rgba(16, 185, 129, 0.25);
   --cyber-laser: #10b981;
   --cyber-laser-glow: #34d399;
+  --arc-cyan: #34d399;
 }
 
 [data-theme="violet"] {
@@ -63,26 +104,70 @@
   --cyber-card-glow: rgba(168, 85, 247, 0.25);
   --cyber-laser: #a855f7;
   --cyber-laser-glow: #c084fc;
+  --arc-cyan: #c084fc;
 }
 
-[data-theme="amber"] {
-  /* Tactical Amber (Hazard Ops) */
-  --cyber-bg: #0a0603;
-  --cyber-panel-bg: rgba(24, 13, 6, 0.88);
-  --cyber-card-bg: rgba(36, 19, 9, 0.74);
-  --cyber-border: rgba(245, 158, 11, 0.22);
-  --cyber-border-hover: rgba(245, 158, 11, 0.55);
-  --cyber-accent: #f59e0b;
-  --cyber-accent-light: #fcd34d;
-  --cyber-accent-dark: #b45309;
-  --cyber-accent-glow: rgba(245, 158, 11, 0.45);
-  --cyber-glow-1: rgba(245, 158, 11, 0.22);
-  --cyber-glow-2: rgba(217, 119, 6, 0.24);
-  --cyber-glow-3: rgba(180, 83, 9, 0.18);
-  --cyber-grid: rgba(245, 158, 11, 0.04);
-  --cyber-card-glow: rgba(245, 158, 11, 0.25);
-  --cyber-laser: #f59e0b;
-  --cyber-laser-glow: #fbbf24;
+[data-theme="crimson"] {
+  /* Stealth Crimson Red */
+  --cyber-bg: #090204;
+  --cyber-panel-bg: rgba(26, 8, 12, 0.88);
+  --cyber-card-bg: rgba(38, 12, 18, 0.74);
+  --cyber-border: rgba(239, 68, 68, 0.28);
+  --cyber-border-hover: rgba(239, 68, 68, 0.65);
+  --cyber-accent: #ef4444;
+  --cyber-accent-light: #fca5a5;
+  --cyber-accent-dark: #b91c1c;
+  --cyber-accent-glow: rgba(239, 68, 68, 0.45);
+  --cyber-glow-1: rgba(239, 68, 68, 0.22);
+  --cyber-glow-2: rgba(220, 38, 38, 0.22);
+  --cyber-glow-3: rgba(185, 28, 28, 0.16);
+  --cyber-grid: rgba(239, 68, 68, 0.04);
+  --cyber-card-glow: rgba(239, 68, 68, 0.25);
+  --cyber-laser: #ef4444;
+  --cyber-laser-glow: #f87171;
+  --arc-cyan: #f87171;
+}
+
+[data-theme="carbon"] {
+  /* Stealth Carbon & Platinum Silver */
+  --cyber-bg: #050608;
+  --cyber-panel-bg: rgba(15, 18, 24, 0.90);
+  --cyber-card-bg: rgba(23, 28, 36, 0.76);
+  --cyber-border: rgba(148, 163, 184, 0.25);
+  --cyber-border-hover: rgba(226, 232, 240, 0.60);
+  --cyber-accent: #94a3b8;
+  --cyber-accent-light: #f1f5f9;
+  --cyber-accent-dark: #475569;
+  --cyber-accent-glow: rgba(148, 163, 184, 0.35);
+  --cyber-glow-1: rgba(100, 116, 139, 0.18);
+  --cyber-glow-2: rgba(71, 85, 105, 0.16);
+  --cyber-glow-3: rgba(51, 65, 85, 0.14);
+  --cyber-grid: rgba(148, 163, 184, 0.03);
+  --cyber-card-glow: rgba(148, 163, 184, 0.20);
+  --cyber-laser: #cbd5e1;
+  --cyber-laser-glow: #f8fafc;
+  --arc-cyan: #38bdf8;
+}
+
+[data-theme="ironman"] {
+  /* Stark Titanium Armor (Balanced Crimson & Arc Cyan) */
+  --cyber-bg: #090305;
+  --cyber-panel-bg: rgba(22, 7, 10, 0.90);
+  --cyber-card-bg: rgba(30, 10, 14, 0.76);
+  --cyber-border: rgba(220, 38, 38, 0.35);
+  --cyber-border-hover: rgba(0, 242, 254, 0.75);
+  --cyber-accent: #00f2fe;
+  --cyber-accent-light: #38bdf8;
+  --cyber-accent-dark: #b91c1c;
+  --cyber-accent-glow: rgba(0, 242, 254, 0.45);
+  --cyber-glow-1: rgba(220, 38, 38, 0.22);
+  --cyber-glow-2: rgba(0, 242, 254, 0.20);
+  --cyber-glow-3: rgba(185, 28, 28, 0.15);
+  --cyber-grid: rgba(0, 242, 254, 0.04);
+  --cyber-card-glow: rgba(0, 242, 254, 0.25);
+  --cyber-laser: #00f2fe;
+  --cyber-laser-glow: #38bdf8;
+  --arc-cyan: #00f2fe;
 }
 
 @layer base {

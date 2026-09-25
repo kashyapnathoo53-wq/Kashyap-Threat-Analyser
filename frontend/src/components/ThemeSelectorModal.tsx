@@ -18,9 +18,18 @@ export interface ThemeOption {
 
 export const THEME_OPTIONS: ThemeOption[] = [
   {
+    id: 'carbon',
+    name: 'Monochrome Platinum (Default)',
+    subtitle: 'Sophisticated Obsidian Black, Charcoal Grey & Crisp White',
+    primaryColor: '#f4f4f5',
+    secondaryColor: '#ffffff',
+    glowColor: 'rgba(255, 255, 255, 0.40)',
+    previewClass: 'from-zinc-800/80 to-zinc-950 border-white/40'
+  },
+  {
     id: 'cyan',
-    name: 'Arc Cyan (Default)',
-    subtitle: 'Zero Orange • Electric Arc Blue & Deep Space Navy',
+    name: 'Arc Cyan',
+    subtitle: 'Electric Arc Blue & Deep Space Navy',
     primaryColor: '#06b6d4',
     secondaryColor: '#00f2fe',
     glowColor: 'rgba(6, 182, 212, 0.45)',
@@ -61,15 +70,6 @@ export const THEME_OPTIONS: ThemeOption[] = [
     secondaryColor: '#f87171',
     glowColor: 'rgba(239, 68, 68, 0.45)',
     previewClass: 'from-red-900/60 to-slate-950 border-red-500/50'
-  },
-  {
-    id: 'carbon',
-    name: 'Stealth Carbon',
-    subtitle: 'Minimalist Titanium Slate & Platinum Silver',
-    primaryColor: '#94a3b8',
-    secondaryColor: '#cbd5e1',
-    glowColor: 'rgba(148, 163, 184, 0.35)',
-    previewClass: 'from-slate-800/60 to-slate-950 border-slate-500/50'
   },
   {
     id: 'ironman',

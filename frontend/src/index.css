@@ -3,24 +3,44 @@
 @tailwind utilities;
 
 :root {
-  /* Default: Cyber Arc Cyan & Deep Space Navy (Sleek, Electric, 0% Orange) */
-  --cyber-bg: #030712;
-  --cyber-panel-bg: rgba(6, 15, 33, 0.90);
-  --cyber-card-bg: rgba(9, 22, 48, 0.76);
-  --cyber-border: rgba(6, 182, 212, 0.28);
-  --cyber-border-hover: rgba(6, 182, 212, 0.70);
-  --cyber-accent: #06b6d4;
-  --cyber-accent-light: #67e8f9;
-  --cyber-accent-dark: #0e7490;
-  --cyber-accent-glow: rgba(6, 182, 212, 0.45);
-  --cyber-glow-1: rgba(6, 182, 212, 0.22);
-  --cyber-glow-2: rgba(59, 130, 246, 0.20);
-  --cyber-glow-3: rgba(14, 116, 144, 0.16);
-  --cyber-grid: rgba(6, 182, 212, 0.04);
-  --cyber-card-glow: rgba(6, 182, 212, 0.25);
-  --cyber-laser: #00f2fe;
-  --cyber-laser-glow: #38bdf8;
-  --arc-cyan: #00f2fe;
+  /* Default: Sophisticated Obsidian Black, Refined Charcoal Grey & Crisp White */
+  --cyber-bg: #09090b;
+  --cyber-panel-bg: rgba(18, 18, 22, 0.92);
+  --cyber-card-bg: rgba(24, 24, 28, 0.80);
+  --cyber-border: rgba(255, 255, 255, 0.12);
+  --cyber-border-hover: rgba(255, 255, 255, 0.35);
+  --cyber-accent: #f4f4f5;
+  --cyber-accent-light: #ffffff;
+  --cyber-accent-dark: #a1a1aa;
+  --cyber-accent-glow: rgba(255, 255, 255, 0.35);
+  --cyber-glow-1: rgba(255, 255, 255, 0.10);
+  --cyber-glow-2: rgba(228, 228, 231, 0.08);
+  --cyber-glow-3: rgba(161, 161, 170, 0.05);
+  --cyber-grid: rgba(255, 255, 255, 0.03);
+  --cyber-card-glow: rgba(255, 255, 255, 0.12);
+  --cyber-laser: #ffffff;
+  --cyber-laser-glow: #e4e4e7;
+  --arc-cyan: #ffffff;
+}
+
+[data-theme="carbon"] {
+  --cyber-bg: #09090b;
+  --cyber-panel-bg: rgba(18, 18, 22, 0.92);
+  --cyber-card-bg: rgba(24, 24, 28, 0.80);
+  --cyber-border: rgba(255, 255, 255, 0.12);
+  --cyber-border-hover: rgba(255, 255, 255, 0.35);
+  --cyber-accent: #f4f4f5;
+  --cyber-accent-light: #ffffff;
+  --cyber-accent-dark: #a1a1aa;
+  --cyber-accent-glow: rgba(255, 255, 255, 0.35);
+  --cyber-glow-1: rgba(255, 255, 255, 0.10);
+  --cyber-glow-2: rgba(228, 228, 231, 0.08);
+  --cyber-glow-3: rgba(161, 161, 170, 0.05);
+  --cyber-grid: rgba(255, 255, 255, 0.03);
+  --cyber-card-glow: rgba(255, 255, 255, 0.12);
+  --cyber-laser: #ffffff;
+  --cyber-laser-glow: #e4e4e7;
+  --arc-cyan: #ffffff;
 }
 
 [data-theme="cyan"] {

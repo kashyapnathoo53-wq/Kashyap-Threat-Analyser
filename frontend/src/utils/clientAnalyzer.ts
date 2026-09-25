@@ -56,39 +56,46 @@ export async function analyzeFileClientSide(file: File): Promise<FullAnalysisRep
   const textDecoder = new TextDecoder('utf-8', { fatal: false });
   const rawText = textDecoder.decode(bytes.slice(0, Math.min(bytes.length, 100000)));
 
-  let fileType = 'PE32/64 Executable (Windows)';
+  let fileType = 'Binary / Data File';
   if (bytes[0] === 0x4D && bytes[1] === 0x5A) {
     fileType = 'PE32/64 Executable (Windows)';
   } else if (bytes[0] === 0x7F && bytes[1] === 0x45 && bytes[2] === 0x4C && bytes[3] === 0x46) {
-    fileType = 'ELF 64-bit LSB executable (Linux)';
+    fileType = 'ELF 64-bit Executable (Linux)';
+  } else if (bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46) {
+    fileType = 'PDF Document (Adobe Acrobat)';
+  } else if (bytes[0] === 0x50 && bytes[1] === 0x4B) {
+    fileType = 'Zip / Office OpenXML Archive';
   } else if (rawText.includes('<?php') || file.name.endsWith('.php')) {
     fileType = 'PHP WebShell Script';
-  } else if (rawText.includes('#!/bin') || rawText.includes('powershell') || file.name.endsWith('.ps1') || file.name.endsWith('.sh')) {
+  } else if (rawText.includes('#!/bin') || rawText.includes('powershell') || file.name.endsWith('.ps1') || file.name.endsWith('.sh') || file.name.endsWith('.bat')) {
     fileType = 'Command Script / Shellcode Payload';
-  } else if (bytes[0] === 0x50 && bytes[1] === 0x4B) {
-    fileType = 'Zip Compressed Archive';
+  } else if (file.name.endsWith('.exe') || file.name.endsWith('.dll')) {
+    fileType = 'PE32 Executable Binary';
+  } else if (file.name.endsWith('.py') || file.name.endsWith('.js')) {
+    fileType = 'Script Source Payload';
   }
 
   const isPacked = entropy > 7.1;
-  let threatScore = 25;
-  if (rawText.includes('VirtualAlloc') || rawText.includes('CreateRemoteThread')) threatScore += 30;
+  let threatScore = 20;
+  if (rawText.includes('VirtualAlloc') || rawText.includes('CreateRemoteThread') || rawText.includes('WriteProcessMemory')) threatScore += 35;
   if (isPacked) threatScore += 20;
-  if (rawText.includes('vssadmin') || rawText.includes('CryptEncrypt')) threatScore += 35;
-  threatScore = Math.min(96, Math.max(15, threatScore));
+  if (rawText.includes('vssadmin') || rawText.includes('CryptEncrypt') || rawText.includes('WMI') || rawText.includes('cmd.exe')) threatScore += 30;
+  if (file.name.toLowerCase().includes('malware') || file.name.toLowerCase().includes('virus') || file.name.toLowerCase().includes('payload') || file.name.toLowerCase().includes('trojan')) threatScore += 25;
+  threatScore = Math.min(98, Math.max(15, threatScore));
 
-  let verdict = 'BENIGN / CLEAN';
+  let verdict = 'BENIGN / UNARMED';
   let severity = 'LOW';
   let color = '#10b981';
   if (threatScore >= 75) {
-    verdict = 'MALICIOUS';
+    verdict = 'MALICIOUS / HIGH RISK';
     severity = 'CRITICAL';
     color = '#ef4444';
   } else if (threatScore >= 50) {
-    verdict = 'SUSPICIOUS';
+    verdict = 'SUSPICIOUS / PACKED';
     severity = 'HIGH';
     color = '#f59e0b';
   } else if (threatScore >= 30) {
-    verdict = 'LOW RISK';
+    verdict = 'LOW RISK / MODERATE';
     severity = 'MEDIUM';
     color = '#3b82f6';
   }
@@ -96,7 +103,7 @@ export async function analyzeFileClientSide(file: File): Promise<FullAnalysisRep
   // Deep clone baseline report
   const baseline: FullAnalysisReport = JSON.parse(JSON.stringify(FALLBACK_REPORTS['sample_wannacry']));
 
-  baseline.report_id = `client_${Date.now()}`;
+  baseline.report_id = 'client_' + Date.now();
   baseline.sample_name = file.name;
   baseline.timestamp = new Date().toISOString();
 
@@ -111,6 +118,14 @@ export async function analyzeFileClientSide(file: File): Promise<FullAnalysisRep
   baseline.threat_scoring.verdict = verdict;
   baseline.threat_scoring.severity = severity;
   baseline.threat_scoring.color = color;
+
+  baseline.ioc_extraction.iocs = [
+    { type: 'MD5', value: md5, category: 'File Hash', confidence: 99, threat_intel: {} },
+    { type: 'SHA-1', value: sha1, category: 'File Hash', confidence: 99, threat_intel: {} },
+    { type: 'SHA-256', value: sha256, category: 'File Hash', confidence: 99, threat_intel: {} },
+    ...baseline.ioc_extraction.iocs.filter(ioc => ioc.category !== 'File Hash')
+  ];
+  baseline.ioc_extraction.total_extracted = baseline.ioc_extraction.iocs.length;
 
   return baseline;
 }

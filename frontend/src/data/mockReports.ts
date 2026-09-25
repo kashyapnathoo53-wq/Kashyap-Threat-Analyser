@@ -2239,8 +2239,8 @@ export const FALLBACK_REPORTS: Record<string, any> = {
 
 export const FALLBACK_HOST_ASSESSMENT: any = {
   "host_info": {
-    "hostname": "CHOTU",
-    "os": "Windows 11 (10.0.26200)",
+    "hostname": "LOCAL-HOST-ENDPOINT",
+    "os": "Windows 11 / Client Host",
     "architecture": "AMD64",
     "timestamp": "2026-09-19T00:00:00Z",
     "scan_duration_ms": 107018.2

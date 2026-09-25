@@ -36,8 +36,8 @@ const THEME_PALETTES = {
     filament: '#ef4444'
   },
   carbon: {
-    particles: ['#94a3b8', '#cbd5e1', '#64748b', '#e2e8f0', '#475569'],
-    filament: '#94a3b8'
+    particles: ['#ffffff', '#f4f4f5', '#e4e4e7', '#a1a1aa', '#71717a'],
+    filament: 'rgba(255, 255, 255, 0.25)'
   },
   ironman: {
     particles: ['#00f2fe', '#ef4444', '#dc2626', '#38bdf8', '#fbbf24'],
@@ -45,7 +45,7 @@ const THEME_PALETTES = {
   }
 };
 
-export const CyberParticleCanvas: React.FC<Props> = ({ theme = 'cyan' }) => {
+export const CyberParticleCanvas: React.FC<Props> = ({ theme = 'carbon' }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {

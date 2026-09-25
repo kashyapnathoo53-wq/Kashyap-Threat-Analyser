@@ -19,6 +19,7 @@ import { FALLBACK_REPORTS, FALLBACK_HOST_ASSESSMENT } from './data/mockReports';
 import { analyzeFileClientSide } from './utils/clientAnalyzer';
 import { cyberAudio } from './utils/cyberAudio';
 import { jarvisVoice, JarvisSpeechState } from './utils/jarvisVoice';
+import { detectClientHostEnvironment } from './utils/clientHostAuditor';
 import { 
   Shield, ShieldAlert, Cpu, Terminal, Layers, Database, Code2, FileText, 
   Upload, AlertTriangle, MonitorCheck, Zap, Sparkles, Radio,
@@ -32,10 +33,10 @@ export type Theme = ThemeId;
 export const App: React.FC = () => {
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem('pasha_theme');
-    if (saved === 'amber' || saved === 'ironman' || !saved) {
-      return 'cyan';
+    if (saved === 'amber' || saved === 'ironman' || saved === 'cyan' || !saved) {
+      return 'carbon';
     }
-    return (saved as Theme) || 'cyan';
+    return (saved as Theme) || 'carbon';
   });
 
   const [customColor, setCustomColor] = useState<string | null>(() => {
@@ -97,7 +98,7 @@ export const App: React.FC = () => {
     document.documentElement.style.removeProperty('--cyber-accent-glow');
     document.documentElement.style.removeProperty('--cyber-border');
     document.documentElement.style.removeProperty('--cyber-laser');
-    setTheme('cyan');
+    setTheme('carbon');
   };
 
   const handleOpenTab = (tabId: string, e?: React.MouseEvent) => {
@@ -111,7 +112,7 @@ export const App: React.FC = () => {
   };
 
   const [report, setReport] = useState<FullAnalysisReport>(FALLBACK_REPORTS['sample_wannacry']);
-  const [hostAssessment, setHostAssessment] = useState<HostAssessment>(FALLBACK_HOST_ASSESSMENT);
+  const [hostAssessment, setHostAssessment] = useState<HostAssessment>(() => detectClientHostEnvironment());
   const [hostLoading, setHostLoading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>('host');
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -202,8 +203,8 @@ export const App: React.FC = () => {
     } finally {
       setHostLoading(false);
     }
-    // Instant fallback for Vercel
-    setHostAssessment(FALLBACK_HOST_ASSESSMENT);
+    // Dynamic client-side host assessment for visitor
+    setHostAssessment(detectClientHostEnvironment());
   };
 
   const simulateProgress = () => {
@@ -617,179 +618,206 @@ export const App: React.FC = () => {
 
       {/* Main Workspace */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6 relative z-10">
-        {/* Clean, Decluttered Executive Threat Hub */}
+        {/* Clean, Decluttered Executive Threat Hub - Centered Arc Reactor */}
         {!loading && report && (
-          <div className="glass-panel p-5 sm:p-6 rounded-3xl border border-cyan-500/30 relative overflow-hidden shadow-2xl bg-[#051024]/90">
-            {/* Subtle cyber background line */}
-            <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent pointer-events-none" />
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/[0.08] relative overflow-hidden shadow-2xl bg-zinc-950/85 backdrop-blur-xl">
+            {/* Subtle platinum cyber illumination */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] via-transparent to-transparent pointer-events-none" />
 
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
-              
-              {/* Left: Compact, Calibrated Arc Reactor & Primary Verdict */}
-              <div className="flex items-center gap-5 shrink-0">
-                <div className="relative w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center shrink-0">
-                  <div 
-                    className="absolute inset-1 rounded-full filter blur-xl opacity-50 pointer-events-none"
-                    style={{ 
-                      background: `radial-gradient(circle, #00f2fe 0%, #0284c7 45%, ${report.threat_scoring.color}40 70%, transparent 100%)` 
-                    }}
-                  />
-                  <svg 
-                    className="w-full h-full drop-shadow-[0_0_18px_rgba(0,242,254,0.6)] cursor-pointer select-none"
-                    viewBox="0 0 190 190"
-                    onClick={() => handleOpenTab('overview')}
-                  >
-                    <defs>
-                      <filter id="arcGlowHub" x="-30%" y="-30%" width="160%" height="160%">
-                        <feGaussianBlur stdDeviation="3.5" result="glow" />
-                        <feMerge>
-                          <feMergeNode in="glow" />
-                          <feMergeNode in="SourceGraphic" />
-                        </feMerge>
-                      </filter>
-                    </defs>
+            {/* Top: Centered Verdict Header */}
+            <div className="text-center space-y-2 mb-4 relative z-10 max-w-2xl mx-auto">
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <span 
+                  className="px-3 py-1 rounded-full text-[11px] font-mono font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
+                  style={{ 
+                    backgroundColor: `${report.threat_scoring.color}20`, 
+                    color: report.threat_scoring.color, 
+                    border: `1px solid ${report.threat_scoring.color}50` 
+                  }}
+                >
+                  <ShieldAlert className="w-3.5 h-3.5" />
+                  {report.threat_scoring.severity}
+                </span>
+                <span className="text-xs font-mono text-zinc-300 font-bold px-2.5 py-0.5 rounded-lg bg-zinc-900/90 border border-white/[0.08]">
+                  {report.sample_name}
+                </span>
+                <span className="text-xs font-mono text-zinc-400">
+                  {report.threat_scoring.confidence ?? 98}% Confidence
+                </span>
+              </div>
 
-                    {/* Outer Reticle */}
-                    <circle cx="95" cy="95" r="90" fill="none" stroke="#00f2fe" strokeWidth="1.2" strokeOpacity="0.3" />
-                    <circle cx="95" cy="95" r="84" fill="none" stroke="#00f2fe" strokeWidth="2.5" strokeOpacity="0.7" strokeDasharray="6 4" />
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight">
+                {report.threat_scoring.verdict}
+              </h2>
 
-                    {/* Rotating Stator Ring */}
-                    <g className="animate-spin-slow origin-center">
-                      <circle cx="95" cy="95" r="72" fill="none" stroke="#0284c7" strokeWidth="4" strokeOpacity="0.6" strokeDasharray="14 8" />
-                      {coils.map((deg, i) => (
-                        <rect
-                          key={i}
-                          x="92"
-                          y="18"
-                          width="6"
-                          height="12"
-                          rx="2"
-                          fill="#00f2fe"
-                          transform={`rotate(${deg} 95 95)`}
-                          filter="url(#arcGlowHub)"
-                          opacity="0.9"
-                        />
-                      ))}
+              <p className="text-xs text-zinc-400 max-w-lg mx-auto line-clamp-2">
+                Consensus synthesized from Shannon entropy, Win32 syscall hooks, and MITRE ATT&amp;CK tactics.
+              </p>
+            </div>
+
+            {/* Middle: Centered, Larger Arc Reactor */}
+            <div className="flex justify-center items-center my-6 relative z-10">
+              <div className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-60 md:h-60 flex items-center justify-center">
+                {/* Arc Reactor Bloom & Radial Energy */}
+                <div 
+                  className="absolute inset-2 rounded-full filter blur-2xl opacity-40 pointer-events-none transition-all duration-700"
+                  style={{ 
+                    background: `radial-gradient(circle, #ffffff 0%, #a1a1aa 35%, ${report.threat_scoring.color}40 70%, transparent 100%)` 
+                  }}
+                />
+
+                <svg 
+                  className="w-full h-full drop-shadow-[0_0_25px_rgba(255,255,255,0.35)] cursor-pointer select-none transition-transform duration-300 hover:scale-105"
+                  viewBox="0 0 190 190"
+                  onClick={() => handleOpenTab('overview')}
+                >
+                  <defs>
+                    <filter id="arcGlowHub" x="-30%" y="-30%" width="160%" height="160%">
+                      <feGaussianBlur stdDeviation="3.5" result="glow" />
+                      <feMerge>
+                        <feMergeNode in="glow" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                    <radialGradient id="arcCoreGrad" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#ffffff" />
+                      <stop offset="40%" stopColor="#f4f4f5" />
+                      <stop offset="70%" stopColor="#a1a1aa" />
+                      <stop offset="100%" stopColor="#18181b" />
+                    </radialGradient>
+                  </defs>
+
+                  {/* Gunmetal Outer Chassis Ring */}
+                  <circle cx="95" cy="95" r="91" fill="none" stroke="#27272a" strokeWidth="2" />
+                  <circle cx="95" cy="95" r="87" fill="#09090b" stroke="#3f3f46" strokeWidth="2.5" strokeOpacity="0.8" strokeDasharray="6 4" />
+
+                  {/* 10 Arc Reactor Toroidal Electromagnet Coils */}
+                  {coils.map((deg, i) => (
+                    <g key={i} transform={`rotate(${deg} 95 95)`}>
+                      <rect
+                        x="91"
+                        y="12"
+                        width="8"
+                        height="16"
+                        rx="2"
+                        fill="#18181b"
+                        stroke="#71717a"
+                        strokeWidth="1.2"
+                      />
+                      <line x1="92" y1="16" x2="98" y2="16" stroke="#d4d4d8" strokeWidth="1.2" />
+                      <line x1="92" y1="20" x2="98" y2="20" stroke="#a1a1aa" strokeWidth="1.2" />
+                      <line x1="92" y1="24" x2="98" y2="24" stroke="#d4d4d8" strokeWidth="1.2" />
                     </g>
+                  ))}
 
-                    {/* Inner Core */}
-                    <circle cx="95" cy="95" r="54" fill="#040d1e" stroke="#00f2fe" strokeWidth="3" strokeOpacity="0.8" />
-                    <circle cx="95" cy="95" r="46" fill="#020817" stroke="#38bdf8" strokeWidth="1.5" strokeOpacity="0.9" strokeDasharray="4 3" />
+                  {/* Rotating Stator Ring */}
+                  <g className="animate-spin-slow origin-center" style={{ transformOrigin: '95px 95px' }}>
+                    <circle cx="95" cy="95" r="70" fill="none" stroke="#71717a" strokeWidth="3" strokeOpacity="0.7" strokeDasharray="14 7" />
+                    <circle cx="95" cy="25" r="2.5" fill="#ffffff" filter="url(#arcGlowHub)" />
+                    <circle cx="165" cy="95" r="2.5" fill="#ffffff" filter="url(#arcGlowHub)" />
+                    <circle cx="95" cy="165" r="2.5" fill="#ffffff" filter="url(#arcGlowHub)" />
+                    <circle cx="25" cy="95" r="2.5" fill="#ffffff" filter="url(#arcGlowHub)" />
+                  </g>
 
-                    {/* Score Text */}
-                    <text 
-                      x="95" 
-                      y="98" 
-                      textAnchor="middle" 
-                      fill="#ffffff" 
-                      fontSize="20" 
-                      fontWeight="900" 
-                      fontFamily="monospace"
-                      filter="drop-shadow(0 0 4px #00f2fe)"
-                    >
-                      {report.threat_scoring.threat_score}
-                    </text>
-                    <text 
-                      x="95" 
-                      y="112" 
-                      textAnchor="middle" 
-                      fill="#38bdf8" 
-                      fontSize="9" 
-                      fontWeight="800" 
-                      fontFamily="monospace"
-                    >
-                      /100
-                    </text>
-                  </svg>
+                  {/* Luminous Inner Arc Flux Ring */}
+                  <circle cx="95" cy="95" r="56" fill="#09090b" stroke="#e4e4e7" strokeWidth="3" strokeOpacity="0.9" filter="url(#arcGlowHub)" />
+                  <circle cx="95" cy="95" r="48" fill="#18181b" stroke="#a1a1aa" strokeWidth="1.5" strokeOpacity="0.8" strokeDasharray="5 3" />
+
+                  {/* Central Threat Score */}
+                  <text 
+                    x="95" 
+                    y="96" 
+                    textAnchor="middle" 
+                    fill="#ffffff" 
+                    fontSize="24" 
+                    fontWeight="900" 
+                    fontFamily="monospace"
+                    filter="drop-shadow(0 0 6px rgba(255,255,255,0.7))"
+                  >
+                    {report.threat_scoring.threat_score}
+                  </text>
+                  <text 
+                    x="95" 
+                    y="114" 
+                    textAnchor="middle" 
+                    fill="#a1a1aa" 
+                    fontSize="10" 
+                    fontWeight="800" 
+                    fontFamily="monospace"
+                  >
+                    /100 THREAT
+                  </text>
+                </svg>
+              </div>
+            </div>
+
+            {/* Bottom: Clean Symmetrical Vitals & Quick Actions */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 relative z-10 pt-2 font-mono text-xs">
+              
+              {/* Card 1: Visitor Host Health */}
+              <div 
+                onClick={() => handleOpenTab('host')}
+                className="bg-zinc-900/80 hover:bg-zinc-800/90 p-3.5 rounded-2xl border border-white/[0.08] hover:border-zinc-500/50 transition cursor-pointer text-center group shadow-md"
+                title="Click to view Visitor Host Security Assessment"
+              >
+                <div className="text-[10px] text-zinc-400 group-hover:text-zinc-200 transition flex items-center justify-center gap-1">
+                  <MonitorCheck className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>Host Integrity</span>
                 </div>
-
-                {/* Verdict Meta */}
-                <div className="space-y-1.5 text-left">
-                  <div className="flex items-center gap-2">
-                    <span 
-                      className="px-2.5 py-0.5 rounded-lg text-[11px] font-mono font-black uppercase tracking-wider flex items-center gap-1 shadow-sm"
-                      style={{ 
-                        backgroundColor: `${report.threat_scoring.color}25`, 
-                        color: report.threat_scoring.color, 
-                        border: `1px solid ${report.threat_scoring.color}50` 
-                      }}
-                    >
-                      <ShieldAlert className="w-3 h-3" />
-                      {report.threat_scoring.severity}
-                    </span>
-                    <span className="text-[11px] font-mono text-cyan-300 font-bold truncate max-w-[160px]">
-                      {report.sample_name}
-                    </span>
-                  </div>
-
-                  <h2 className="text-base sm:text-lg font-black text-white leading-tight">
-                    {report.threat_scoring.verdict}
-                  </h2>
-
-                  <p className="text-xs text-slate-300 max-w-sm line-clamp-2">
-                    Consensus synthesized from Shannon entropy, Win32 syscall hooks, and MITRE ATT&amp;CK tactics.
-                  </p>
+                <div className="text-lg font-black text-white mt-1">
+                  {hostAssessment?.health_score ?? 100}/100
+                </div>
+                <div className="text-[10px] text-emerald-400 font-bold mt-0.5 flex items-center justify-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                  <span>{hostAssessment?.status || 'OPTIMAL'}</span>
+                  <span className="text-zinc-500 text-[9px]">({hostAssessment?.host_info?.os?.split(' ')[0] || 'Browser'})</span>
                 </div>
               </div>
 
-              {/* Center: 3 Primary Essential Vitals (Clean KPI Cards) */}
-              <div className="grid grid-cols-3 gap-2.5 w-full lg:w-auto font-mono text-xs">
-                
-                {/* Vital 1: Host Health */}
-                <div 
-                  onClick={() => handleOpenTab('host')}
-                  className="bg-[#071630]/90 hover:bg-[#0b2146] p-3 rounded-2xl border border-cyan-500/25 hover:border-cyan-400/60 transition cursor-pointer text-center group shadow-md"
-                  title="Click to view System Assessment"
-                >
-                  <div className="text-[10px] text-slate-400 group-hover:text-cyan-300 transition">Host Health</div>
-                  <div className="text-base font-black text-cyan-200 mt-0.5">
-                    {hostAssessment?.health_score ?? 100}/100
-                  </div>
-                  <div className="text-[9px] text-emerald-400 font-bold mt-0.5 flex items-center justify-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
-                    {hostAssessment?.status || 'OPTIMAL'}
-                  </div>
+              {/* Card 2: Extracted Forensic IOCs */}
+              <div 
+                onClick={() => handleOpenTab('iocs')}
+                className="bg-zinc-900/80 hover:bg-zinc-800/90 p-3.5 rounded-2xl border border-white/[0.08] hover:border-zinc-500/50 transition cursor-pointer text-center group shadow-md"
+                title="Click to view Extracted IOCs"
+              >
+                <div className="text-[10px] text-zinc-400 group-hover:text-zinc-200 transition flex items-center justify-center gap-1">
+                  <Database className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>Forensic IOCs</span>
                 </div>
-
-                {/* Vital 2: Extracted IOCs */}
-                <div 
-                  onClick={() => handleOpenTab('iocs')}
-                  className="bg-[#071630]/90 hover:bg-[#0b2146] p-3 rounded-2xl border border-cyan-500/25 hover:border-cyan-400/60 transition cursor-pointer text-center group shadow-md"
-                  title="Click to view Extracted IOCs"
-                >
-                  <div className="text-[10px] text-slate-400 group-hover:text-cyan-300 transition">Forensic IOCs</div>
-                  <div className="text-base font-black text-sky-200 mt-0.5">
-                    {report.ioc_extraction.total_extracted}
-                  </div>
-                  <div className="text-[9px] text-sky-400 font-bold mt-0.5">
-                    {report.ioc_extraction.summary_by_category?.['Network C2'] || 0} C2 IPs
-                  </div>
+                <div className="text-lg font-black text-white mt-1">
+                  {report.ioc_extraction.total_extracted}
                 </div>
-
-                {/* Vital 3: Engine Latency */}
-                <div 
-                  onClick={() => handleOpenTab('static')}
-                  className="bg-[#071630]/90 hover:bg-[#0b2146] p-3 rounded-2xl border border-cyan-500/25 hover:border-cyan-400/60 transition cursor-pointer text-center group shadow-md"
-                  title="Click to view Static Analysis"
-                >
-                  <div className="text-[10px] text-slate-400 group-hover:text-cyan-300 transition">Execution</div>
-                  <div className="text-base font-black text-teal-200 mt-0.5">
-                    {(report as any).analysis_duration_ms || 18}ms
-                  </div>
-                  <div className="text-[9px] text-teal-400 font-bold mt-0.5">
-                    ZERO-LAG
-                  </div>
+                <div className="text-[10px] text-zinc-400 font-bold mt-0.5">
+                  {report.ioc_extraction.summary_by_category?.['Network C2'] || 0} C2 IPs &bull; Hashes Extracted
                 </div>
               </div>
 
-              {/* Right: Quick J.A.R.V.I.S. Audio & Chat Actions */}
-              <div className="flex flex-row lg:flex-col gap-2 w-full lg:w-44 shrink-0">
+              {/* Card 3: Deep Scan Latency */}
+              <div 
+                onClick={() => handleOpenTab('static')}
+                className="bg-zinc-900/80 hover:bg-zinc-800/90 p-3.5 rounded-2xl border border-white/[0.08] hover:border-zinc-500/50 transition cursor-pointer text-center group shadow-md"
+                title="Click to view Static Analysis"
+              >
+                <div className="text-[10px] text-zinc-400 group-hover:text-zinc-200 transition flex items-center justify-center gap-1">
+                  <Zap className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>Scan Latency</span>
+                </div>
+                <div className="text-lg font-black text-white mt-1">
+                  {(report as any).analysis_duration_ms || 18}ms
+                </div>
+                <div className="text-[10px] text-zinc-400 font-bold mt-0.5">
+                  ZERO-LAG PIPELINE
+                </div>
+              </div>
+
+              {/* Card 4: J.A.R.V.I.S. Audio & AI Actions */}
+              <div className="bg-zinc-900/80 p-2 rounded-2xl border border-white/[0.08] flex flex-col justify-center gap-1.5 shadow-md">
                 <button
                   onClick={handleToggleVoiceBriefing}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold font-mono transition cursor-pointer border shadow-sm ${
+                  className={`w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold font-mono transition cursor-pointer border ${
                     speechState.isSpeaking
-                      ? 'bg-cyan-950 text-cyan-300 border-cyan-400/70 shadow-cyan-950/60'
-                      : 'bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white border-white/[0.1] hover:border-cyan-500/40'
+                      ? 'bg-zinc-800 text-white border-zinc-400 shadow-sm'
+                      : 'bg-zinc-950/80 hover:bg-zinc-800 text-zinc-200 hover:text-white border-white/[0.1] hover:border-zinc-500'
                   }`}
                   title="Listen to J.A.R.V.I.S. Audio Briefing"
                 >
@@ -800,7 +828,7 @@ export const App: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <Volume2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      <Volume2 className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
                       <span>Audio Briefing</span>
                     </>
                   )}
@@ -808,24 +836,24 @@ export const App: React.FC = () => {
 
                 <button
                   onClick={() => handleOpenJarvisChat()}
-                  className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 hover:from-cyan-600/35 hover:to-blue-600/35 text-cyan-300 hover:text-white border border-cyan-500/40 hover:border-cyan-400 rounded-xl text-xs font-bold font-mono transition cursor-pointer shadow-sm"
+                  className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-zinc-800/80 hover:bg-zinc-700/80 text-white border border-white/[0.12] hover:border-white/30 rounded-xl text-xs font-bold font-mono transition cursor-pointer shadow-sm"
                   title="Ask J.A.R.V.I.S. questions about malware eradication"
                 >
-                  <MessageSquare className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <MessageSquare className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
                   <span>Ask J.A.R.V.I.S.</span>
                 </button>
               </div>
             </div>
 
             {/* Collapsible Toggle for Deep Telemetry & Technical Specs */}
-            <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
-              <span className="text-[11px] font-mono text-cyan-300/80 truncate max-w-md hidden sm:inline">
+            <div className="mt-5 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
+              <span className="text-[11px] font-mono text-zinc-400 truncate max-w-md hidden sm:inline">
                 {telemetryFeed[telemetryIndex]}
               </span>
 
               <button
                 onClick={() => setShowAdvancedSpecs(prev => !prev)}
-                className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-slate-400 hover:text-cyan-300 transition cursor-pointer ml-auto"
+                className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-zinc-400 hover:text-zinc-200 transition cursor-pointer ml-auto"
               >
                 <span>{showAdvancedSpecs ? 'Collapse Advanced Specs' : 'Show Advanced Specs & Telemetry'}</span>
                 {showAdvancedSpecs ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -834,26 +862,32 @@ export const App: React.FC = () => {
 
             {/* Expandable Advanced Telemetry Specs Drawer */}
             {showAdvancedSpecs && (
-              <div className="mt-3 pt-3 border-t border-cyan-900/30 grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs animate-fadeIn">
-                <div className="bg-slate-950/70 p-2.5 rounded-xl border border-white/[0.05]">
-                  <div className="text-[10px] text-slate-400">Entropy Metric</div>
-                  <div className="text-cyan-300 font-bold mt-0.5">5.248 bit/B</div>
-                  <div className="text-[9px] text-emerald-400">UNPACKED</div>
+              <div className="mt-3 pt-3 border-t border-zinc-800/60 grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs animate-fadeIn">
+                <div className="bg-zinc-900/70 p-2.5 rounded-xl border border-white/[0.05]">
+                  <div className="text-[10px] text-zinc-400">Entropy Metric</div>
+                  <div className="text-zinc-200 font-bold mt-0.5">
+                    {report.static_analysis?.file_info?.entropy != null 
+                      ? `${report.static_analysis.file_info.entropy.toFixed(2)} / 8.00`
+                      : '5.25 / 8.00'}
+                  </div>
+                  <div className="text-[9px] text-emerald-400">
+                    {(report.static_analysis?.file_info?.entropy ?? 5.25) > 7.0 ? 'PACKED / OBFUSCATED' : 'UNPACKED'}
+                  </div>
                 </div>
-                <div className="bg-slate-950/70 p-2.5 rounded-xl border border-white/[0.05]">
-                  <div className="text-[10px] text-slate-400">Unibeam Flux</div>
-                  <div className="text-cyan-300 font-bold mt-0.5">3.14 GJ/s</div>
-                  <div className="text-[9px] text-cyan-400">PALLADIUM CORE</div>
+                <div className="bg-zinc-900/70 p-2.5 rounded-xl border border-white/[0.05]">
+                  <div className="text-[10px] text-zinc-400">Threat Vectors</div>
+                  <div className="text-zinc-200 font-bold mt-0.5">{report.mitre_mapping?.tactics?.length ?? 5} MITRE Tactics</div>
+                  <div className="text-[9px] text-zinc-400">ATT&amp;CK MATRIX</div>
                 </div>
-                <div className="bg-slate-950/70 p-2.5 rounded-xl border border-white/[0.05]">
-                  <div className="text-[10px] text-slate-400">Confidence Score</div>
-                  <div className="text-cyan-300 font-bold mt-0.5">96.4%</div>
+                <div className="bg-zinc-900/70 p-2.5 rounded-xl border border-white/[0.05]">
+                  <div className="text-[10px] text-zinc-400">Confidence Score</div>
+                  <div className="text-zinc-200 font-bold mt-0.5">{report.threat_scoring?.confidence ?? 98}%</div>
                   <div className="text-[9px] text-emerald-400">VERIFIED ATT&amp;CK</div>
                 </div>
-                <div className="bg-slate-950/70 p-2.5 rounded-xl border border-white/[0.05]">
-                  <div className="text-[10px] text-slate-400">Active YARA Rules</div>
-                  <div className="text-cyan-300 font-bold mt-0.5">14 Compiled</div>
-                  <div className="text-[9px] text-cyan-400">SURICATA / MISP</div>
+                <div className="bg-zinc-900/70 p-2.5 rounded-xl border border-white/[0.05]">
+                  <div className="text-[10px] text-zinc-400">Active YARA Rules</div>
+                  <div className="text-zinc-200 font-bold mt-0.5">{report.yara_scan?.match_count ?? 14} Matches</div>
+                  <div className="text-[9px] text-zinc-400">SURICATA / MISP</div>
                 </div>
               </div>
             )}

@@ -18,13 +18,14 @@ import { JarvisChatModal } from './components/JarvisChatModal';
 import { FALLBACK_REPORTS, FALLBACK_HOST_ASSESSMENT } from './data/mockReports';
 import { analyzeFileClientSide } from './utils/clientAnalyzer';
 import { cyberAudio } from './utils/cyberAudio';
+import { jarvisVoice, JarvisSpeechState } from './utils/jarvisVoice';
 import { 
   Shield, ShieldAlert, Cpu, Terminal, Layers, Database, Code2, FileText, 
-  Upload, RefreshCw, Activity, AlertTriangle, MonitorCheck, Zap, 
-  Sparkles, Globe2, Radio, Server, CheckCircle2, ChevronRight, Lock,
-  Volume2, VolumeX, Palette, ArrowUpRight, Flame, Bot, MessageSquare, Sliders
+  Upload, AlertTriangle, MonitorCheck, Zap, Sparkles, Radio,
+  Volume2, VolumeX, Palette, ArrowUpRight, Bot, MessageSquare, Sliders,
+  ChevronDown, ChevronUp, Play, Pause
 } from 'lucide-react';
-import { ThemeSelectorModal, ThemeId, THEME_OPTIONS } from './components/ThemeSelectorModal';
+import { ThemeSelectorModal, ThemeId } from './components/ThemeSelectorModal';
 
 export type Theme = ThemeId;
 
@@ -42,8 +43,27 @@ export const App: React.FC = () => {
   });
 
   const [showThemeModal, setShowThemeModal] = useState<boolean>(false);
+  const [showToolsDropdown, setShowToolsDropdown] = useState<boolean>(false);
+  const [showJarvisDropdown, setShowJarvisDropdown] = useState<boolean>(false);
+  const [showMoreToolsDropdown, setShowMoreToolsDropdown] = useState<boolean>(false);
+  const [showAdvancedSpecs, setShowAdvancedSpecs] = useState<boolean>(false);
+  const [showTerminal, setShowTerminal] = useState<boolean>(false);
 
   const workspaceRef = useRef<HTMLDivElement | null>(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-dropdown]')) {
+        setShowToolsDropdown(false);
+        setShowJarvisDropdown(false);
+        setShowMoreToolsDropdown(false);
+      }
+    };
+    window.addEventListener('click', handleOutsideClick);
+    return () => window.removeEventListener('click', handleOutsideClick);
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -83,6 +103,7 @@ export const App: React.FC = () => {
   const handleOpenTab = (tabId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     setActiveTab(tabId);
+    setShowMoreToolsDropdown(false);
     cyberAudio.playTabSwitch();
     setTimeout(() => {
       workspaceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -97,11 +118,30 @@ export const App: React.FC = () => {
   const [showJarvisModal, setShowJarvisModal] = useState<boolean>(false);
   const [showChatModal, setShowChatModal] = useState<boolean>(false);
   const [chatInitialPrompt, setChatInitialPrompt] = useState<string>('');
+  const [speechState, setSpeechState] = useState<JarvisSpeechState>(jarvisVoice.getState());
+
+  useEffect(() => {
+    return jarvisVoice.subscribe(setSpeechState);
+  }, []);
 
   const handleOpenJarvisChat = (prompt?: string) => {
     setChatInitialPrompt(prompt || '');
     setShowChatModal(true);
+    setShowJarvisDropdown(false);
   };
+
+  const handleToggleVoiceBriefing = () => {
+    cyberAudio.playClick();
+    if (speechState.isSpeaking && !speechState.isPaused) {
+      jarvisVoice.pause();
+    } else if (speechState.isPaused) {
+      jarvisVoice.resume();
+    } else {
+      const script = jarvisVoice.generateFullScript(report, hostAssessment);
+      jarvisVoice.speak(script, 'full');
+    }
+  };
+
   const [isMuted, setIsMuted] = useState<boolean>(cyberAudio.getIsMuted());
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingPhase, setLoadingPhase] = useState<string>('Initializing forensic pipeline...');
@@ -298,206 +338,261 @@ export const App: React.FC = () => {
     }
   };
 
+  // Secondary Forensic Tools grouped into dropdown
+  const SECONDARY_TOOLS = [
+    { id: 'static', label: 'Static Analysis', icon: Cpu, desc: 'PE headers, entropy & strings' },
+    { id: 'mitre', label: 'MITRE ATT&CK', icon: Layers, desc: 'TTP matrix & techniques' },
+    { id: 'iocs', label: 'Extracted IOCs', icon: Database, desc: 'IPs, hashes & STIX 2.1' },
+    { id: 'yara', label: 'YARA Workbench', icon: Code2, desc: 'Signatures & rule compiler' }
+  ];
+
+  const activeSecondaryTool = SECONDARY_TOOLS.find(t => t.id === activeTab);
+  const isSecondaryActive = Boolean(activeSecondaryTool);
+
+  const coils = [0, 36, 72, 108, 144, 180, 216, 252, 288, 324];
+
   return (
     <div className="min-h-screen cyber-bg text-slate-100 font-sans flex flex-col selection:bg-cyan-500 selection:text-slate-950 relative overflow-hidden">
       {/* Interactive 60fps Cyber Particle & Filament Canvas */}
       <CyberParticleCanvas theme={theme} />
 
-      {/* Topmost Enterprise Status Bar in Iron Man Stark Armor Grid */}
-      <div className="bg-[#0b0304]/95 border-b border-amber-900/40 px-4 py-1.5 text-[11px] font-mono flex flex-wrap items-center justify-between text-slate-400 gap-2 relative z-20">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-amber-400 font-black bg-red-950/80 px-2 py-0.5 rounded border border-amber-500/50 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping inline-block" />
-            AUTONOMOUS DEFENSE GRID MK-85
-          </span>
-
-          {/* Equalizer Live Activity Bars */}
-          <div className="flex items-center gap-0.5 h-4 px-1" title="Real-time telemetry stream active">
-            <span className="w-0.5 bg-cyan-400 rounded-full animate-bar-1" />
-            <span className="w-0.5 bg-sky-300 rounded-full animate-bar-2" />
-            <span className="w-0.5 bg-blue-500 rounded-full animate-bar-3" />
-            <span className="w-0.5 bg-teal-400 rounded-full animate-bar-4" />
-            <span className="w-0.5 bg-cyan-500 rounded-full animate-bar-5" />
-          </div>
-
-          <span className="hidden md:inline text-cyan-300 font-semibold transition-all duration-500">
-            {telemetryFeed[telemetryIndex]}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2.5">
-          {/* Dynamic Theme Palette Switcher & Color Customizer Trigger */}
-          <div className="flex items-center bg-slate-950/90 border border-white/[0.08] p-0.5 rounded-lg text-[10px] font-mono gap-1">
-            <button
-              onClick={() => {
-                cyberAudio.playClick();
-                setShowThemeModal(true);
-              }}
-              className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-cyan-950/80 hover:bg-cyan-900/80 text-cyan-300 border border-cyan-500/40 hover:border-cyan-400 font-bold transition cursor-pointer shadow-sm"
-              title="Open Theme Studio & Color Customizer"
+      {/* Sleek, Single Unified Navigation Header */}
+      <header className="glass-panel sticky top-0 z-40 border-b border-cyan-500/20 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between gap-4">
+          
+          {/* Brand & Live Defense Indicator */}
+          <div className="flex items-center gap-3">
+            <div 
+              className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 p-[1.5px] cursor-pointer shadow-md shadow-cyan-950/60 transition hover:scale-105"
+              onClick={() => setShowThemeModal(true)}
+              title="Customize Theme & Colors"
             >
-              <Palette className="w-3 h-3 text-cyan-400 animate-spin-slow" />
-              <span>THEMES</span>
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: customColor || '#06b6d4' }} />
-            </button>
-
-            <div className="hidden sm:flex items-center gap-0.5">
-              {[
-                { id: 'cyan', label: 'CYAN', color: '#06b6d4' },
-                { id: 'cobalt', label: 'COBALT', color: '#3b82f6' },
-                { id: 'emerald', label: 'MATRIX', color: '#10b981' },
-                { id: 'violet', label: 'VIOLET', color: '#a855f7' },
-                { id: 'crimson', label: 'RED', color: '#ef4444' },
-                { id: 'carbon', label: 'CARBON', color: '#94a3b8' },
-              ].map(t => (
-                <button
-                  key={t.id}
-                  onClick={() => {
-                    setCustomColor(null);
-                    localStorage.removeItem('pasha_custom_color');
-                    setTheme(t.id as Theme);
-                    cyberAudio.playClick();
-                  }}
-                  className={`px-1.5 py-0.5 rounded flex items-center gap-1 transition cursor-pointer ${
-                    theme === t.id && !customColor
-                      ? 'bg-white/15 text-white border border-white/30 font-black shadow-sm' 
-                      : 'text-slate-400 hover:text-slate-200'
-                  }`}
-                  title={`Switch theme to ${t.label}`}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: t.color }} />
-                  <span>{t.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <span className="hidden sm:inline text-slate-700 font-bold">|</span>
-
-          {/* Audio Synthesizer Toggle */}
-          <button
-            onClick={() => {
-              const muted = cyberAudio.toggleMute();
-              setIsMuted(muted);
-            }}
-            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border text-[10px] font-mono font-bold transition cursor-pointer bg-slate-900/80 border-cyan-500/30 hover:bg-slate-800 text-cyan-300 hover:text-white shadow-sm"
-            title="Toggle Synthesized Sci-Fi Sound FX"
-          >
-            {isMuted ? <VolumeX className="w-3.5 h-3.5 text-slate-400" /> : <Volume2 className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />}
-            <span className="hidden sm:inline">JARVIS AUDIO: {isMuted ? 'MUTED' : 'ONLINE'}</span>
-          </button>
-          <span className="hidden sm:inline text-slate-700 font-bold">|</span>
-          <span className="hidden sm:inline text-slate-400">ARMOR: <strong className="text-cyan-300">{hostAssessment?.host_info?.hostname || 'SUIT_ONLINE'}</strong></span>
-          <span className="hidden sm:inline text-slate-700 font-bold">|</span>
-          <span className="text-cyan-400 font-mono font-bold text-[11px] flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block animate-pulse" />
-            {currentTime} UTC
-          </span>
-        </div>
-      </div>
-
-      {/* Main Command Header in High-Tech Cyber Aesthetic */}
-      <header className="glass-panel sticky top-0 z-40 border-b border-cyan-500/20">
-        <div className="max-w-7xl mx-auto px-4 py-3.5 flex justify-between items-center gap-4">
-          {/* Brand & Logo */}
-          <div className="flex items-center gap-3.5">
-            <div className="relative group cursor-pointer" onClick={() => setShowThemeModal(true)} title="Click to customize theme & colors">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 via-sky-500 to-blue-600 p-[1.5px] shadow-lg shadow-cyan-950/80 transition-transform duration-300 group-hover:scale-105">
-                <div className="w-full h-full bg-[#040d1e] rounded-2xl flex items-center justify-center">
-                  <Shield className="w-6 h-6 text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]" />
-                </div>
+              <div className="w-full h-full bg-[#040d1e] rounded-[10px] flex items-center justify-center">
+                <Shield className="w-5 h-5 text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]" />
               </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-cyan-400 border-2 border-slate-950 animate-pulse" />
             </div>
 
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-black tracking-widest text-white flex items-center gap-2">
-                  <span className="gradient-text-arc font-black tracking-widest">PASHA</span>
-                </h1>
+                <span className="text-lg font-black tracking-wider text-white">PASHA</span>
+                <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono text-cyan-400 bg-cyan-950/70 px-2 py-0.5 rounded-full border border-cyan-800/60">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                  DEFENSE GRID ACTIVE
+                </span>
               </div>
-              <p className="text-xs text-slate-400 font-medium">
+              <p className="text-[11px] text-slate-400 font-medium hidden md:block">
                 Autonomous Threat Reversing &amp; Deep Behavioral Sandboxing
               </p>
             </div>
           </div>
 
-          {/* Quick Actions & Live Counters */}
-          <div className="flex items-center gap-3">
-            {hostAssessment && (
-              <button 
-                onClick={() => handleOpenTab('host')}
-                className="hidden lg:flex items-center gap-2.5 bg-[#040d1e]/90 hover:bg-[#071630] px-3.5 py-2 rounded-xl border border-cyan-900/50 hover:border-cyan-400/50 transition shadow-inner group cursor-pointer"
-              >
-                <MonitorCheck className="w-4 h-4 text-emerald-400 group-hover:animate-bounce" />
-                <div className="text-left text-xs">
-                  <div className="text-[10px] text-slate-400 leading-none">Endpoint Health</div>
-                  <div className="font-mono font-black text-slate-200 leading-tight">
-                    {hostAssessment.health_score}/100 
-                    <span className="text-[10px] ml-1 font-bold" style={{ color: hostAssessment.status_color }}>
-                      ({hostAssessment.status})
-                    </span>
-                  </div>
-                </div>
-              </button>
-            )}
-
-            {report && (
-              <button 
-                onClick={() => handleOpenTab('overview')}
-                className="hidden md:flex items-center gap-2.5 bg-[#040d1e]/90 hover:bg-[#071630] px-3.5 py-2 rounded-xl border border-cyan-900/50 hover:border-cyan-400/50 text-xs font-mono shadow-inner transition cursor-pointer"
-                title="Click to view Executive Overview"
-              >
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: report.threat_scoring.color }} />
-                <div className="text-left">
-                  <div className="text-[10px] text-slate-400 leading-none">Sample</div>
-                  <div className="font-bold text-cyan-200 max-w-[130px] truncate leading-tight" title={report.sample_name}>
-                    {report.sample_name}
-                  </div>
-                </div>
-                {(report as any).analysis_duration_ms && (
-                  <span className="text-[10px] text-slate-400 border-l border-cyan-900/60 pl-2 flex items-center gap-1">
-                    <Zap className="w-3 h-3 text-cyan-400" />
-                    {(report as any).analysis_duration_ms}ms
-                  </span>
-                )}
-              </button>
-            )}
-
-            <button
-              onClick={() => {
-                cyberAudio.playClick();
-                setShowJarvisModal(true);
-              }}
-              className="flex items-center gap-2 px-3.5 py-2.5 bg-[#040d1e]/90 hover:bg-[#071630] text-cyan-300 hover:text-white border border-cyan-500/40 hover:border-cyan-400 rounded-xl text-xs font-bold transition-all duration-300 shadow-xl shadow-cyan-950/60 hover:scale-[1.02] active:scale-[0.98] cursor-pointer group"
-              title="Open J.A.R.V.I.S. Tactical AI Voice Guide"
+          {/* Center Target Pill: Active Payload Summary */}
+          {report && (
+            <div 
+              onClick={() => handleOpenTab('overview')}
+              className="hidden lg:flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-950/80 border border-white/[0.08] hover:border-cyan-500/50 cursor-pointer transition text-xs font-mono shadow-inner group"
+              title="Click to view Executive Overview"
             >
-              <Bot className="w-4 h-4 text-cyan-400 group-hover:animate-bounce stroke-[2.5]" />
-              <span className="hidden sm:inline font-mono">J.A.R.V.I.S. Audio Guide</span>
-            </button>
+              <span className="w-2 h-2 rounded-full group-hover:scale-125 transition-transform" style={{ backgroundColor: report.threat_scoring.color }} />
+              <span className="text-slate-300 font-bold max-w-[140px] truncate">{report.sample_name}</span>
+              <span 
+                className="text-[10px] font-black px-1.5 py-0.5 rounded"
+                style={{ 
+                  backgroundColor: `${report.threat_scoring.color}20`, 
+                  color: report.threat_scoring.color 
+                }}
+              >
+                {report.threat_scoring.threat_score}/100 {report.threat_scoring.severity}
+              </span>
+            </div>
+          )}
 
-            <button
-              onClick={() => {
-                cyberAudio.playClick();
-                handleOpenJarvisChat();
-              }}
-              className="flex items-center gap-2 px-3.5 py-2.5 bg-gradient-to-r from-cyan-600/25 via-sky-600/25 to-blue-500/25 hover:from-cyan-600/40 hover:to-blue-500/40 text-cyan-300 hover:text-white border border-cyan-500/50 hover:border-cyan-400 rounded-xl text-xs font-bold transition-all duration-300 shadow-xl shadow-cyan-950/60 hover:scale-[1.02] active:scale-[0.98] cursor-pointer group"
-              title="Ask J.A.R.V.I.S. questions about malware removal & remediation"
-            >
-              <MessageSquare className="w-4 h-4 text-cyan-400 group-hover:scale-110 stroke-[2.5]" />
-              <span className="hidden sm:inline font-mono">Talk to J.A.R.V.I.S.</span>
-            </button>
-
+          {/* Right Action Cluster & Clean Dropdowns */}
+          <div className="flex items-center gap-2">
+            
+            {/* Primary Action: Submit Payload */}
             <button
               onClick={() => {
                 cyberAudio.playClick();
                 setShowModal(true);
               }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black rounded-xl text-xs transition-all duration-300 shadow-xl shadow-cyan-950/80 hover:shadow-cyan-900/90 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-cyan-950/70 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
-              <Upload className="w-4 h-4 stroke-[2.5]" />
+              <Upload className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>Submit Payload</span>
             </button>
+
+            {/* J.A.R.V.I.S. AI Action Dropdown */}
+            <div className="relative" data-dropdown>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  cyberAudio.playClick();
+                  setShowJarvisDropdown(prev => !prev);
+                  setShowToolsDropdown(false);
+                }}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                  speechState.isSpeaking
+                    ? 'bg-cyan-950/90 text-cyan-300 border-cyan-400/80 shadow-md shadow-cyan-950/80'
+                    : 'bg-[#040d1e]/90 hover:bg-[#071630] text-cyan-300 hover:text-white border-cyan-500/40 hover:border-cyan-400'
+                }`}
+                title="J.A.R.V.I.S. AI Security Assistant"
+              >
+                <Bot className={`w-4 h-4 text-cyan-400 ${speechState.isSpeaking ? 'animate-bounce' : ''}`} />
+                <span className="hidden sm:inline font-mono">J.A.R.V.I.S.</span>
+                <ChevronDown className={`w-3 h-3 text-cyan-400/80 transition-transform duration-200 ${showJarvisDropdown ? 'rotate-180' : ''}`} />
+              </button>
+
+              {showJarvisDropdown && (
+                <div className="absolute right-0 mt-2 w-64 glass-panel rounded-2xl border border-cyan-500/40 shadow-2xl p-2 z-50 animate-fadeIn text-xs space-y-1">
+                  <div className="px-3 py-1.5 text-[10px] font-mono text-cyan-400 font-bold uppercase border-b border-cyan-900/40 mb-1 flex items-center justify-between">
+                    <span>AI Assistant Suite</span>
+                    {speechState.isSpeaking && (
+                      <span className="text-emerald-400 animate-pulse font-mono text-[9px]">&bull; SPEAKING</span>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setShowJarvisDropdown(false);
+                      handleOpenJarvisChat();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-cyan-950/60 text-slate-200 hover:text-white transition text-left cursor-pointer"
+                  >
+                    <MessageSquare className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <div>
+                      <div className="font-bold">Talk to J.A.R.V.I.S.</div>
+                      <div className="text-[10px] text-slate-400">Ask remediation &amp; forensics questions</div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setShowJarvisDropdown(false);
+                      setShowJarvisModal(true);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-cyan-950/60 text-slate-200 hover:text-white transition text-left cursor-pointer"
+                  >
+                    <Bot className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <div>
+                      <div className="font-bold">Voice Guidance Console</div>
+                      <div className="text-[10px] text-slate-400">Full speech script &amp; teleprompter</div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      handleToggleVoiceBriefing();
+                      setShowJarvisDropdown(false);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-cyan-950/60 text-cyan-300 hover:text-white transition text-left cursor-pointer border-t border-white/[0.06] pt-2"
+                  >
+                    {speechState.isSpeaking ? (
+                      <Pause className="w-4 h-4 text-amber-400 shrink-0" />
+                    ) : (
+                      <Play className="w-4 h-4 text-cyan-400 shrink-0" />
+                    )}
+                    <div>
+                      <div className="font-bold">
+                        {speechState.isSpeaking ? 'Pause Audio Briefing' : 'Quick Audio Briefing'}
+                      </div>
+                      <div className="text-[10px] text-slate-400">Vocal overview of current payload</div>
+                    </div>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Tools & System Settings Dropdown */}
+            <div className="relative" data-dropdown>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  cyberAudio.playClick();
+                  setShowToolsDropdown(prev => !prev);
+                  setShowJarvisDropdown(false);
+                }}
+                className="flex items-center justify-center w-9 h-9 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/[0.1] hover:border-cyan-500/40 rounded-xl transition cursor-pointer"
+                title="Tools & Preferences"
+              >
+                <Sliders className="w-4 h-4 text-slate-300" />
+              </button>
+
+              {showToolsDropdown && (
+                <div className="absolute right-0 mt-2 w-72 glass-panel rounded-2xl border border-cyan-500/40 shadow-2xl p-2.5 z-50 animate-fadeIn text-xs space-y-1.5">
+                  <div className="px-3 py-1 text-[10px] font-mono text-cyan-400 font-bold uppercase border-b border-cyan-900/40">
+                    Preferences &amp; System Tools
+                  </div>
+
+                  {/* Theme Selector */}
+                  <button
+                    onClick={() => {
+                      setShowToolsDropdown(false);
+                      setShowThemeModal(true);
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-white/[0.06] text-slate-200 transition cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Palette className="w-4 h-4 text-cyan-400" />
+                      <span className="font-medium">Theme &amp; Accent Studio</span>
+                    </div>
+                    <span 
+                      className="w-3.5 h-3.5 rounded-full border border-white/30 shadow-sm"
+                      style={{ backgroundColor: customColor || '#06b6d4' }}
+                    />
+                  </button>
+
+                  {/* Audio Synthesizer Toggle */}
+                  <button
+                    onClick={() => {
+                      const muted = cyberAudio.toggleMute();
+                      setIsMuted(muted);
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-white/[0.06] text-slate-200 transition cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {isMuted ? <VolumeX className="w-4 h-4 text-slate-500" /> : <Volume2 className="w-4 h-4 text-cyan-400" />}
+                      <span className="font-medium">Sound Effects FX</span>
+                    </div>
+                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${!isMuted ? 'bg-cyan-950 text-cyan-300 border border-cyan-800/50' : 'bg-slate-800 text-slate-400'}`}>
+                      {isMuted ? 'MUTED' : 'ENABLED'}
+                    </span>
+                  </button>
+
+                  {/* Live Telemetry Terminal Toggle */}
+                  <button
+                    onClick={() => {
+                      setShowTerminal(prev => !prev);
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-white/[0.06] text-slate-200 transition cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Terminal className="w-4 h-4 text-sky-400" />
+                      <span className="font-medium">Matrix Telemetry Terminal</span>
+                    </div>
+                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${showTerminal ? 'bg-cyan-950 text-cyan-300 border border-cyan-800/50' : 'bg-slate-800 text-slate-400'}`}>
+                      {showTerminal ? 'VISIBLE' : 'HIDDEN'}
+                    </span>
+                  </button>
+
+                  {/* System Info footer */}
+                  <div className="pt-2 border-t border-white/[0.08] px-3 text-[10px] font-mono text-slate-400 space-y-1">
+                    <div className="flex justify-between">
+                      <span>ARMOR HOST</span>
+                      <span className="text-cyan-300 font-bold">{hostAssessment?.host_info?.hostname || 'SUIT_ONLINE'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>DEFENSE GRID</span>
+                      <span className="text-emerald-400 font-bold">MK-85 ARMED</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>UTC CLOCK</span>
+                      <span className="text-slate-300 font-bold">{currentTime}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -522,137 +617,246 @@ export const App: React.FC = () => {
 
       {/* Main Workspace */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6 relative z-10">
-        {/* J.A.R.V.I.S. Tactical AI Voice Assistant & Threat Guide Banner */}
-        {!loading && (report || hostAssessment) && (
-          <JarvisVoiceBanner
-            report={report}
-            hostAssessment={hostAssessment}
-            onOpenModal={() => setShowJarvisModal(true)}
-            onOpenChat={handleOpenJarvisChat}
-          />
-        )}
-
-        {/* Legendary Holographic 3D Gyroscopic Reactor Core */}
+        {/* Clean, Decluttered Executive Threat Hub */}
         {!loading && report && (
-          <HoloReactorCore 
-            score={report.threat_scoring.threat_score}
-            severity={report.threat_scoring.severity}
-            verdict={report.threat_scoring.verdict}
-            color={report.threat_scoring.color}
-            sampleName={report.sample_name}
-          />
-        )}
+          <div className="glass-panel p-5 sm:p-6 rounded-3xl border border-cyan-500/30 relative overflow-hidden shadow-2xl bg-[#051024]/90">
+            {/* Subtle cyber background line */}
+            <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent pointer-events-none" />
 
-        {/* Executive KPI Ribbon (Clickable jump cards) */}
-        {!loading && report && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-            {/* KPI 1 - Threat Verdict */}
-            <div
-              onClick={() => handleOpenTab('overview')}
-              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-red-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
-                activeTab === 'overview' ? 'border-red-500/60 ring-1 ring-red-500/30 shadow-red-950/40' : 'border-white/[0.08]'
-              }`}
-            >
-              <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span className="font-bold group-hover:text-red-300 transition">Threat Verdict</span>
-                <ShieldAlert className="w-4 h-4 text-red-400 group-hover:scale-110 transition" />
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
+              
+              {/* Left: Compact, Calibrated Arc Reactor & Primary Verdict */}
+              <div className="flex items-center gap-5 shrink-0">
+                <div className="relative w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center shrink-0">
+                  <div 
+                    className="absolute inset-1 rounded-full filter blur-xl opacity-50 pointer-events-none"
+                    style={{ 
+                      background: `radial-gradient(circle, #00f2fe 0%, #0284c7 45%, ${report.threat_scoring.color}40 70%, transparent 100%)` 
+                    }}
+                  />
+                  <svg 
+                    className="w-full h-full drop-shadow-[0_0_18px_rgba(0,242,254,0.6)] cursor-pointer select-none"
+                    viewBox="0 0 190 190"
+                    onClick={() => handleOpenTab('overview')}
+                  >
+                    <defs>
+                      <filter id="arcGlowHub" x="-30%" y="-30%" width="160%" height="160%">
+                        <feGaussianBlur stdDeviation="3.5" result="glow" />
+                        <feMerge>
+                          <feMergeNode in="glow" />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                      </filter>
+                    </defs>
+
+                    {/* Outer Reticle */}
+                    <circle cx="95" cy="95" r="90" fill="none" stroke="#00f2fe" strokeWidth="1.2" strokeOpacity="0.3" />
+                    <circle cx="95" cy="95" r="84" fill="none" stroke="#00f2fe" strokeWidth="2.5" strokeOpacity="0.7" strokeDasharray="6 4" />
+
+                    {/* Rotating Stator Ring */}
+                    <g className="animate-spin-slow origin-center">
+                      <circle cx="95" cy="95" r="72" fill="none" stroke="#0284c7" strokeWidth="4" strokeOpacity="0.6" strokeDasharray="14 8" />
+                      {coils.map((deg, i) => (
+                        <rect
+                          key={i}
+                          x="92"
+                          y="18"
+                          width="6"
+                          height="12"
+                          rx="2"
+                          fill="#00f2fe"
+                          transform={`rotate(${deg} 95 95)`}
+                          filter="url(#arcGlowHub)"
+                          opacity="0.9"
+                        />
+                      ))}
+                    </g>
+
+                    {/* Inner Core */}
+                    <circle cx="95" cy="95" r="54" fill="#040d1e" stroke="#00f2fe" strokeWidth="3" strokeOpacity="0.8" />
+                    <circle cx="95" cy="95" r="46" fill="#020817" stroke="#38bdf8" strokeWidth="1.5" strokeOpacity="0.9" strokeDasharray="4 3" />
+
+                    {/* Score Text */}
+                    <text 
+                      x="95" 
+                      y="98" 
+                      textAnchor="middle" 
+                      fill="#ffffff" 
+                      fontSize="20" 
+                      fontWeight="900" 
+                      fontFamily="monospace"
+                      filter="drop-shadow(0 0 4px #00f2fe)"
+                    >
+                      {report.threat_scoring.threat_score}
+                    </text>
+                    <text 
+                      x="95" 
+                      y="112" 
+                      textAnchor="middle" 
+                      fill="#38bdf8" 
+                      fontSize="9" 
+                      fontWeight="800" 
+                      fontFamily="monospace"
+                    >
+                      /100
+                    </text>
+                  </svg>
+                </div>
+
+                {/* Verdict Meta */}
+                <div className="space-y-1.5 text-left">
+                  <div className="flex items-center gap-2">
+                    <span 
+                      className="px-2.5 py-0.5 rounded-lg text-[11px] font-mono font-black uppercase tracking-wider flex items-center gap-1 shadow-sm"
+                      style={{ 
+                        backgroundColor: `${report.threat_scoring.color}25`, 
+                        color: report.threat_scoring.color, 
+                        border: `1px solid ${report.threat_scoring.color}50` 
+                      }}
+                    >
+                      <ShieldAlert className="w-3 h-3" />
+                      {report.threat_scoring.severity}
+                    </span>
+                    <span className="text-[11px] font-mono text-cyan-300 font-bold truncate max-w-[160px]">
+                      {report.sample_name}
+                    </span>
+                  </div>
+
+                  <h2 className="text-base sm:text-lg font-black text-white leading-tight">
+                    {report.threat_scoring.verdict}
+                  </h2>
+
+                  <p className="text-xs text-slate-300 max-w-sm line-clamp-2">
+                    Consensus synthesized from Shannon entropy, Win32 syscall hooks, and MITRE ATT&amp;CK tactics.
+                  </p>
+                </div>
               </div>
-              <div className="text-xl font-black font-mono tracking-tight" style={{ color: report.threat_scoring.color }}>
-                {report.threat_scoring.severity}
-              </div>
-              <div className="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
-                <span>Score: <strong className="text-white font-mono">{report.threat_scoring.threat_score}/100</strong></span>
-                <button
-                  type="button"
-                  onClick={(e) => handleOpenTab('overview', e)}
-                  className="text-[11px] font-mono font-bold text-red-300 hover:text-white bg-red-950/70 hover:bg-red-800/80 px-2.5 py-0.5 rounded-md border border-red-500/40 hover:border-red-400 transition flex items-center gap-1 cursor-pointer shadow-sm active:scale-95"
+
+              {/* Center: 3 Primary Essential Vitals (Clean KPI Cards) */}
+              <div className="grid grid-cols-3 gap-2.5 w-full lg:w-auto font-mono text-xs">
+                
+                {/* Vital 1: Host Health */}
+                <div 
+                  onClick={() => handleOpenTab('host')}
+                  className="bg-[#071630]/90 hover:bg-[#0b2146] p-3 rounded-2xl border border-cyan-500/25 hover:border-cyan-400/60 transition cursor-pointer text-center group shadow-md"
+                  title="Click to view System Assessment"
                 >
-                  <span>Open</span>
-                  <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <div className="text-[10px] text-slate-400 group-hover:text-cyan-300 transition">Host Health</div>
+                  <div className="text-base font-black text-cyan-200 mt-0.5">
+                    {hostAssessment?.health_score ?? 100}/100
+                  </div>
+                  <div className="text-[9px] text-emerald-400 font-bold mt-0.5 flex items-center justify-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                    {hostAssessment?.status || 'OPTIMAL'}
+                  </div>
+                </div>
+
+                {/* Vital 2: Extracted IOCs */}
+                <div 
+                  onClick={() => handleOpenTab('iocs')}
+                  className="bg-[#071630]/90 hover:bg-[#0b2146] p-3 rounded-2xl border border-cyan-500/25 hover:border-cyan-400/60 transition cursor-pointer text-center group shadow-md"
+                  title="Click to view Extracted IOCs"
+                >
+                  <div className="text-[10px] text-slate-400 group-hover:text-cyan-300 transition">Forensic IOCs</div>
+                  <div className="text-base font-black text-sky-200 mt-0.5">
+                    {report.ioc_extraction.total_extracted}
+                  </div>
+                  <div className="text-[9px] text-sky-400 font-bold mt-0.5">
+                    {report.ioc_extraction.summary_by_category?.['Network C2'] || 0} C2 IPs
+                  </div>
+                </div>
+
+                {/* Vital 3: Engine Latency */}
+                <div 
+                  onClick={() => handleOpenTab('static')}
+                  className="bg-[#071630]/90 hover:bg-[#0b2146] p-3 rounded-2xl border border-cyan-500/25 hover:border-cyan-400/60 transition cursor-pointer text-center group shadow-md"
+                  title="Click to view Static Analysis"
+                >
+                  <div className="text-[10px] text-slate-400 group-hover:text-cyan-300 transition">Execution</div>
+                  <div className="text-base font-black text-teal-200 mt-0.5">
+                    {(report as any).analysis_duration_ms || 18}ms
+                  </div>
+                  <div className="text-[9px] text-teal-400 font-bold mt-0.5">
+                    ZERO-LAG
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Quick J.A.R.V.I.S. Audio & Chat Actions */}
+              <div className="flex flex-row lg:flex-col gap-2 w-full lg:w-44 shrink-0">
+                <button
+                  onClick={handleToggleVoiceBriefing}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold font-mono transition cursor-pointer border shadow-sm ${
+                    speechState.isSpeaking
+                      ? 'bg-cyan-950 text-cyan-300 border-cyan-400/70 shadow-cyan-950/60'
+                      : 'bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white border-white/[0.1] hover:border-cyan-500/40'
+                  }`}
+                  title="Listen to J.A.R.V.I.S. Audio Briefing"
+                >
+                  {speechState.isSpeaking ? (
+                    <>
+                      <Pause className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <span>Pause Audio</span>
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      <span>Audio Briefing</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => handleOpenJarvisChat()}
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 hover:from-cyan-600/35 hover:to-blue-600/35 text-cyan-300 hover:text-white border border-cyan-500/40 hover:border-cyan-400 rounded-xl text-xs font-bold font-mono transition cursor-pointer shadow-sm"
+                  title="Ask J.A.R.V.I.S. questions about malware eradication"
+                >
+                  <MessageSquare className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <span>Ask J.A.R.V.I.S.</span>
                 </button>
               </div>
             </div>
 
-            {/* KPI 2 - Host Health Status */}
-            <div
-              onClick={() => handleOpenTab('host')}
-              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-cyan-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
-                activeTab === 'host' ? 'border-cyan-500/60 ring-1 ring-cyan-500/30 shadow-cyan-950/40' : 'border-white/[0.08]'
-              }`}
-            >
-              <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span className="font-bold group-hover:text-cyan-300 transition">Host Health Status</span>
-                <MonitorCheck className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition" />
-              </div>
-              <div className="text-xl font-black font-mono tracking-tight text-cyan-300">
-                {hostAssessment?.health_score ?? 100}/100
-              </div>
-              <div className="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
-                <span className="truncate">Host: <strong className="text-slate-200 font-mono">{hostAssessment?.host_info?.hostname || 'ONLINE'}</strong></span>
-                <button
-                  type="button"
-                  onClick={(e) => handleOpenTab('host', e)}
-                  className="text-[11px] font-mono font-bold text-cyan-300 hover:text-white bg-cyan-950/70 hover:bg-cyan-800/80 px-2.5 py-0.5 rounded-md border border-cyan-500/40 hover:border-cyan-400 transition flex items-center gap-1 cursor-pointer shadow-sm active:scale-95 shrink-0"
-                >
-                  <span>Open</span>
-                  <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
-                </button>
-              </div>
+            {/* Collapsible Toggle for Deep Telemetry & Technical Specs */}
+            <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
+              <span className="text-[11px] font-mono text-cyan-300/80 truncate max-w-md hidden sm:inline">
+                {telemetryFeed[telemetryIndex]}
+              </span>
+
+              <button
+                onClick={() => setShowAdvancedSpecs(prev => !prev)}
+                className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-slate-400 hover:text-cyan-300 transition cursor-pointer ml-auto"
+              >
+                <span>{showAdvancedSpecs ? 'Collapse Advanced Specs' : 'Show Advanced Specs & Telemetry'}</span>
+                {showAdvancedSpecs ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </button>
             </div>
 
-            {/* KPI 3 - Forensic Extraction */}
-            <div
-              onClick={() => handleOpenTab('iocs')}
-              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-sky-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
-                activeTab === 'iocs' ? 'border-sky-500/60 ring-1 ring-sky-500/30 shadow-sky-950/40' : 'border-white/[0.08]'
-              }`}
-            >
-              <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span className="font-bold group-hover:text-sky-300 transition">Forensic Extraction</span>
-                <Database className="w-4 h-4 text-sky-400 group-hover:scale-110 transition" />
+            {/* Expandable Advanced Telemetry Specs Drawer */}
+            {showAdvancedSpecs && (
+              <div className="mt-3 pt-3 border-t border-cyan-900/30 grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs animate-fadeIn">
+                <div className="bg-slate-950/70 p-2.5 rounded-xl border border-white/[0.05]">
+                  <div className="text-[10px] text-slate-400">Entropy Metric</div>
+                  <div className="text-cyan-300 font-bold mt-0.5">5.248 bit/B</div>
+                  <div className="text-[9px] text-emerald-400">UNPACKED</div>
+                </div>
+                <div className="bg-slate-950/70 p-2.5 rounded-xl border border-white/[0.05]">
+                  <div className="text-[10px] text-slate-400">Unibeam Flux</div>
+                  <div className="text-cyan-300 font-bold mt-0.5">3.14 GJ/s</div>
+                  <div className="text-[9px] text-cyan-400">PALLADIUM CORE</div>
+                </div>
+                <div className="bg-slate-950/70 p-2.5 rounded-xl border border-white/[0.05]">
+                  <div className="text-[10px] text-slate-400">Confidence Score</div>
+                  <div className="text-cyan-300 font-bold mt-0.5">96.4%</div>
+                  <div className="text-[9px] text-emerald-400">VERIFIED ATT&amp;CK</div>
+                </div>
+                <div className="bg-slate-950/70 p-2.5 rounded-xl border border-white/[0.05]">
+                  <div className="text-[10px] text-slate-400">Active YARA Rules</div>
+                  <div className="text-cyan-300 font-bold mt-0.5">14 Compiled</div>
+                  <div className="text-[9px] text-cyan-400">SURICATA / MISP</div>
+                </div>
               </div>
-              <div className="text-xl font-black font-mono tracking-tight text-sky-300">
-                {report.ioc_extraction.total_extracted} Indicators
-              </div>
-              <div className="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
-                <span>{report.ioc_extraction.summary_by_category?.['Network C2'] || 0} C2 IPs</span>
-                <button
-                  type="button"
-                  onClick={(e) => handleOpenTab('iocs', e)}
-                  className="text-[11px] font-mono font-bold text-sky-300 hover:text-white bg-sky-950/70 hover:bg-sky-800/80 px-2.5 py-0.5 rounded-md border border-sky-500/40 hover:border-sky-400 transition flex items-center gap-1 cursor-pointer shadow-sm active:scale-95"
-                >
-                  <span>Open</span>
-                  <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
-                </button>
-              </div>
-            </div>
-
-            {/* KPI 4 - Execution Speed */}
-            <div
-              onClick={() => handleOpenTab('static')}
-              className={`glass-card p-4 rounded-2xl text-left relative overflow-hidden transition-all duration-200 cursor-pointer hover:border-teal-500/60 hover:scale-[1.01] active:scale-[0.99] group ${
-                activeTab === 'static' ? 'border-teal-500/60 ring-1 ring-teal-500/30 shadow-teal-950/40' : 'border-white/[0.08]'
-              }`}
-            >
-              <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span className="font-bold group-hover:text-teal-300 transition">Execution Speed</span>
-                <Zap className="w-4 h-4 text-teal-400 group-hover:scale-110 transition" />
-              </div>
-              <div className="text-xl font-black font-mono tracking-tight text-teal-300">
-                {(report as any).analysis_duration_ms || 18} ms
-              </div>
-              <div className="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
-                <span>Streaming Engine</span>
-                <button
-                  type="button"
-                  onClick={(e) => handleOpenTab('static', e)}
-                  className="text-[11px] font-mono font-bold text-teal-300 hover:text-white bg-teal-950/70 hover:bg-teal-800/80 px-2.5 py-0.5 rounded-md border border-teal-500/40 hover:border-teal-400 transition flex items-center gap-1 cursor-pointer shadow-sm active:scale-95"
-                >
-                  <span>Open</span>
-                  <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
-                </button>
-              </div>
-            </div>
+            )}
           </div>
         )}
 
@@ -689,47 +893,105 @@ export const App: React.FC = () => {
           </div>
         ) : report ? (
           <>
-            {/* Segmented Tab Navigation Rail */}
+            {/* Streamlined Tab Rail with Primary Tabs & Secondary Forensic Tools Dropdown */}
             <div 
               ref={workspaceRef}
               id="workspace-tabs"
-              className="flex overflow-x-auto glass-panel p-1.5 rounded-2xl border border-cyan-500/20 text-xs font-bold gap-1.5 shadow-2xl scroll-mt-20"
+              className="flex flex-wrap items-center justify-between glass-panel p-1.5 rounded-2xl border border-cyan-500/20 text-xs font-bold gap-2 shadow-xl scroll-mt-20"
             >
-              {[
-                { id: 'host', label: 'System Auto-Assessment', icon: MonitorCheck, badge: hostAssessment ? `${hostAssessment.health_score}/100` : undefined, badgeColor: hostAssessment?.status_color },
-                { id: 'overview', label: 'Executive Overview', icon: ShieldAlert },
-                { id: 'static', label: 'Static Analysis', icon: Cpu },
-                { id: 'sandbox', label: 'Behavioral Sandbox', icon: Terminal },
-                { id: 'mitre', label: 'MITRE ATT&CK', icon: Layers },
-                { id: 'iocs', label: 'Extracted IOCs', icon: Database },
-                { id: 'yara', label: 'YARA Workbench', icon: Code2 },
-                { id: 'report', label: 'Automated Report', icon: FileText }
-              ].map(tab => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => handleTabChange(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 whitespace-nowrap text-xs font-bold cursor-pointer ${
-                      isActive 
-                        ? 'bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-slate-950 font-black shadow-lg shadow-cyan-950/80 scale-[1.02] border border-cyan-400/50' 
-                        : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{tab.label}</span>
-                    {tab.badge && (
-                      <span 
-                        className="px-2 py-0.5 text-[10px] font-mono font-black rounded-md text-slate-950 shadow-sm"
-                        style={{ backgroundColor: tab.badgeColor || '#06b6d4' }}
-                      >
-                        {tab.badge}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+              {/* Primary 4 Major Tabs */}
+              <div className="flex items-center gap-1.5 overflow-x-auto">
+                {[
+                  { 
+                    id: 'host', 
+                    label: 'System Assessment', 
+                    icon: MonitorCheck, 
+                    badge: hostAssessment ? `${hostAssessment.health_score}/100` : undefined, 
+                    badgeColor: hostAssessment?.status_color 
+                  },
+                  { id: 'overview', label: 'Executive Overview', icon: ShieldAlert },
+                  { id: 'sandbox', label: 'Behavioral Sandbox', icon: Terminal },
+                  { id: 'report', label: 'Report & Remediation', icon: FileText }
+                ].map(tab => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => handleTabChange(tab.id)}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all duration-200 whitespace-nowrap text-xs font-bold cursor-pointer ${
+                        isActive 
+                          ? 'bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-slate-950 font-black shadow-md shadow-cyan-950/80 scale-[1.01] border border-cyan-400/50' 
+                          : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{tab.label}</span>
+                      {tab.badge && (
+                        <span 
+                          className="px-1.5 py-0.5 text-[10px] font-mono font-black rounded text-slate-950 shadow-sm"
+                          style={{ backgroundColor: tab.badgeColor || '#06b6d4' }}
+                        >
+                          {tab.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Secondary Forensic Tools in Clean Dropdown */}
+              <div className="relative" data-dropdown>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    cyberAudio.playClick();
+                    setShowMoreToolsDropdown(prev => !prev);
+                  }}
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all duration-200 text-xs font-bold cursor-pointer border ${
+                    isSecondaryActive 
+                      ? 'bg-cyan-950/90 text-cyan-300 border-cyan-400/80 shadow-md shadow-cyan-950/60' 
+                      : 'bg-slate-900/60 text-slate-400 hover:text-white border-white/[0.08] hover:border-cyan-500/40'
+                  }`}
+                  title="Deep Forensic Tools"
+                >
+                  <Layers className="w-4 h-4 text-cyan-400" />
+                  <span>{activeSecondaryTool ? activeSecondaryTool.label : 'More Forensic Tools'}</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showMoreToolsDropdown ? 'rotate-180' : ''}`} />
+                </button>
+
+                {showMoreToolsDropdown && (
+                  <div className="absolute right-0 mt-2 w-60 glass-panel rounded-2xl border border-cyan-500/40 shadow-2xl p-1.5 z-40 animate-fadeIn text-xs space-y-1">
+                    <div className="px-3 py-1 text-[10px] font-mono text-cyan-400/80 font-bold uppercase border-b border-white/[0.06] mb-1">
+                      Secondary Forensic Tools
+                    </div>
+                    {SECONDARY_TOOLS.map(tool => {
+                      const ToolIcon = tool.icon;
+                      const isSelected = activeTab === tool.id;
+                      return (
+                        <button
+                          key={tool.id}
+                          onClick={() => {
+                            handleTabChange(tool.id);
+                            setShowMoreToolsDropdown(false);
+                          }}
+                          className={`w-full flex items-start gap-2.5 px-3 py-2 rounded-xl transition text-left cursor-pointer ${
+                            isSelected 
+                              ? 'bg-cyan-950/90 text-cyan-300 font-bold border border-cyan-500/40' 
+                              : 'hover:bg-white/[0.06] text-slate-300 hover:text-white'
+                          }`}
+                        >
+                          <ToolIcon className="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
+                          <div>
+                            <div className="font-semibold leading-tight">{tool.label}</div>
+                            <div className="text-[10px] text-slate-400">{tool.desc}</div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Active Viewport */}
@@ -754,13 +1016,13 @@ export const App: React.FC = () => {
           </>
         ) : (
           <div className="text-center py-20 text-slate-500">
-            No active threat session. Click <strong className="text-amber-400">Submit Payload</strong> to begin.
+            No active threat session. Click <strong className="text-cyan-400">Submit Payload</strong> to begin.
           </div>
         )}
       </main>
 
-      {/* Real-Time Live Telemetry Matrix Terminal HUD */}
-      <LiveTelemetryTerminal />
+      {/* Real-Time Live Telemetry Matrix Terminal HUD (Toggleable via Settings) */}
+      {showTerminal && <LiveTelemetryTerminal />}
 
       {/* Submit Sample Modal */}
       {showModal && (

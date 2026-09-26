@@ -45,3 +45,6 @@ lerna-debug.log*
 *.sw?
 .DS_Store
 Thumbs.db
+
+# Pasha 2.0 Local Agent Runtime Data
+backend/agent/data/

@@ -68,6 +68,14 @@ def test_full_pipeline():
     assert len(assessment["threat_forecast"]) > 0
     print(f"  [x] Host Scanner & Vulnerability Auditor passed (Host: {assessment['host_info']['hostname']}, Health: {assessment['health_score']}/100).")
     
+    # 9. Pasha 2.0 Local Agent & Snapshot Engine
+    from agent.main import run_local_scan
+    snapshot = run_local_scan(save_to_store=True)
+    assert snapshot.snapshot_id is not None
+    assert len(snapshot.collector_reports) >= 6
+    assert "processes" in snapshot.collector_reports
+    print(f"  [x] Pasha 2.0 Local Agent passed (Snapshot: {snapshot.snapshot_id}, Collectors: {len(snapshot.collector_reports)}).")
+
     print("[SUCCESS] All pipeline & host security tests passed cleanly!")
 
 if __name__ == "__main__":

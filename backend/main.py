@@ -29,6 +29,7 @@ from agent.security.correlation import correlate_evidence
 from agent.security.timeline import reconstruct_security_timeline
 from agent.security.blast_radius import compute_blast_radius
 from agent.security.metrics import evaluate_dual_metrics
+from agent.security.remediation import remediation_engine
 
 
 
@@ -669,6 +670,79 @@ def get_candidate_threat_metrics(candidate_id: str):
     return metrics.model_dump(mode="json")
 
 
+# -------------------------------------------------------------
+# MILESTONE 10: USER-CONFIRMED RESPONSE & REMEDIATION
+# -------------------------------------------------------------
+
+class RemediationExecuteRequest(BaseModel):
+    plan_id: str
+    item_id: str
+    confirmation_token: str
+
+
+@app.get("/api/agent/remediation/quarantine")
+def list_quarantined_files():
+    """
+    Lists all files currently secured inside the Pasha quarantine vault.
+    """
+    records = remediation_engine.list_quarantined_files()
+    return [r.model_dump(mode="json") for r in records]
+
+
+@app.post("/api/agent/remediation/quarantine/restore/{quarantine_id}")
+def restore_quarantined_file(quarantine_id: str):
+    """
+    Restores a quarantined file from the vault back to its original location.
+    """
+    success, message = remediation_engine.restore_quarantined_file(quarantine_id)
+    if not success:
+        raise HTTPException(status_code=400, detail=message)
+    return {"success": True, "message": message, "quarantine_id": quarantine_id}
+
+
+@app.post("/api/agent/remediation/execute")
+def execute_remediation_item(req: RemediationExecuteRequest):
+    """
+    Executes a specific guarded remediation action using its confirmation token.
+    """
+    result = remediation_engine.execute_action(
+        plan_id=req.plan_id,
+        item_id=req.item_id,
+        confirmation_token=req.confirmation_token
+    )
+    if not result.success:
+        raise HTTPException(status_code=400, detail=result.message)
+    return result.model_dump(mode="json")
+
+
+@app.post("/api/agent/remediation/plan/{candidate_id}")
+def create_candidate_remediation_plan(candidate_id: str):
+    """
+    Constructs a user-confirmed remediation plan with explicit tokens and safety checks.
+    """
+    cand = candidate_queue.get_candidate(candidate_id)
+    if not cand:
+        raise HTTPException(status_code=404, detail=f"Candidate '{candidate_id}' not found.")
+
+    report = orchestrator.get_candidate_report(candidate_id)
+    snapshot = snapshot_store.load_snapshot(cand.snapshot_id) if cand.snapshot_id else None
+    blast_report = compute_blast_radius(candidate=cand, report=report, snapshot=snapshot)
+    
+    plan = remediation_engine.create_plan(candidate=cand, blast_report=blast_report)
+    return plan.model_dump(mode="json")
+
+
+@app.get("/api/agent/remediation/plan/{plan_id}")
+def get_remediation_plan(plan_id: str):
+    """
+    Retrieves the status and items of a remediation plan.
+    """
+    plan = remediation_engine.get_plan(plan_id)
+    if not plan:
+        raise HTTPException(status_code=404, detail=f"Remediation plan '{plan_id}' not found.")
+    return plan.model_dump(mode="json")
+
+
 @app.post("/api/analyze/upload")
 
 
@@ -684,6 +758,8 @@ async def analyze_upload(file: UploadFile = File(...)):
 @app.post("/api/analyze/preset")
 def analyze_preset(req: PresetAnalyzeRequest):
     preset = get_preset_sample_by_id(req.sample_id)
+    if not preset:
+        raise HTTPException(status_code=404, detail="No preset sample found. Please upload a file to analyze.")
     return run_full_analysis(preset["name"], preset["content_bytes"])
 
 @app.get("/api/reports/{report_id}")
@@ -704,11 +780,8 @@ def add_yara_rule(req: CustomYaraRequest):
 @app.get("/api/reports/{report_id}/export/{format_type}")
 def export_report(report_id: str, format_type: str):
     if report_id not in analysis_store:
-        # Fallback to default preset if sample not found
-        preset = get_preset_sample_by_id("sample_wannacry")
-        res = run_full_analysis(preset["name"], preset["content_bytes"])
-    else:
-        res = analysis_store[report_id]
+        raise HTTPException(status_code=404, detail=f"Analysis report '{report_id}' not found. Please upload a file to analyze.")
+    res = analysis_store[report_id]
 
     sample_name = res["sample_name"]
     s_res = res["static_analysis"]

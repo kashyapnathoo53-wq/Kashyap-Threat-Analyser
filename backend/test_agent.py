@@ -989,6 +989,169 @@ class TestPashaLocalAgent(unittest.TestCase):
         r_bad = client.get("/api/agent/metrics/nonexistent_cand_9999")
         self.assertEqual(r_bad.status_code, 404)
 
+    def test_remediation_plan_generation_and_safety_guardrails(self):
+        import tempfile
+        from agent.models.candidate import SuspiciousCandidate
+        from agent.models.blast_radius import BlastRadiusReport, ContainmentAction
+        from agent.security.remediation import RemediationEngine, RemediationActionType, RemediationStatus
+
+        temp_dir = tempfile.mkdtemp(prefix="pasha_rem_test_")
+        engine = RemediationEngine(data_dir=temp_dir)
+
+        cand = SuspiciousCandidate(
+            candidate_id="cand_rem_test_01",
+            snapshot_id="snap_r_01",
+            category="process",
+            name="stealer.exe",
+            target_path="C:\\Temp\\stealer.exe",
+            discovered_at="2026-09-26T07:30:00+00:00",
+            priority_score=85,
+            status="ANALYZED",
+            metadata={"pid": 9999}
+        )
+
+        # Blast report proposing to kill explorer.exe and a malicious process
+        blast = BlastRadiusReport(
+            report_id="blast_test_rem",
+            candidate_id="cand_rem_test_01",
+            candidate_name="stealer.exe",
+            scope_level="PERSISTED",
+            blast_score=80,
+            summary_narrative="Test blast",
+            containment_actions=[
+                ContainmentAction(
+                    action_id="act_kill_bad",
+                    target_type="process",
+                    target="9999",
+                    action="TERMINATE",
+                    description="Terminate stealer.exe"
+                ),
+                ContainmentAction(
+                    action_id="act_kill_sys",
+                    target_type="process",
+                    target="explorer.exe",
+                    action="TERMINATE",
+                    description="Malicious request to terminate Windows Explorer"
+                ),
+                ContainmentAction(
+                    action_id="act_del_win",
+                    target_type="file",
+                    target="C:\\Windows\\System32",
+                    action="QUARANTINE",
+                    description="Malicious request to quarantine System32"
+                )
+            ]
+        )
+
+        plan = engine.create_plan(candidate=cand, blast_report=blast)
+        self.assertIsNotNone(plan.plan_id)
+        self.assertEqual(len(plan.items), 3)
+
+        # 1. Verify safety guardrails
+        bad_proc_item = next(i for i in plan.items if i.target == "9999")
+        sys_proc_item = next(i for i in plan.items if i.target == "explorer.exe")
+        sys_file_item = next(i for i in plan.items if "System32" in i.target)
+
+        self.assertTrue(bad_proc_item.is_safe)
+        self.assertEqual(bad_proc_item.safety_check, "SAFE")
+
+        self.assertFalse(sys_proc_item.is_safe)
+        self.assertEqual(sys_proc_item.safety_check, "PROTECTED_SYSTEM_ENTITY")
+        self.assertEqual(sys_proc_item.status, RemediationStatus.BLOCKED_BY_GUARDRAIL)
+
+        self.assertFalse(sys_file_item.is_safe)
+        self.assertEqual(sys_file_item.safety_check, "PROTECTED_SYSTEM_ENTITY")
+
+        # 2. Test token rejection
+        res_bad_tok = engine.execute_action(plan.plan_id, bad_proc_item.item_id, "wrong_token_123")
+        self.assertFalse(res_bad_tok.success)
+        self.assertIn("Invalid or missing confirmation token", res_bad_tok.message)
+
+        # 3. Test guardrail execution block
+        res_blocked = engine.execute_action(plan.plan_id, sys_proc_item.item_id, sys_proc_item.confirmation_token)
+        self.assertFalse(res_blocked.success)
+        self.assertIn("Action blocked by safety guardrail", res_blocked.message)
+
+    def test_quarantine_and_restore_cycle(self):
+        import tempfile
+        from agent.models.candidate import SuspiciousCandidate
+        from agent.security.remediation import RemediationEngine, RemediationActionType
+
+        temp_dir = tempfile.mkdtemp(prefix="pasha_quar_test_")
+        engine = RemediationEngine(data_dir=temp_dir)
+
+        # Create temporary dummy payload
+        dummy_file = os.path.join(temp_dir, "malicious_payload.bin")
+        with open(dummy_file, "w") as f:
+            f.write("DUMMY_MALWARE_PAYLOAD_TEST")
+
+        cand = SuspiciousCandidate(
+            candidate_id="cand_quar_test",
+            snapshot_id="snap_q_01",
+            category="file",
+            name="malicious_payload.bin",
+            target_path=dummy_file,
+            discovered_at="2026-09-26T07:35:00+00:00",
+            priority_score=80,
+            status="ANALYZED"
+        )
+
+        plan = engine.create_plan(candidate=cand)
+        quar_item = next(i for i in plan.items if i.action_type == RemediationActionType.QUARANTINE_FILE)
+
+        # 1. Execute Quarantine
+        exec_res = engine.execute_action(plan.plan_id, quar_item.item_id, quar_item.confirmation_token)
+        self.assertTrue(exec_res.success)
+        self.assertFalse(os.path.exists(dummy_file))  # Removed from source
+
+        records = engine.list_quarantined_files()
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0].filename, "malicious_payload.bin")
+        self.assertTrue(os.path.exists(records[0].quarantine_vault_path))
+
+        # 2. Execute Restore
+        ok, msg = engine.restore_quarantined_file(records[0].quarantine_id)
+        self.assertTrue(ok)
+        self.assertTrue(os.path.exists(dummy_file))  # Restored!
+        with open(dummy_file, "r") as f:
+            self.assertEqual(f.read(), "DUMMY_MALWARE_PAYLOAD_TEST")
+
+    def test_remediation_api_endpoints(self):
+        from fastapi.testclient import TestClient
+        from main import app
+        client = TestClient(app)
+
+        # 1. Test GET /api/agent/remediation/quarantine
+        r_q = client.get("/api/agent/remediation/quarantine")
+        self.assertEqual(r_q.status_code, 200)
+        self.assertIsInstance(r_q.json(), list)
+
+        # 2. Test Plan creation for latest candidate
+        r_cand = client.get("/api/agent/candidates?limit=1")
+        if r_cand.status_code == 200:
+            c_data = r_cand.json()
+            cands = c_data.get("candidates", []) if isinstance(c_data, dict) else c_data
+            if cands:
+                cand_id = cands[0]["candidate_id"]
+                r_plan = client.post(f"/api/agent/remediation/plan/{cand_id}")
+                self.assertEqual(r_plan.status_code, 200)
+                p_data = r_plan.json()
+                self.assertIn("plan_id", p_data)
+                self.assertIn("items", p_data)
+
+                # 3. Test GET plan by plan_id
+                plan_id = p_data["plan_id"]
+                r_get_plan = client.get(f"/api/agent/remediation/plan/{plan_id}")
+                self.assertEqual(r_get_plan.status_code, 200)
+                self.assertEqual(r_get_plan.json()["plan_id"], plan_id)
+
+        # 4. Test 404s
+        r_bad_plan = client.get("/api/agent/remediation/plan/nonexistent_plan_9999")
+        self.assertEqual(r_bad_plan.status_code, 404)
+
+        r_bad_restore = client.post("/api/agent/remediation/quarantine/restore/nonexistent_quar_9999")
+        self.assertEqual(r_bad_restore.status_code, 400)
+
 if __name__ == "__main__":
     unittest.main()
 

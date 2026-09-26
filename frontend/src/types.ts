@@ -252,3 +252,166 @@ export interface HostAssessment {
   threat_forecast: ThreatForecastItem[];
   remediation_plan: RemediationItem[];
 }
+
+// ==========================================
+// PASHA 2.0 AUTONOMIC DEFENSE & AGENT TYPES
+// ==========================================
+
+export interface AgentStatus {
+  status: string;
+  agent_version: string;
+  machine_id: string;
+  storage: {
+    total_snapshots: number;
+    active_snapshots_retained: number;
+    storage_directory: string;
+    total_disk_bytes: number;
+    total_disk_human: string;
+  };
+}
+
+export interface SuspiciousCandidate {
+  candidate_id: string;
+  category: string;
+  target_entity: string;
+  process_name?: string;
+  pid?: number;
+  file_path?: string;
+  snapshot_id?: string;
+  priority_score: number;
+  status: 'DISCOVERED' | 'QUEUED' | 'ANALYZING' | 'ANALYZED' | 'REMEDIATED' | 'IGNORED';
+  heuristics_matched: string[];
+  risk_score: number;
+  confidence_score: number;
+  discovered_at: string;
+  investigated_at?: string;
+}
+
+export interface CandidateQueueSummary {
+  total_candidates: number;
+  counts_by_status: Record<string, number>;
+  counts_by_category: Record<string, number>;
+  average_priority_score: number;
+  top_candidates: SuspiciousCandidate[];
+}
+
+export interface SecuritySnapshotSummary {
+  snapshot_id: string;
+  timestamp: string;
+  host_info?: {
+    hostname: string;
+    os: string;
+    architecture: string;
+  };
+  metrics?: {
+    process_count: number;
+    network_connection_count: number;
+    persistence_count: number;
+    scanned_file_count: number;
+  };
+}
+
+export interface AttackStoryNode {
+  id: string;
+  type: string;
+  label: string;
+  severity: string;
+  details?: Record<string, any>;
+}
+
+export interface AttackStoryEdge {
+  source: string;
+  target: string;
+  relation: string;
+}
+
+export interface AttackStory {
+  candidate_id: string;
+  title: string;
+  executive_summary: string;
+  attack_narrative: string[];
+  nodes: AttackStoryNode[];
+  edges: AttackStoryEdge[];
+  mitre_tactics: string[];
+  mitre_techniques: string[];
+  root_cause: string;
+  risk_assessment: {
+    risk_score: number;
+    confidence_score: number;
+    verdict: string;
+  };
+}
+
+export interface TimelineEvent {
+  event_id: string;
+  timestamp: string;
+  category: 'PROCESS' | 'PERSISTENCE' | 'NETWORK' | 'FILE' | 'ANALYSIS' | 'HEURISTIC';
+  action: string;
+  source: string;
+  target: string;
+  severity: 'INFO' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  description: string;
+}
+
+export interface SecurityTimeline {
+  candidate_id?: string;
+  snapshot_id?: string;
+  total_events: number;
+  events: TimelineEvent[];
+}
+
+export interface BlastRadiusReport {
+  target_entity: string;
+  category: string;
+  scope_level: 'ISOLATED_PROCESS' | 'LOCAL_USER' | 'PERSISTENCE_ONLY' | 'SYSTEM_WIDE';
+  impact_score: number;
+  severity: string;
+  affected_processes: string[];
+  affected_registry_keys: string[];
+  affected_network_endpoints: string[];
+  affected_files: string[];
+  containment_recommendations: string[];
+}
+
+export interface DualMetrics {
+  target_id: string;
+  risk_score: number;
+  risk_severity: string;
+  confidence_score: number;
+  confidence_level: string;
+  evidence_signals_count: number;
+  risk_breakdown: Record<string, number>;
+  confidence_factors: Record<string, number>;
+}
+
+export interface RemediationDryRun {
+  action: string;
+  target_entity: string;
+  is_safe: boolean;
+  block_reason?: string;
+  impact_description: string;
+  confirmation_token: string;
+  requires_user_confirmation: boolean;
+}
+
+export interface RemediationHistoryItem {
+  execution_id: string;
+  timestamp: string;
+  action: string;
+  target_entity: string;
+  status: string;
+  details: string;
+}
+
+export interface EvidencePackageSummary {
+  package_id: string;
+  created_at: string;
+  candidate_id: string;
+  target_entity: string;
+  package_size_bytes: number;
+  package_size_human: string;
+  manifest_sha256: string;
+  zip_sha256: string;
+  file_count: number;
+}
+

@@ -16,6 +16,7 @@ from agent.security.correlation import correlate_evidence
 from agent.security.timeline import reconstruct_security_timeline
 from agent.security.blast_radius import compute_blast_radius
 from agent.security.metrics import evaluate_dual_metrics
+from agent.security.remediation import remediation_engine, RemediationEngine
 
 __all__ = [
     "evaluate_process_heuristics",
@@ -29,6 +30,8 @@ __all__ = [
     "reconstruct_security_timeline",
     "compute_blast_radius",
     "evaluate_dual_metrics",
+    "remediation_engine",
+    "RemediationEngine",
 ]
 
 

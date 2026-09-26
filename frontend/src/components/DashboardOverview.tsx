@@ -170,18 +170,20 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
         <div 
           onClick={() => navigateWithSound('static')}
           onMouseEnter={() => cyberAudio.playHover()}
-          className="glass-card hud-corner p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-cyan-500/40 hover:shadow-[0_0_25px_rgba(6,182,212,0.25)] transition duration-200 active:scale-[0.98]"
+          className="glass-card hover-glow-cyan hud-corner p-5 rounded-2xl cursor-pointer group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 active:scale-[0.98] border border-white/[0.12]"
         >
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-cyan-400 transition">Static Analysis</span>
+          <div className="absolute top-0 inset-x-3 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none" />
+          <div className="absolute -top-8 -right-8 w-20 h-20 rounded-full bg-cyan-500/10 blur-xl group-hover:bg-cyan-500/20 transition-all pointer-events-none" />
+          <div className="flex items-center justify-between text-slate-400 mb-2 relative z-10">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-cyan-300 transition">Static Analysis</span>
             <HardDrive className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition" />
           </div>
-          <div className="text-xl font-black font-mono text-white">
+          <div className="text-xl font-black font-mono text-white relative z-10">
             {report.static_analysis.pe_structure.is_packed ? "PACKED / CRYPT" : "UNPACKED PE"}
           </div>
-          <div className="text-xs text-slate-400 mt-1 flex items-center justify-between">
+          <div className="text-xs text-slate-300 mt-1 flex items-center justify-between relative z-10">
             <span>Entropy: <strong className="text-cyan-300">{report.static_analysis.file_info.entropy}</strong></span>
-            <span className="text-[11px] text-cyan-400 flex items-center gap-0.5">Explore <ArrowUpRight className="w-3 h-3" /></span>
+            <span className="text-[11px] text-cyan-400 font-bold flex items-center gap-0.5">Explore <ArrowUpRight className="w-3 h-3" /></span>
           </div>
         </div>
 
@@ -189,18 +191,20 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
         <div 
           onClick={() => navigateWithSound('sandbox')}
           onMouseEnter={() => cyberAudio.playHover()}
-          className="glass-card hud-corner p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-teal-500/40 hover:shadow-[0_0_25px_rgba(20,184,166,0.25)] transition duration-200 active:scale-[0.98]"
+          className="glass-card hover-glow-emerald hud-corner p-5 rounded-2xl cursor-pointer group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 active:scale-[0.98] border border-white/[0.12]"
         >
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-teal-300 transition">Sandbox Emulation</span>
-            <Terminal className="w-4 h-4 text-teal-400 group-hover:scale-110 transition" />
+          <div className="absolute top-0 inset-x-3 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent pointer-events-none" />
+          <div className="absolute -top-8 -right-8 w-20 h-20 rounded-full bg-emerald-500/10 blur-xl group-hover:bg-emerald-500/20 transition-all pointer-events-none" />
+          <div className="flex items-center justify-between text-slate-400 mb-2 relative z-10">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-emerald-300 transition">Sandbox Emulation</span>
+            <Terminal className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition" />
           </div>
-          <div className="text-xl font-black font-mono text-white">
+          <div className="text-xl font-black font-mono text-white relative z-10">
             {report.behavioral_analysis.api_call_stream.length} Syscalls Traced
           </div>
-          <div className="text-xs text-slate-400 mt-1 flex items-center justify-between">
-            <span>Subprocesses: <strong className="text-teal-300">{report.behavioral_analysis.process_tree.children?.length || 0}</strong></span>
-            <span className="text-[11px] text-teal-400 flex items-center gap-0.5">View Tree <ArrowUpRight className="w-3 h-3" /></span>
+          <div className="text-xs text-slate-300 mt-1 flex items-center justify-between relative z-10">
+            <span>Subprocesses: <strong className="text-emerald-300">{report.behavioral_analysis.process_tree.children?.length || 0}</strong></span>
+            <span className="text-[11px] text-emerald-400 font-bold flex items-center gap-0.5">View Tree <ArrowUpRight className="w-3 h-3" /></span>
           </div>
         </div>
 
@@ -208,18 +212,20 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
         <div 
           onClick={() => navigateWithSound('mitre')}
           onMouseEnter={() => cyberAudio.playHover()}
-          className="glass-card hud-corner p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-purple-500/40 hover:shadow-[0_0_25px_rgba(168,85,247,0.25)] transition duration-200 active:scale-[0.98]"
+          className="glass-card hover-glow-violet hud-corner p-5 rounded-2xl cursor-pointer group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 active:scale-[0.98] border border-white/[0.12]"
         >
-          <div className="flex items-center justify-between text-slate-400 mb-2">
+          <div className="absolute top-0 inset-x-3 h-[1px] bg-gradient-to-r from-transparent via-purple-400/40 to-transparent pointer-events-none" />
+          <div className="absolute -top-8 -right-8 w-20 h-20 rounded-full bg-purple-500/10 blur-xl group-hover:bg-purple-500/20 transition-all pointer-events-none" />
+          <div className="flex items-center justify-between text-slate-400 mb-2 relative z-10">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-purple-300 transition">MITRE ATT&amp;CK</span>
             <Layers className="w-4 h-4 text-purple-400 group-hover:scale-110 transition" />
           </div>
-          <div className="text-xl font-black font-mono text-white">
+          <div className="text-xl font-black font-mono text-white relative z-10">
             {report.mitre_mapping.total_techniques_mapped ?? report.mitre_mapping.total_mapped_techniques} TTPs Detected
           </div>
-          <div className="text-xs text-slate-400 mt-1 flex items-center justify-between">
+          <div className="text-xs text-slate-300 mt-1 flex items-center justify-between relative z-10">
             <span>Tactics: <strong className="text-purple-300">{report.mitre_mapping.detected_tactics?.length || report.mitre_mapping.tactics.length} active</strong></span>
-            <span className="text-[11px] text-purple-400 flex items-center gap-0.5">Matrix <ArrowUpRight className="w-3 h-3" /></span>
+            <span className="text-[11px] text-purple-400 font-bold flex items-center gap-0.5">Matrix <ArrowUpRight className="w-3 h-3" /></span>
           </div>
         </div>
 
@@ -227,18 +233,20 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
         <div 
           onClick={() => navigateWithSound('yara')}
           onMouseEnter={() => cyberAudio.playHover()}
-          className="glass-card hud-corner p-4 rounded-2xl cursor-pointer group relative overflow-hidden hover:border-amber-500/40 hover:shadow-[0_0_25px_rgba(245,158,11,0.25)] transition duration-200 active:scale-[0.98]"
+          className="glass-card hover-glow-amber hud-corner p-5 rounded-2xl cursor-pointer group relative overflow-hidden transition-all duration-300 hover:-translate-y-1 active:scale-[0.98] border border-white/[0.12]"
         >
-          <div className="flex items-center justify-between text-slate-400 mb-2">
+          <div className="absolute top-0 inset-x-3 h-[1px] bg-gradient-to-r from-transparent via-amber-400/40 to-transparent pointer-events-none" />
+          <div className="absolute -top-8 -right-8 w-20 h-20 rounded-full bg-amber-500/10 blur-xl group-hover:bg-amber-500/20 transition-all pointer-events-none" />
+          <div className="flex items-center justify-between text-slate-400 mb-2 relative z-10">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-amber-300 transition">YARA Matches</span>
             <Fingerprint className="w-4 h-4 text-amber-400 group-hover:scale-110 transition" />
           </div>
-          <div className="text-xl font-black font-mono text-white">
+          <div className="text-xl font-black font-mono text-white relative z-10">
             {report.yara_scan.total_matches ?? report.yara_scan.match_count} Rules Hit
           </div>
-          <div className="text-xs text-slate-400 mt-1 flex items-center justify-between">
+          <div className="text-xs text-slate-300 mt-1 flex items-center justify-between relative z-10">
             <span>Scan Time: <strong className="text-amber-300">{report.yara_scan.scan_duration_ms ?? 14}ms</strong></span>
-            <span className="text-[11px] text-amber-400 flex items-center gap-0.5">Rules <ArrowUpRight className="w-3 h-3" /></span>
+            <span className="text-[11px] text-amber-400 font-bold flex items-center gap-0.5">Rules <ArrowUpRight className="w-3 h-3" /></span>
           </div>
         </div>
       </div>
@@ -246,8 +254,9 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
       {/* Analytics Breakdown & High-Priority Alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Threat Score Breakdown Chart */}
-        <div className="lg:col-span-2 glass-card hud-corner p-6 rounded-3xl">
-          <div className="flex items-center justify-between mb-4">
+        <div className="lg:col-span-2 glass-panel hover-glow-cyan hud-corner p-6 sm:p-7 rounded-3xl relative overflow-hidden border border-white/[0.12] group">
+          <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none" />
+          <div className="flex items-center justify-between mb-4 relative z-10">
             <div>
               <h3 className="text-sm font-extrabold text-white tracking-wide flex items-center gap-2">
                 <Activity className="w-4 h-4 text-cyan-400" /> Multi-Factor Score Breakdown
@@ -256,18 +265,18 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
                 Mathematical contribution of each analytical vector to the final score
               </p>
             </div>
-            <span className="text-xs font-mono font-bold text-cyan-300 bg-cyan-950/80 px-2.5 py-1 rounded-lg border border-cyan-800/50">
+            <span className="text-xs font-mono font-bold text-cyan-300 bg-cyan-950/80 px-2.5 py-1 rounded-lg border border-cyan-800/50 backdrop-blur-sm">
               Normalized (0-100)
             </span>
           </div>
 
-          <div className="h-56">
+          <div className="h-56 relative z-10">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={scoreData} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
-                <XAxis type="number" domain={[0, 30]} stroke="#475569" fontSize={11} fontStyle="monospace" />
+                <XAxis type="number" domain={[0, 30]} stroke="#64748b" fontSize={11} fontStyle="monospace" />
                 <YAxis dataKey="name" type="category" stroke="#cbd5e1" fontSize={12} fontStyle="monospace" width={80} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#070e1c', borderColor: '#06b6d4', borderRadius: '12px', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: 'rgba(8, 14, 28, 0.85)', backdropFilter: 'blur(16px)', borderColor: '#06b6d4', borderRadius: '12px', fontSize: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}
                   formatter={(val: any) => [`${val} Points`, 'Score Weight']}
                 />
                 <Bar dataKey="score" radius={[0, 8, 8, 0]}>
@@ -281,8 +290,9 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
         </div>
 
         {/* High-Priority Detection Flags */}
-        <div className="glass-card hud-corner p-6 rounded-3xl flex flex-col justify-between">
-          <div>
+        <div className="glass-panel hover-glow-rose hud-corner p-6 sm:p-7 rounded-3xl flex flex-col justify-between relative overflow-hidden border border-white/[0.12] group">
+          <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-rose-400/40 to-transparent pointer-events-none" />
+          <div className="relative z-10">
             <h3 className="text-sm font-extrabold text-white tracking-wide flex items-center gap-2 mb-1">
               <Flame className="w-4 h-4 text-rose-400" /> Critical Indicators
             </h3>
@@ -295,14 +305,14 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
                 (threat.high_priority_flags || threat.risk_factors || []).map((flag: string, idx: number) => (
                   <div 
                     key={idx} 
-                    className="p-3 bg-slate-950/80 rounded-xl border border-white/[0.05] text-xs flex items-start gap-2.5 shadow-sm"
+                    className="p-3 glass-subcard rounded-xl border border-white/[0.08] text-xs flex items-start gap-2.5 shadow-sm"
                   >
                     <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                     <span className="text-slate-200 font-medium">{flag}</span>
                   </div>
                 ))
               ) : (
-                <div className="p-4 bg-emerald-950/40 rounded-xl border border-emerald-500/30 text-xs text-emerald-300 flex items-center gap-2">
+                <div className="p-4 glass-subcard rounded-xl border border-emerald-500/30 text-xs text-emerald-300 flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   <span>No high-priority critical indicators flagged.</span>
                 </div>
@@ -310,7 +320,7 @@ export const DashboardOverview: React.FC<Props> = ({ report, onNavigateTab }) =>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-white/[0.06] mt-4 text-[11px] text-slate-400 flex items-center justify-between">
+          <div className="pt-4 border-t border-white/[0.08] mt-4 text-[11px] text-slate-400 flex items-center justify-between relative z-10">
             <span>Analyst Consensus</span>
             <span className="text-emerald-400 font-bold flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5" /> Verified High Accuracy

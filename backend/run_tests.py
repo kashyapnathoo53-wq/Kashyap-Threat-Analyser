@@ -11,9 +11,9 @@ from samples_generator import get_preset_samples, get_preset_sample_by_id
 def test_full_pipeline():
     print("[+] Testing Malware Threat Analysis Pipeline...")
     
-    preset = get_preset_sample_by_id("sample_wannacry")
-    content = preset["content_bytes"]
-    filename = preset["name"]
+    # Self-contained synthetic test payload for analytical pipeline verification
+    content = b"MZ\x90\0\x03\0\0\0vssadmin.exe delete shadows /all /quiet bcdedit /set {default} recoveryenabled No CryptEncrypt VirtualAllocEx WriteProcessMemory CreateRemoteThread 185.220.101.4 UPX0 UPX1"
+    filename = "test_synthetic_payload.bin"
     
     # 1. Static Analyzer
     sa = StaticAnalyzer()

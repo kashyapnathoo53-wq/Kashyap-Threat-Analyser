@@ -23,6 +23,52 @@ def collect_processes() -> Tuple[List[ProcessItem], CollectorReport]:
             ProcessItem(pid=1000, name="explorer.exe", ppid=4, path="C:\\Windows\\explorer.exe", user="User", integrity_level="Medium")
         ], CollectorReport(collector=collector_name, status="SUCCESS", item_count=2, duration_ms=duration))
 
+    # High-Performance Primary: Query via native psutil
+    try:
+        import psutil
+        for proc in psutil.process_iter(['pid', 'ppid', 'name', 'exe', 'cmdline', 'username']):
+            try:
+                info = proc.info
+                pid = int(info.get('pid') or 0)
+                ppid = int(info.get('ppid') or 0) if info.get('ppid') is not None else None
+                name = str(info.get('name') or "Unknown")
+                path = info.get('exe') or None
+                cmd_parts = info.get('cmdline') or []
+                cmdline = " ".join(cmd_parts) if isinstance(cmd_parts, list) else (str(cmd_parts) if cmd_parts else None)
+                user = str(info.get('username') or "N/A")
+
+                integrity = "Medium"
+                if user in ["NT AUTHORITY\\SYSTEM", "SYSTEM", "root"]:
+                    integrity = "SYSTEM"
+                elif user in ["NT AUTHORITY\\LOCAL SERVICE", "NT AUTHORITY\\NETWORK SERVICE"]:
+                    integrity = "Low"
+
+                is_sus, reasons = evaluate_process_heuristics(name, path or "", cmdline or "")
+                items.append(ProcessItem(
+                    pid=pid,
+                    name=name,
+                    ppid=ppid,
+                    path=path,
+                    cmdline=cmdline,
+                    user=user,
+                    integrity_level=integrity,
+                    is_suspicious=is_sus,
+                    suspicious_reasons=reasons
+                ))
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+
+        if len(items) > 5:
+            duration_ms = round((time.time() - t0) * 1000, 2)
+            return (items, CollectorReport(
+                collector=collector_name,
+                status="SUCCESS",
+                item_count=len(items),
+                duration_ms=duration_ms
+            ))
+    except Exception:
+        items.clear()
+
     # Step 1: Collect User and Session info using fast native tasklist
     user_map: Dict[int, str] = {}
     try:

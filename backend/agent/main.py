@@ -65,37 +65,42 @@ def run_local_scan(save_to_store: bool = True, storage_dir: Optional[str] = None
     snapshot_id = f"snap_{now_utc.strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}"
     collector_reports: Dict[str, CollectorReport] = {}
 
-    # 1. Collect Running Processes
-    processes, rep_proc = collect_processes()
+    from concurrent.futures import ThreadPoolExecutor
+
+    # Execute Phase 1 collectors concurrently
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        f_proc = executor.submit(collect_processes)
+        f_persist = executor.submit(collect_persistence)
+        f_services = executor.submit(collect_services)
+        f_tasks = executor.submit(collect_scheduled_tasks)
+        f_browser = executor.submit(collect_browser_info)
+
+        processes, rep_proc = f_proc.result()
+        persistence, rep_persist = f_persist.result()
+        services, rep_services = f_services.result()
+        tasks, rep_tasks = f_tasks.result()
+        browser_info, rep_browser = f_browser.result()
+
     collector_reports["processes"] = rep_proc
+    collector_reports["persistence"] = rep_persist
+    collector_reports["services"] = rep_services
+    collector_reports["scheduled_tasks"] = rep_tasks
+    collector_reports["browser"] = rep_browser
 
     # Build process map (PID -> Name) and referenced executable paths for downstream correlation
     proc_map = {p.pid: p.name for p in processes}
     proc_paths = [p.path for p in processes if p.path]
 
-    # 2. Collect Persistence Mechanisms (RunKeys, Startup folders, Winlogon)
-    persistence, rep_persist = collect_persistence()
-    collector_reports["persistence"] = rep_persist
+    # Execute Phase 2 collectors (dependent on process paths) concurrently
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        f_network = executor.submit(collect_network_connections, proc_map)
+        f_files = executor.submit(collect_security_files, proc_paths)
 
-    # 3. Collect Windows Services
-    services, rep_services = collect_services()
-    collector_reports["services"] = rep_services
+        network, rep_network = f_network.result()
+        files, rep_files = f_files.result()
 
-    # 4. Collect Scheduled Tasks
-    tasks, rep_tasks = collect_scheduled_tasks()
-    collector_reports["scheduled_tasks"] = rep_tasks
-
-    # 5. Collect Active Network Sockets & Correlate with Process PIDs
-    network, rep_network = collect_network_connections(proc_map)
     collector_reports["network"] = rep_network
-
-    # 6. Collect Security-Relevant Files (Downloads, Temp, AppData, referenced process paths)
-    files, rep_files = collect_security_files(proc_paths)
     collector_reports["files"] = rep_files
-
-    # 7. Collect Lightweight Browser Footprint
-    browser_info, rep_browser = collect_browser_info()
-    collector_reports["browser"] = rep_browser
 
     # Pre-screened unified suspicious items consolidation
     suspicious_items: List[SuspiciousSummaryItem] = []

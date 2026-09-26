@@ -23,15 +23,24 @@ import { cyberAudio } from './utils/cyberAudio';
 import { jarvisVoice, JarvisSpeechState } from './utils/jarvisVoice';
 import { detectClientHostEnvironment } from './utils/clientHostAuditor';
 import { 
+<<<<<<< HEAD
   Shield, ShieldAlert, ShieldCheck, Cpu, Terminal, Layers, Database, Code2, FileText, 
   Upload, AlertTriangle, MonitorCheck, Zap, Radio,
   Volume2, VolumeX, Palette, Bot, MessageSquare, Sliders,
   ChevronDown, ChevronUp, Play, Pause, Laptop, CheckCircle2, UserCheck, 
   RefreshCw, Crosshair, Radar, GitCompare, X
+=======
+  Shield, ShieldAlert, Cpu, Terminal, Layers, Database, Code2, FileText, 
+  Upload, AlertTriangle, MonitorCheck, Zap, Sparkles, Radio,
+  Volume2, VolumeX, Palette, ArrowUpRight, Bot, MessageSquare, Sliders,
+  ChevronDown, ChevronUp, Play, Pause, ShieldCheck, FolderSearch, Smartphone, Laptop
+>>>>>>> origin/main
 } from 'lucide-react';
 import { ThemeSelectorModal, ThemeId } from './components/ThemeSelectorModal';
+import { DeviceSentinelTab } from './components/DeviceSentinelTab';
 
 export type Theme = ThemeId;
+export type OperatingMode = 'device' | 'analyst';
 
 export const App: React.FC = () => {
   const [theme, setTheme] = useState<Theme>(() => {
@@ -40,6 +49,11 @@ export const App: React.FC = () => {
       return 'carbon';
     }
     return (saved as Theme) || 'carbon';
+  });
+
+  const [operatingMode, setOperatingMode] = useState<OperatingMode>(() => {
+    const saved = localStorage.getItem('pasha_operating_mode');
+    return (saved === 'analyst' || saved === 'device') ? (saved as OperatingMode) : 'device';
   });
 
   const [customColor, setCustomColor] = useState<string | null>(() => {
@@ -188,6 +202,49 @@ export const App: React.FC = () => {
     }, 60);
   };
 
+<<<<<<< HEAD
+=======
+  const handleSwitchMode = (mode: OperatingMode) => {
+    cyberAudio.playClick();
+    setOperatingMode(mode);
+    localStorage.setItem('pasha_operating_mode', mode);
+    if (mode === 'device') {
+      setActiveTab('device_sentinel');
+    } else {
+      setActiveTab('overview');
+    }
+    setTimeout(() => {
+      workspaceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 60);
+  };
+
+  const handleUpdateHostScore = (newScore: number, newStatus: string, newColor: string) => {
+    setHostAssessment(prev => ({
+      ...prev,
+      health_score: newScore,
+      status: newStatus,
+      status_color: newColor
+    }));
+  };
+
+  const [report, setReport] = useState<FullAnalysisReport>(FALLBACK_REPORTS['sample_wannacry']);
+  const [hostAssessment, setHostAssessment] = useState<HostAssessment>(() => detectClientHostEnvironment());
+  const [hostLoading, setHostLoading] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    const saved = localStorage.getItem('pasha_operating_mode');
+    return saved === 'analyst' ? 'overview' : 'device_sentinel';
+  });
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [showJarvisModal, setShowJarvisModal] = useState<boolean>(false);
+  const [showChatModal, setShowChatModal] = useState<boolean>(false);
+  const [chatInitialPrompt, setChatInitialPrompt] = useState<string>('');
+  const [speechState, setSpeechState] = useState<JarvisSpeechState>(jarvisVoice.getState());
+
+  useEffect(() => {
+    return jarvisVoice.subscribe(setSpeechState);
+  }, []);
+
+>>>>>>> origin/main
   const handleOpenJarvisChat = (prompt?: string) => {
     setChatInitialPrompt(prompt || '');
     setShowChatModal(true);
@@ -201,8 +258,18 @@ export const App: React.FC = () => {
     } else if (speechState.isPaused) {
       jarvisVoice.resume();
     } else {
+<<<<<<< HEAD
       const script = jarvisVoice.generateFullScript(report, hostAssessment || detectClientHostEnvironment());
       jarvisVoice.speak(script, 'full');
+=======
+      if (operatingMode === 'device') {
+        const script = `Device assessment for ${hostAssessment.host_info.os}. Host score is ${hostAssessment.health_score} out of 100. Status is ${hostAssessment.status}. Process isolation and browser sandbox protections are active. You can scan your computer's Downloads or Desktop files anytime by clicking Scan Folder.`;
+        jarvisVoice.speak(script, 'system');
+      } else {
+        const script = jarvisVoice.generateFullScript(report, hostAssessment);
+        jarvisVoice.speak(script, 'full');
+      }
+>>>>>>> origin/main
     }
   };
 
@@ -495,6 +562,7 @@ export const App: React.FC = () => {
             </div>
           </div>
 
+<<<<<<< HEAD
           {/* Center: Normal View vs Forensic Expert View Toggle */}
           <div className="flex items-center bg-slate-950/90 p-1 rounded-2xl border border-white/[0.12] text-xs font-mono shadow-inner">
             <button
@@ -524,6 +592,36 @@ export const App: React.FC = () => {
             >
               <Cpu className="w-3.5 h-3.5" />
               <span>Forensic Expert</span>
+=======
+          {/* Center: Concentric Dual-Mode Switcher */}
+          <div className="flex items-center bg-zinc-950/90 p-1 rounded-2xl border border-white/[0.1] shadow-inner text-xs font-mono">
+            <button
+              onClick={() => handleSwitchMode('device')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all duration-200 cursor-pointer ${
+                operatingMode === 'device'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-zinc-950 font-black shadow-md'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+              title="User Mode: Inspect & audit this device"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Device Sentinel</span>
+              <span className="hidden md:inline text-[9px] opacity-80">(User)</span>
+            </button>
+
+            <button
+              onClick={() => handleSwitchMode('analyst')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all duration-200 cursor-pointer ${
+                operatingMode === 'analyst'
+                  ? 'bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-500 text-zinc-950 font-black shadow-md'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+              title="Analyst Mode: Deep malware reversing & sandbox tools"
+            >
+              <Terminal className="w-3.5 h-3.5" />
+              <span>Malware Lab</span>
+              <span className="hidden md:inline text-[9px] opacity-80">(Analyst)</span>
+>>>>>>> origin/main
             </button>
           </div>
 
@@ -739,6 +837,7 @@ export const App: React.FC = () => {
             <div className="absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] via-transparent to-transparent pointer-events-none" />
 
+<<<<<<< HEAD
             {/* Host Health Hero Centerpiece */}
                 <div className="text-center space-y-2 mb-4 relative z-10 max-w-2xl mx-auto">
                   <div className="flex flex-wrap items-center justify-center gap-2">
@@ -809,6 +908,115 @@ export const App: React.FC = () => {
                         strokeWidth="2.5" 
                         strokeOpacity={hasScannedHost ? "0.8" : "0.5"} 
                         strokeDasharray="6 4" 
+=======
+            {/* Top: Centered Verdict Header */}
+            <div className="text-center space-y-2 mb-4 relative z-10 max-w-2xl mx-auto">
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {operatingMode === 'device' ? (
+                  <>
+                    <span 
+                      className="px-3 py-1 rounded-full text-[11px] font-mono font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
+                      style={{ 
+                        backgroundColor: `${hostAssessment?.status_color || '#10b981'}20`, 
+                        color: hostAssessment?.status_color || '#10b981', 
+                        border: `1px solid ${hostAssessment?.status_color || '#10b981'}50` 
+                      }}
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      {hostAssessment?.status || 'HARDENED / SECURE'}
+                    </span>
+                    <span className="text-xs font-mono text-zinc-300 font-bold px-2.5 py-0.5 rounded-lg bg-zinc-900/90 border border-white/[0.08]">
+                      {hostAssessment?.host_info?.os || 'Local Endpoint'}
+                    </span>
+                    <span className="text-xs font-mono text-zinc-400">
+                      {hostAssessment?.host_info?.architecture}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span 
+                      className="px-3 py-1 rounded-full text-[11px] font-mono font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
+                      style={{ 
+                        backgroundColor: `${report.threat_scoring.color}20`, 
+                        color: report.threat_scoring.color, 
+                        border: `1px solid ${report.threat_scoring.color}50` 
+                      }}
+                    >
+                      <ShieldAlert className="w-3.5 h-3.5" />
+                      {report.threat_scoring.severity}
+                    </span>
+                    <span className="text-xs font-mono text-zinc-300 font-bold px-2.5 py-0.5 rounded-lg bg-zinc-900/90 border border-white/[0.08]">
+                      {report.sample_name}
+                    </span>
+                    <span className="text-xs font-mono text-zinc-400">
+                      {report.threat_scoring.confidence ?? 98}% Confidence
+                    </span>
+                  </>
+                )}
+              </div>
+
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight">
+                {operatingMode === 'device' 
+                  ? `${hostAssessment?.host_info?.hostname} • Host Security Sentinel` 
+                  : report.threat_scoring.verdict}
+              </h2>
+
+              <p className="text-xs text-zinc-400 max-w-lg mx-auto line-clamp-2">
+                {operatingMode === 'device'
+                  ? 'Real-time operating system posture, browser sandbox isolation, and authorized local file audit.'
+                  : 'Consensus synthesized from Shannon entropy, Win32 syscall hooks, and MITRE ATT&CK tactics.'}
+              </p>
+            </div>
+
+            {/* Middle: Centered, Larger Arc Reactor */}
+            <div className="flex justify-center items-center my-6 relative z-10">
+              <div className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-60 md:h-60 flex items-center justify-center">
+                {/* Arc Reactor Bloom & Radial Energy */}
+                <div 
+                  className="absolute inset-2 rounded-full filter blur-2xl opacity-40 pointer-events-none transition-all duration-700"
+                  style={{ 
+                    background: `radial-gradient(circle, #ffffff 0%, #a1a1aa 35%, ${(operatingMode === 'device' ? hostAssessment?.status_color : report.threat_scoring.color) || '#10b981'}40 70%, transparent 100%)` 
+                  }}
+                />
+
+                <svg 
+                  className="w-full h-full drop-shadow-[0_0_25px_rgba(255,255,255,0.35)] cursor-pointer select-none transition-transform duration-300 hover:scale-105"
+                  viewBox="0 0 190 190"
+                  onClick={() => handleOpenTab(operatingMode === 'device' ? 'device_sentinel' : 'overview')}
+                >
+                  <defs>
+                    <filter id="arcGlowHub" x="-30%" y="-30%" width="160%" height="160%">
+                      <feGaussianBlur stdDeviation="3.5" result="glow" />
+                      <feMerge>
+                        <feMergeNode in="glow" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                    <radialGradient id="arcCoreGrad" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#ffffff" />
+                      <stop offset="40%" stopColor="#f4f4f5" />
+                      <stop offset="70%" stopColor="#a1a1aa" />
+                      <stop offset="100%" stopColor="#18181b" />
+                    </radialGradient>
+                  </defs>
+
+                  {/* Gunmetal Outer Chassis Ring */}
+                  <circle cx="95" cy="95" r="91" fill="none" stroke="#27272a" strokeWidth="2" />
+                  <circle cx="95" cy="95" r="87" fill="#09090b" stroke="#3f3f46" strokeWidth="2.5" strokeOpacity="0.8" strokeDasharray="6 4" />
+
+                  {/* 10 Arc Reactor Toroidal Electromagnet Coils */}
+                  {coils.map((deg, i) => (
+                    <g key={i} transform={`rotate(${deg} 95 95)`}>
+                      <rect
+                        x="91"
+                        y="12"
+                        width="8"
+                        height="16"
+                        rx="2"
+                        fill="#18181b"
+                        stroke="#71717a"
+                        strokeWidth="1.2"
+>>>>>>> origin/main
                       />
 
                       {coils.map((deg, i) => (
@@ -901,6 +1109,7 @@ export const App: React.FC = () => {
                     disabled={hostLoading}
                     className="group relative flex items-center justify-center gap-3 px-8 py-4.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:via-sky-400 hover:to-blue-500 text-slate-950 font-black rounded-2xl text-base transition-all duration-300 shadow-[0_0_35px_rgba(6,182,212,0.65)] hover:shadow-[0_0_55px_rgba(6,182,212,0.9)] hover:scale-[1.03] active:scale-[0.98] cursor-pointer border border-cyan-200/60"
                   >
+<<<<<<< HEAD
                     <div className="w-8 h-8 rounded-xl bg-slate-950/40 flex items-center justify-center text-cyan-200 shadow-inner">
                       <Shield className={`w-5 h-5 ${hostLoading ? 'animate-spin' : 'animate-pulse'}`} />
                     </div>
@@ -913,6 +1122,24 @@ export const App: React.FC = () => {
                       </div>
                     </div>
                   </button>
+=======
+                    {operatingMode === 'device' ? (hostAssessment?.health_score ?? 96) : report.threat_scoring.threat_score}
+                  </text>
+                  <text 
+                    x="95" 
+                    y="114" 
+                    textAnchor="middle" 
+                    fill="#a1a1aa" 
+                    fontSize="10" 
+                    fontWeight="800" 
+                    fontFamily="monospace"
+                  >
+                    {operatingMode === 'device' ? '/100 HEALTH' : '/100 THREAT'}
+                  </text>
+                </svg>
+              </div>
+            </div>
+>>>>>>> origin/main
 
                   <button
                     onClick={() => {
@@ -936,6 +1163,7 @@ export const App: React.FC = () => {
             {/* Symmetrical Vitals Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 relative z-10 pt-2 font-mono text-xs">
               
+<<<<<<< HEAD
               {/* Card 1: Host Integrity */}
               <div 
                 onClick={() => {
@@ -999,6 +1227,125 @@ export const App: React.FC = () => {
                   {hasScannedHost ? 'SECURE • 0 UNKNOWN' : 'AWAITING SCAN'}
                 </div>
               </div>
+=======
+              {operatingMode === 'device' ? (
+                <>
+                  {/* Card 1: Visitor Host Health */}
+                  <div 
+                    onClick={() => handleOpenTab('device_sentinel')}
+                    className="bg-zinc-900/80 hover:bg-zinc-800/90 p-3.5 rounded-2xl border border-white/[0.08] hover:border-zinc-500/50 transition cursor-pointer text-center group shadow-md"
+                    title="Click to view Device Sentinel"
+                  >
+                    <div className="text-[10px] text-zinc-400 group-hover:text-zinc-200 transition flex items-center justify-center gap-1">
+                      <MonitorCheck className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>Host Integrity</span>
+                    </div>
+                    <div className="text-lg font-black text-white mt-1">
+                      {hostAssessment?.health_score ?? 100}/100
+                    </div>
+                    <div className="text-[10px] text-emerald-400 font-bold mt-0.5 flex items-center justify-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                      <span>{hostAssessment?.status || 'OPTIMAL'}</span>
+                      <span className="text-zinc-500 text-[9px]">({hostAssessment?.host_info?.os?.split(' ')[0] || 'Browser'})</span>
+                    </div>
+                  </div>
+
+                  {/* Card 2: Memory & Sandbox Handles */}
+                  <div 
+                    onClick={() => handleOpenTab('host')}
+                    className="bg-zinc-900/80 hover:bg-zinc-800/90 p-3.5 rounded-2xl border border-white/[0.08] hover:border-zinc-500/50 transition cursor-pointer text-center group shadow-md"
+                    title="Click to view Deep System Assessment"
+                  >
+                    <div className="text-[10px] text-zinc-400 group-hover:text-zinc-200 transition flex items-center justify-center gap-1">
+                      <Cpu className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>Sandbox Defense</span>
+                    </div>
+                    <div className="text-lg font-black text-emerald-300 mt-1">
+                      {hostAssessment?.summary?.total_processes_scanned ?? 256} Handles
+                    </div>
+                    <div className="text-[10px] text-zinc-400 font-bold mt-0.5">
+                      V8 MEMORY ISOLATED
+                    </div>
+                  </div>
+
+                  {/* Card 3: File & Folder Scanner */}
+                  <div 
+                    onClick={() => handleOpenTab('device_sentinel')}
+                    className="bg-zinc-900/80 hover:bg-zinc-800/90 p-3.5 rounded-2xl border border-white/[0.08] hover:border-zinc-500/50 transition cursor-pointer text-center group shadow-md"
+                    title="Click to scan local files and folders"
+                  >
+                    <div className="text-[10px] text-zinc-400 group-hover:text-zinc-200 transition flex items-center justify-center gap-1">
+                      <FolderSearch className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>Local File Audit</span>
+                    </div>
+                    <div className="text-lg font-black text-white mt-1">
+                      SCAN FILES
+                    </div>
+                    <div className="text-[10px] text-zinc-400 font-bold mt-0.5">
+                      Downloads &bull; Desktop Audit
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Card 1: Host Integrity */}
+                  <div 
+                    onClick={() => handleOpenTab('host')}
+                    className="bg-zinc-900/80 hover:bg-zinc-800/90 p-3.5 rounded-2xl border border-white/[0.08] hover:border-zinc-500/50 transition cursor-pointer text-center group shadow-md"
+                    title="Click to view Visitor Host Security Assessment"
+                  >
+                    <div className="text-[10px] text-zinc-400 group-hover:text-zinc-200 transition flex items-center justify-center gap-1">
+                      <MonitorCheck className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>Host Integrity</span>
+                    </div>
+                    <div className="text-lg font-black text-white mt-1">
+                      {hostAssessment?.health_score ?? 100}/100
+                    </div>
+                    <div className="text-[10px] text-emerald-400 font-bold mt-0.5 flex items-center justify-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                      <span>{hostAssessment?.status || 'OPTIMAL'}</span>
+                      <span className="text-zinc-500 text-[9px]">({hostAssessment?.host_info?.os?.split(' ')[0] || 'Browser'})</span>
+                    </div>
+                  </div>
+
+                  {/* Card 2: Extracted Forensic IOCs */}
+                  <div 
+                    onClick={() => handleOpenTab('iocs')}
+                    className="bg-zinc-900/80 hover:bg-zinc-800/90 p-3.5 rounded-2xl border border-white/[0.08] hover:border-zinc-500/50 transition cursor-pointer text-center group shadow-md"
+                    title="Click to view Extracted IOCs"
+                  >
+                    <div className="text-[10px] text-zinc-400 group-hover:text-zinc-200 transition flex items-center justify-center gap-1">
+                      <Database className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>Forensic IOCs</span>
+                    </div>
+                    <div className="text-lg font-black text-white mt-1">
+                      {report.ioc_extraction.total_extracted}
+                    </div>
+                    <div className="text-[10px] text-zinc-400 font-bold mt-0.5">
+                      {report.ioc_extraction.summary_by_category?.['Network C2'] || 0} C2 IPs &bull; Hashes Extracted
+                    </div>
+                  </div>
+
+                  {/* Card 3: Deep Scan Latency */}
+                  <div 
+                    onClick={() => handleOpenTab('static')}
+                    className="bg-zinc-900/80 hover:bg-zinc-800/90 p-3.5 rounded-2xl border border-white/[0.08] hover:border-zinc-500/50 transition cursor-pointer text-center group shadow-md"
+                    title="Click to view Static Analysis"
+                  >
+                    <div className="text-[10px] text-zinc-400 group-hover:text-zinc-200 transition flex items-center justify-center gap-1">
+                      <Zap className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>Scan Latency</span>
+                    </div>
+                    <div className="text-lg font-black text-white mt-1">
+                      {(report as any).analysis_duration_ms || 18}ms
+                    </div>
+                    <div className="text-[10px] text-zinc-400 font-bold mt-0.5">
+                      ZERO-LAG PIPELINE
+                    </div>
+                  </div>
+                </>
+              )}
+>>>>>>> origin/main
 
               {/* Card 4: J.A.R.V.I.S. Audio & Help */}
               <div className="glass-card p-2 rounded-2xl border border-white/[0.14] flex flex-col justify-center gap-1.5 shadow-md relative overflow-hidden">
@@ -1122,6 +1469,7 @@ export const App: React.FC = () => {
           </div>
         ) : (
           <>
+<<<<<<< HEAD
             {/* VIEW MODE 1: NORMAL VIEW (Simple, Human-Friendly Dashboard) */}
             {viewMode === 'simple' ? (
               <NormalUserDashboard
@@ -1146,10 +1494,135 @@ export const App: React.FC = () => {
                     {FORENSIC_WORKFLOW_TABS.map(tab => {
                       const Icon = tab.icon;
                       const isActive = activeTab === tab.id;
+=======
+            {/* Streamlined Tab Rail with Primary Tabs & Secondary Forensic Tools Dropdown */}
+            <div 
+              ref={workspaceRef}
+              id="workspace-tabs"
+              className="flex flex-wrap items-center justify-between glass-panel p-1.5 rounded-2xl border border-white/[0.08] text-xs font-bold gap-2 shadow-xl scroll-mt-20 bg-zinc-950/80"
+            >
+              {/* Primary Tabs dependent on operatingMode */}
+              <div className="flex items-center gap-1.5 overflow-x-auto">
+                {operatingMode === 'device' ? (
+                  [
+                    { 
+                      id: 'device_sentinel', 
+                      label: 'My Device Sentinel', 
+                      icon: ShieldCheck, 
+                      badge: `${hostAssessment?.health_score ?? 96}/100`, 
+                      badgeColor: hostAssessment?.status_color || '#10b981' 
+                    },
+                    { 
+                      id: 'host', 
+                      label: 'System Assessment', 
+                      icon: MonitorCheck 
+                    },
+                    { 
+                      id: 'report', 
+                      label: 'Security Roadmap', 
+                      icon: FileText 
+                    }
+                  ].map(tab => {
+                    const Icon = tab.icon;
+                    const isActive = activeTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => handleOpenTab(tab.id)}
+                        className={`flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all duration-200 whitespace-nowrap text-xs font-bold cursor-pointer ${
+                          isActive 
+                            ? 'bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-slate-950 font-black shadow-md shadow-emerald-950/80 scale-[1.01] border border-emerald-400/50' 
+                            : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span>{tab.label}</span>
+                        {tab.badge && (
+                          <span 
+                            className="px-1.5 py-0.5 text-[10px] font-mono font-black rounded text-slate-950 shadow-sm"
+                            style={{ backgroundColor: tab.badgeColor || '#10b981' }}
+                          >
+                            {tab.badge}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })
+                ) : (
+                  [
+                    { id: 'overview', label: 'Executive Overview', icon: ShieldAlert },
+                    { id: 'sandbox', label: 'Behavioral Sandbox', icon: Terminal },
+                    { 
+                      id: 'host', 
+                      label: 'System Assessment', 
+                      icon: MonitorCheck, 
+                      badge: hostAssessment ? `${hostAssessment.health_score}/100` : undefined, 
+                      badgeColor: hostAssessment?.status_color 
+                    },
+                    { id: 'report', label: 'Report & Remediation', icon: FileText }
+                  ].map(tab => {
+                    const Icon = tab.icon;
+                    const isActive = activeTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => handleOpenTab(tab.id)}
+                        className={`flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all duration-200 whitespace-nowrap text-xs font-bold cursor-pointer ${
+                          isActive 
+                            ? 'bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-slate-950 font-black shadow-md shadow-cyan-950/80 scale-[1.01] border border-cyan-400/50' 
+                            : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span>{tab.label}</span>
+                        {tab.badge && (
+                          <span 
+                            className="px-1.5 py-0.5 text-[10px] font-mono font-black rounded text-slate-950 shadow-sm"
+                            style={{ backgroundColor: tab.badgeColor || '#06b6d4' }}
+                          >
+                            {tab.badge}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Secondary Forensic Tools in Clean Dropdown */}
+              <div className="relative" data-dropdown>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    cyberAudio.playClick();
+                    setShowMoreToolsDropdown(prev => !prev);
+                  }}
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all duration-200 text-xs font-bold cursor-pointer border ${
+                    isSecondaryActive 
+                      ? 'bg-zinc-800 text-white border-zinc-500 shadow-md' 
+                      : 'bg-zinc-900/80 text-zinc-400 hover:text-white border-white/[0.08] hover:border-zinc-500'
+                  }`}
+                  title="Deep Forensic Tools"
+                >
+                  <Layers className="w-4 h-4 text-zinc-300" />
+                  <span>{activeSecondaryTool ? activeSecondaryTool.label : 'More Forensic Tools'}</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showMoreToolsDropdown ? 'rotate-180' : ''}`} />
+                </button>
+
+                {showMoreToolsDropdown && (
+                  <div className="absolute right-0 mt-2 w-60 glass-panel rounded-2xl border border-white/[0.12] shadow-2xl p-1.5 z-40 animate-fadeIn text-xs space-y-1 bg-zinc-950/95">
+                    <div className="px-3 py-1 text-[10px] font-mono text-zinc-400 font-bold uppercase border-b border-white/[0.06] mb-1">
+                      Secondary Forensic Tools
+                    </div>
+                    {SECONDARY_TOOLS.map(tool => {
+                      const ToolIcon = tool.icon;
+                      const isSelected = activeTab === tool.id;
+>>>>>>> origin/main
                       return (
                         <button
                           key={tab.id}
                           onClick={() => {
+<<<<<<< HEAD
                             setActiveTab(tab.id);
                             cyberAudio.playTabSwitch();
                           }}
@@ -1201,12 +1674,29 @@ export const App: React.FC = () => {
                         >
                           <SubIcon className="w-3.5 h-3.5 text-cyan-400" />
                           <span>{sub.label}</span>
+=======
+                            handleOpenTab(tool.id);
+                            setShowMoreToolsDropdown(false);
+                          }}
+                          className={`w-full flex items-start gap-2.5 px-3 py-2 rounded-xl transition text-left cursor-pointer ${
+                            isSelected 
+                              ? 'bg-zinc-800 text-white font-bold border border-zinc-500' 
+                              : 'hover:bg-white/[0.06] text-zinc-300 hover:text-white'
+                          }`}
+                        >
+                          <ToolIcon className="w-4 h-4 text-zinc-300 mt-0.5 shrink-0" />
+                          <div>
+                            <div className="font-semibold leading-tight">{tool.label}</div>
+                            <div className="text-[10px] text-zinc-400">{tool.desc}</div>
+                          </div>
+>>>>>>> origin/main
                         </button>
                       );
                     })}
                   </div>
                 )}
 
+<<<<<<< HEAD
                 {/* Active Viewport Content for Forensic Mode */}
                 <div className="transition-all duration-300">
                   {activeTab === 'host' && (
@@ -1288,6 +1778,34 @@ export const App: React.FC = () => {
                 </div>
               </div>
             )}
+=======
+            {/* Active Viewport */}
+            <div className="transition-all duration-300">
+              {activeTab === 'device_sentinel' && (
+                <DeviceSentinelTab 
+                  hostAssessment={hostAssessment}
+                  onUpdateHostScore={handleUpdateHostScore}
+                  onOpenJarvisChat={handleOpenJarvisChat}
+                />
+              )}
+              {activeTab === 'host' && (
+                <SystemAssessmentTab 
+                  assessment={hostAssessment} 
+                  loading={hostLoading} 
+                  onRescan={runHostAutoAssessment} 
+                  report={report}
+                  onOpenJarvisChat={handleOpenJarvisChat}
+                />
+              )}
+              {activeTab === 'overview' && <DashboardOverview report={report} onNavigateTab={setActiveTab} />}
+              {activeTab === 'static' && <StaticAnalysisTab staticAnalysis={report.static_analysis} />}
+              {activeTab === 'sandbox' && <BehavioralSandboxTab behavioral={report.behavioral_analysis} />}
+              {activeTab === 'mitre' && <MitreAttackTab mitre={report.mitre_mapping} />}
+              {activeTab === 'iocs' && <IocExtractorTab ioc={report.ioc_extraction} reportId={report.report_id} />}
+              {activeTab === 'yara' && <YaraWorkbenchTab yaraScan={report.yara_scan} />}
+              {activeTab === 'report' && <ReportGeneratorTab report={report} />}
+            </div>
+>>>>>>> origin/main
           </>
         )}
       </main>

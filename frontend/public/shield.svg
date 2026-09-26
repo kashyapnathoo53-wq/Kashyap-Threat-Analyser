@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <radialGradient id="arcCore" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="25%" stop-color="#67e8f9"/>
+      <stop offset="60%" stop-color="#0284c7"/>
+      <stop offset="90%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </radialGradient>
+    <radialGradient id="bloomGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#0284c7" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="coreGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Ambient Arc Bloom -->
+  <circle cx="32" cy="32" r="31" fill="url(#bloomGlow)"/>
+
+  <!-- Outer Dark Armored Ring -->
+  <circle cx="32" cy="32" r="30" fill="#09090b" stroke="#00f2fe" stroke-width="2" stroke-opacity="0.9"/>
+  <circle cx="32" cy="32" r="27.5" fill="#09090b" stroke="#334155" stroke-width="1"/>
+
+  <!-- 10 Toroidal Cyan Electromagnets (Arc Reactor) -->
+  <g>
+    <rect x="30" y="3" width="4" height="6.5" rx="1" fill="#0369a1" stroke="#38bdf8" stroke-width="0.9" />
+    <rect x="30" y="3" width="4" height="6.5" rx="1" fill="#0369a1" stroke="#38bdf8" stroke-width="0.9" transform="rotate(36 32 32)" />
+    <rect x="30" y="3" width="4" height="6.5" rx="1" fill="#0369a1" stroke="#38bdf8" stroke-width="0.9" transform="rotate(72 32 32)" />
+    <rect x="30" y="3" width="4" height="6.5" rx="1" fill="#0369a1" stroke="#38bdf8" stroke-width="0.9" transform="rotate(108 32 32)" />
+    <rect x="30" y="3" width="4" height="6.5" rx="1" fill="#0369a1" stroke="#38bdf8" stroke-width="0.9" transform="rotate(144 32 32)" />
+    <rect x="30" y="3" width="4" height="6.5" rx="1" fill="#0369a1" stroke="#38bdf8" stroke-width="0.9" transform="rotate(180 32 32)" />
+    <rect x="30" y="3" width="4" height="6.5" rx="1" fill="#0369a1" stroke="#38bdf8" stroke-width="0.9" transform="rotate(216 32 32)" />
+    <rect x="30" y="3" width="4" height="6.5" rx="1" fill="#0369a1" stroke="#38bdf8" stroke-width="0.9" transform="rotate(252 32 32)" />
+    <rect x="30" y="3" width="4" height="6.5" rx="1" fill="#0369a1" stroke="#38bdf8" stroke-width="0.9" transform="rotate(288 32 32)" />
+    <rect x="30" y="3" width="4" height="6.5" rx="1" fill="#0369a1" stroke="#38bdf8" stroke-width="0.9" transform="rotate(324 32 32)" />
+  </g>
+
+  <!-- Intermediate Stator Ring with Magnetic Flux Dashes -->
+  <circle cx="32" cy="32" r="21" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="5 3" opacity="0.95"/>
+  <circle cx="32" cy="32" r="16.5" fill="none" stroke="#0284c7" stroke-width="1.3" stroke-opacity="0.8"/>
+
+  <!-- Glowing Luminous Palladium Core -->
+  <circle cx="32" cy="32" r="13" fill="url(#arcCore)" filter="url(#coreGlow)"/>
+
+  <!-- Central Supercharged White Fusion Center -->
+  <circle cx="32" cy="32" r="6" fill="#ffffff" filter="url(#coreGlow)"/>
+  <circle cx="32" cy="32" r="3" fill="#ffffff"/>
+</svg>

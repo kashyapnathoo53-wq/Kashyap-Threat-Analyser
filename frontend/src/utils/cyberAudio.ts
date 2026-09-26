@@ -202,6 +202,35 @@ class CyberAudioEngine {
       });
     } catch {}
   }
+
+  // Futuristic affirmative chime for clean scans / successful verifications
+  public playSuccess() {
+    if (this.isMuted) return;
+    try {
+      this.initContext();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      [
+        { f: 587.33, t: 0 },    // D5
+        { f: 880, t: 0.08 },    // A5
+        { f: 1174.66, t: 0.16 } // D6
+      ].forEach(note => {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(note.f, now + note.t);
+        gain.gain.setValueAtTime(0.08, now + note.t);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + note.t + 0.18);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now + note.t);
+        osc.stop(now + note.t + 0.2);
+      });
+    } catch {}
+  }
 }
 
 export const cyberAudio = new CyberAudioEngine();

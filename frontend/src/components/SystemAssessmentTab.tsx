@@ -89,11 +89,13 @@ export const SystemAssessmentTab: React.FC<Props> = ({
 
       {/* Hero Health Banner */}
       <div 
-        className="glass-panel p-6 sm:p-7 rounded-3xl relative overflow-hidden border border-white/[0.1] shadow-2xl transition-all"
+        className="glass-panel p-6 sm:p-7 rounded-3xl relative overflow-hidden border border-white/[0.14] shadow-2xl transition-all duration-500 group"
         style={{
-          boxShadow: `0 0 45px ${status_color}20`
+          boxShadow: `0 0 45px ${status_color}25`
         }}
       >
+        {/* Top specular reflection line */}
+        <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
         <div 
           className="absolute -right-20 -top-20 w-80 h-80 rounded-full blur-3xl opacity-20 pointer-events-none"
           style={{ backgroundColor: status_color }}
@@ -108,7 +110,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                   cx="50"
                   cy="50"
                   r={radius}
-                  className="stroke-slate-800"
+                  className="stroke-slate-800/80"
                   strokeWidth="8"
                   fill="transparent"
                 />
@@ -144,10 +146,10 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                 >
                   {status}
                 </span>
-                <span className="text-xs font-mono text-slate-400 bg-slate-900/90 px-2.5 py-0.5 rounded-lg border border-white/[0.06]">
+                <span className="text-xs font-mono text-slate-300 bg-white/[0.04] px-2.5 py-0.5 rounded-lg border border-white/[0.10] backdrop-blur-sm">
                   HOST: {host_info.hostname}
                 </span>
-                <span className="text-xs text-slate-500 font-mono">
+                <span className="text-xs text-slate-400 font-mono">
                   ARCH: {host_info.architecture}
                 </span>
               </div>
@@ -168,7 +170,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                 cyberAudio.playClick();
                 jarvisVoice.speak(jarvisVoice.generateSystemScript(assessment), 'system');
               }}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-600/30 via-sky-600/30 to-blue-500/30 hover:from-cyan-600/50 hover:to-blue-500/50 text-cyan-200 hover:text-white font-bold text-xs rounded-xl border border-cyan-500/50 hover:border-cyan-400 transition shadow-lg shadow-cyan-950/40 cursor-pointer"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-600/30 via-sky-600/30 to-blue-500/30 hover:from-cyan-600/50 hover:to-blue-500/50 text-cyan-200 hover:text-white font-bold text-xs rounded-xl border border-cyan-500/50 hover:border-cyan-400 transition shadow-lg shadow-cyan-950/40 cursor-pointer backdrop-blur-sm"
             >
               <Bot className="w-4 h-4 text-cyan-400" />
               <span>Hear J.A.R.V.I.S. Host Diagnosis</span>
@@ -176,9 +178,9 @@ export const SystemAssessmentTab: React.FC<Props> = ({
 
             <button
               onClick={onRescan}
-              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs rounded-xl transition shadow-lg shadow-cyan-950/60 shrink-0 cursor-pointer"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs sm:text-sm rounded-xl transition shadow-[0_0_20px_rgba(6,182,212,0.5)] hover:shadow-[0_0_30px_rgba(6,182,212,0.8)] shrink-0 cursor-pointer border border-cyan-200"
             >
-              <RefreshCw className="w-4 h-4" /> <span>Re-scan Host</span>
+              <RefreshCw className="w-4 h-4" /> <span>🛡️ Run Full Computer Scan</span>
             </button>
           </div>
         </div>
@@ -186,70 +188,128 @@ export const SystemAssessmentTab: React.FC<Props> = ({
 
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Running Processes */}
         <div 
           onClick={() => setActiveSubTab('processes')}
-          className="glass-card p-4 rounded-2xl cursor-pointer group hover:border-cyan-500/50 hover:shadow-cyan-950/30"
+          className="glass-card hover-glow-cyan p-5 rounded-2xl border border-white/[0.14] cursor-pointer group transition-all duration-500 hover:-translate-y-1 relative overflow-hidden flex flex-col justify-between"
         >
-          <div className="flex justify-between items-center text-slate-400 text-xs font-bold uppercase mb-1">
-            <span className="group-hover:text-cyan-400 transition">Running Processes</span>
-            <Cpu className="w-4 h-4 text-cyan-400" />
+          {/* Top specular reflection line */}
+          <div className="absolute top-0 inset-x-4 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none" />
+          {/* Ambient backlight orb */}
+          <div className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-cyan-500/15 blur-xl group-hover:bg-cyan-500/30 transition-all duration-500 pointer-events-none" />
+
+          <div className="relative z-10">
+            <div className="flex justify-between items-center text-slate-400 text-xs font-bold uppercase mb-1">
+              <span className="group-hover:text-cyan-400 transition flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                Running Processes
+              </span>
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 backdrop-blur-md group-hover:scale-110 transition-transform">
+                <Cpu className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-2xl font-black font-mono text-white mt-1">
+              {summary.total_processes_scanned}
+            </div>
           </div>
-          <div className="text-2xl font-black font-mono text-white">
-            {summary.total_processes_scanned}
-          </div>
-          <div className="text-xs mt-1">
+          <div className="text-xs mt-2 pt-2 border-t border-white/[0.06] relative z-10">
             {summary.suspicious_processes > 0 ? (
-              <span className="text-rose-400 font-bold">{summary.suspicious_processes} Suspicious Anomaly</span>
+              <span className="text-rose-400 font-bold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
+                {summary.suspicious_processes} Suspicious Anomaly
+              </span>
             ) : (
-              <span className="text-emerald-400 font-bold">Verified Benign</span>
+              <span className="text-emerald-400 font-bold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                Verified Benign
+              </span>
             )}
           </div>
         </div>
 
+        {/* Card 2: Known CVEs Found */}
         <div 
           onClick={() => setActiveSubTab('vulns')}
-          className="glass-card p-4 rounded-2xl cursor-pointer group hover:border-amber-500/50"
+          className="glass-card hover-glow-amber p-5 rounded-2xl border border-white/[0.14] cursor-pointer group transition-all duration-500 hover:-translate-y-1 relative overflow-hidden flex flex-col justify-between"
         >
-          <div className="flex justify-between items-center text-slate-400 text-xs font-bold uppercase mb-1">
-            <span className="group-hover:text-amber-300 transition">Known CVEs Found</span>
-            <AlertOctagon className="w-4 h-4 text-amber-400" />
+          {/* Top specular reflection line */}
+          <div className="absolute top-0 inset-x-4 h-[1px] bg-gradient-to-r from-transparent via-amber-400/40 to-transparent pointer-events-none" />
+          {/* Ambient backlight orb */}
+          <div className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-amber-500/15 blur-xl group-hover:bg-amber-500/30 transition-all duration-500 pointer-events-none" />
+
+          <div className="relative z-10">
+            <div className="flex justify-between items-center text-slate-400 text-xs font-bold uppercase mb-1">
+              <span className="group-hover:text-amber-300 transition flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                Known CVEs Found
+              </span>
+              <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 backdrop-blur-md group-hover:scale-110 transition-transform">
+                <AlertOctagon className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-2xl font-black font-mono text-amber-400 mt-1">
+              {summary.known_vulnerabilities_detected}
+            </div>
           </div>
-          <div className="text-2xl font-black font-mono text-amber-400">
-            {summary.known_vulnerabilities_detected}
-          </div>
-          <div className="text-xs text-slate-400 mt-1">
+          <div className="text-xs text-slate-400 mt-2 pt-2 border-t border-white/[0.06] relative z-10">
             Across {summary.installed_software_scanned} audited packages
           </div>
         </div>
 
+        {/* Card 3: Forecasted Vectors */}
         <div 
           onClick={() => setActiveSubTab('forecast')}
-          className="glass-card p-4 rounded-2xl cursor-pointer group hover:border-purple-500/50"
+          className="glass-card hover-glow-violet p-5 rounded-2xl border border-white/[0.14] cursor-pointer group transition-all duration-500 hover:-translate-y-1 relative overflow-hidden flex flex-col justify-between"
         >
-          <div className="flex justify-between items-center text-slate-400 text-xs font-bold uppercase mb-1">
-            <span className="group-hover:text-purple-300 transition">Forecasted Vectors</span>
-            <TrendingUp className="w-4 h-4 text-purple-400" />
+          {/* Top specular reflection line */}
+          <div className="absolute top-0 inset-x-4 h-[1px] bg-gradient-to-r from-transparent via-purple-400/40 to-transparent pointer-events-none" />
+          {/* Ambient backlight orb */}
+          <div className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-purple-500/15 blur-xl group-hover:bg-purple-500/30 transition-all duration-500 pointer-events-none" />
+
+          <div className="relative z-10">
+            <div className="flex justify-between items-center text-slate-400 text-xs font-bold uppercase mb-1">
+              <span className="group-hover:text-purple-300 transition flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                Forecasted Vectors
+              </span>
+              <div className="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 backdrop-blur-md group-hover:scale-110 transition-transform">
+                <TrendingUp className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-2xl font-black font-mono text-purple-300 mt-1">
+              {threat_forecast.length} Scenarios
+            </div>
           </div>
-          <div className="text-2xl font-black font-mono text-purple-300">
-            {threat_forecast.length} Scenarios
-          </div>
-          <div className="text-xs text-slate-400 mt-1">
+          <div className="text-xs text-slate-400 mt-2 pt-2 border-t border-white/[0.06] relative z-10">
             Predictive threat vectors modeled
           </div>
         </div>
 
+        {/* Card 4: Required Fixes */}
         <div 
           onClick={() => setActiveSubTab('remediation')}
-          className="glass-card p-4 rounded-2xl cursor-pointer group hover:border-emerald-500/50"
+          className="glass-card hover-glow-emerald p-5 rounded-2xl border border-white/[0.14] cursor-pointer group transition-all duration-500 hover:-translate-y-1 relative overflow-hidden flex flex-col justify-between"
         >
-          <div className="flex justify-between items-center text-slate-400 text-xs font-bold uppercase mb-1">
-            <span className="group-hover:text-emerald-300 transition">Required Fixes</span>
-            <Wrench className="w-4 h-4 text-emerald-400" />
+          {/* Top specular reflection line */}
+          <div className="absolute top-0 inset-x-4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent pointer-events-none" />
+          {/* Ambient backlight orb */}
+          <div className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-emerald-500/15 blur-xl group-hover:bg-emerald-500/30 transition-all duration-500 pointer-events-none" />
+
+          <div className="relative z-10">
+            <div className="flex justify-between items-center text-slate-400 text-xs font-bold uppercase mb-1">
+              <span className="group-hover:text-emerald-300 transition flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Required Fixes
+              </span>
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 backdrop-blur-md group-hover:scale-110 transition-transform">
+                <Wrench className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-2xl font-black font-mono text-emerald-300 mt-1">
+              {remediation_plan.length} Actions
+            </div>
           </div>
-          <div className="text-2xl font-black font-mono text-emerald-300">
-            {remediation_plan.length} Actions
-          </div>
-          <div className="text-xs text-slate-400 mt-1">
+          <div className="text-xs text-slate-400 mt-2 pt-2 border-t border-white/[0.06] relative z-10">
             Prioritized remediation steps
           </div>
         </div>
@@ -287,20 +347,21 @@ export const SystemAssessmentTab: React.FC<Props> = ({
       {activeSubTab === 'overview' && (
         <div className="space-y-6">
           {safeThreats.length > 0 && (
-            <div className="bg-rose-950/40 border border-rose-500/60 p-5 rounded-3xl space-y-3 shadow-xl shadow-rose-950/20">
-              <div className="flex items-center gap-2 text-rose-300 font-extrabold text-sm">
+            <div className="glass-card hover-glow-rose border border-rose-500/60 p-5 rounded-3xl space-y-3 shadow-xl shadow-rose-950/30 relative overflow-hidden group">
+              <div className="absolute top-0 inset-x-6 h-[1px] bg-gradient-to-r from-transparent via-rose-400/50 to-transparent pointer-events-none" />
+              <div className="flex items-center gap-2 text-rose-300 font-extrabold text-sm relative z-10">
                 <ShieldAlert className="w-5 h-5 text-rose-400" />
                 <span>ALERT: Suspicious Malware Process Signatures Operating on Host!</span>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 relative z-10">
                 {safeThreats.map((t, idx) => (
-                  <div key={idx} className="bg-slate-950/90 p-3.5 rounded-2xl border border-rose-900/60 text-xs font-mono flex justify-between items-center">
+                  <div key={idx} className="glass-subcard p-3.5 rounded-2xl border border-rose-500/40 text-xs font-mono flex justify-between items-center">
                     <div>
                       <span className="text-rose-400 font-bold">{t.name} (PID: {t.pid})</span>
-                      <div className="text-slate-400 mt-0.5">{t.path}</div>
+                      <div className="text-slate-300 mt-0.5">{t.path}</div>
                       <div className="text-amber-400 mt-0.5">{t.anomaly_reason}</div>
                     </div>
-                    <span className="px-2.5 py-1 bg-rose-900 text-rose-200 text-[10px] font-bold rounded-lg">
+                    <span className="px-2.5 py-1 bg-rose-900/80 text-rose-200 text-[10px] font-bold rounded-lg border border-rose-700/50">
                       CRITICAL RISK
                     </span>
                   </div>
@@ -309,8 +370,9 @@ export const SystemAssessmentTab: React.FC<Props> = ({
             </div>
           )}
           {/* Active Process Threat Detection */}
-          <div className="glass-card p-6 rounded-3xl space-y-4">
-            <div className="flex items-center justify-between">
+          <div className="glass-panel hover-glow-cyan p-6 sm:p-7 rounded-3xl border border-white/[0.12] space-y-4 relative overflow-hidden group">
+            <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none" />
+            <div className="flex items-center justify-between relative z-10">
               <div className="flex items-center gap-3">
                 <div className={`p-2.5 rounded-xl ${safeThreats.length > 0 ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
                   {safeThreats.length > 0 ? <AlertOctagon className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
@@ -336,9 +398,9 @@ export const SystemAssessmentTab: React.FC<Props> = ({
             </div>
 
             {safeThreats.length > 0 && (
-              <div className="overflow-x-auto border border-rose-900/30 rounded-2xl bg-rose-950/10">
+              <div className="overflow-x-auto border border-rose-900/40 rounded-2xl bg-rose-950/20 relative z-10">
                 <table className="w-full text-left font-mono text-xs">
-                  <thead className="bg-rose-950/40 text-rose-300/80 border-b border-rose-900/30">
+                  <thead className="bg-rose-950/50 text-rose-300/80 border-b border-rose-900/30">
                     <tr>
                       <th className="p-3">PID</th>
                       <th className="p-3">Process Name</th>
@@ -362,8 +424,9 @@ export const SystemAssessmentTab: React.FC<Props> = ({
           </div>
 
           {/* Vulnerable Software Overview */}
-          <div className="glass-card p-6 rounded-3xl space-y-4">
-            <div className="flex items-center justify-between">
+          <div className="glass-panel hover-glow-amber p-6 sm:p-7 rounded-3xl border border-white/[0.12] space-y-4 relative overflow-hidden group">
+            <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-amber-400/40 to-transparent pointer-events-none" />
+            <div className="flex items-center justify-between relative z-10">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-400">
                   <Package className="w-5 h-5" />
@@ -379,13 +442,13 @@ export const SystemAssessmentTab: React.FC<Props> = ({
             </div>
 
             {software_audit.vulnerabilities.length === 0 ? (
-              <div className="p-6 bg-slate-950/60 rounded-2xl text-center text-emerald-400 text-xs border border-emerald-500/20">
+              <div className="p-6 glass-subcard rounded-2xl text-center text-emerald-400 text-xs border border-emerald-500/30 relative z-10">
                 No known critical or high severity CVEs detected across installed software packages.
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-3 relative z-10">
                 {software_audit.vulnerabilities.map((v, idx) => (
-                  <div key={idx} className="bg-slate-950/80 p-4 rounded-2xl border border-white/[0.05] flex items-start gap-4">
+                  <div key={idx} className="glass-subcard p-4 rounded-2xl border border-white/[0.08] flex items-start gap-4">
                     <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 shrink-0">
                       <AlertTriangle className="w-4 h-4" />
                     </div>
@@ -412,8 +475,9 @@ export const SystemAssessmentTab: React.FC<Props> = ({
 
       {/* Viewport: Software Vulnerabilities */}
       {activeSubTab === 'vulns' && (
-        <div className="glass-card p-6 rounded-3xl space-y-4">
-          <div className="flex justify-between items-center">
+        <div className="glass-panel hover-glow-amber p-6 sm:p-7 rounded-3xl border border-white/[0.12] space-y-4 relative overflow-hidden group">
+          <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-amber-400/40 to-transparent pointer-events-none" />
+          <div className="flex justify-between items-center relative z-10">
             <div>
               <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
                 <Package className="w-4 h-4 text-amber-400" /> Audited Installed System Packages
@@ -422,14 +486,14 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                 Cross-referenced against NIST NVD and Known Exploited Vulnerabilities catalog
               </p>
             </div>
-            <span className="text-xs font-mono text-cyan-300 font-bold bg-cyan-950/80 px-3 py-1 rounded-xl border border-cyan-800/50">
+            <span className="text-xs font-mono text-cyan-300 font-bold bg-cyan-950/80 px-3 py-1 rounded-xl border border-cyan-800/50 backdrop-blur-sm">
               {software_audit.total_software_found} Packages Audited
             </span>
           </div>
 
-          <div className="overflow-x-auto border border-white/[0.06] rounded-2xl">
+          <div className="overflow-x-auto border border-white/[0.08] rounded-2xl glass-subcard relative z-10">
             <table className="w-full text-left font-mono text-xs">
-              <thead className="bg-slate-950 text-slate-400 border-b border-white/[0.06]">
+              <thead className="bg-white/[0.04] text-slate-300 border-b border-white/[0.08]">
                 <tr>
                   <th className="p-3.5">Application Name</th>
                   <th className="p-3.5">Installed Version</th>
@@ -438,9 +502,9 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                   <th className="p-3.5">Severity</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.04] bg-slate-950/40">
+              <tbody className="divide-y divide-white/[0.04]">
                 {software_audit.installed_software.map((app, idx) => (
-                  <tr key={idx} className="hover:bg-slate-900/60 transition">
+                  <tr key={idx} className="hover:bg-white/[0.04] transition">
                     <td className="p-3.5 font-bold text-slate-200">{app.name}</td>
                     <td className="p-3.5 text-cyan-300 font-semibold">{app.version}</td>
                     <td className="p-3.5 text-slate-400">{app.publisher}</td>
@@ -455,7 +519,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                     </td>
                     <td className="p-3.5">
                       {app.has_cve ? (
-                        <span className="px-2 py-0.5 bg-rose-950 text-rose-300 border border-rose-800 text-[10px] font-bold rounded">
+                        <span className="px-2 py-0.5 bg-rose-950/80 text-rose-300 border border-rose-800 text-[10px] font-bold rounded">
                           {app.severity || 'HIGH'}
                         </span>
                       ) : (
@@ -472,13 +536,14 @@ export const SystemAssessmentTab: React.FC<Props> = ({
 
       {/* Viewport: Processes */}
       {activeSubTab === 'processes' && (
-        <div className="glass-card p-6 rounded-3xl space-y-4">
-          <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+        <div className="glass-panel hover-glow-cyan p-6 sm:p-7 rounded-3xl border border-white/[0.12] space-y-4 relative overflow-hidden group">
+          <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none" />
+          <h3 className="text-sm font-extrabold text-white flex items-center gap-2 relative z-10">
             <Cpu className="w-4 h-4 text-cyan-400" /> Monitored Host Processes
           </h3>
-          <div className="overflow-x-auto border border-white/[0.06] rounded-2xl">
+          <div className="overflow-x-auto border border-white/[0.08] rounded-2xl glass-subcard relative z-10">
             <table className="w-full text-left font-mono text-xs">
-              <thead className="bg-slate-950 text-slate-400 border-b border-white/[0.06]">
+              <thead className="bg-white/[0.04] text-slate-300 border-b border-white/[0.08]">
                 <tr>
                   <th className="p-3.5">PID</th>
                   <th className="p-3.5">Process Name</th>
@@ -487,13 +552,13 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                   <th className="p-3.5">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.04] bg-slate-950/40">
+              <tbody className="divide-y divide-white/[0.04]">
                 {safeThreats.length > 0 ? (
                   safeThreats.map((proc: any, idx: number) => (
-                    <tr key={idx} className="hover:bg-slate-900/60 transition">
+                    <tr key={idx} className="hover:bg-white/[0.04] transition">
                       <td className="p-3.5 text-slate-400">{proc.pid}</td>
                       <td className="p-3.5 font-bold text-slate-200">{proc.name}</td>
-                      <td className="p-3.5 text-slate-400 font-mono text-[11px] truncate max-w-xs">{proc.path || 'N/A'}</td>
+                      <td className="p-3.5 text-slate-300 font-mono text-[11px] truncate max-w-xs">{proc.path || 'N/A'}</td>
                       <td className="p-3.5 text-cyan-300">{proc.anomaly_reason || 'Verified system process'}</td>
                       <td className="p-3.5">
                         <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${
@@ -506,7 +571,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="p-6 text-center text-slate-500 italic">
+                    <td colSpan={5} className="p-6 text-center text-slate-400 italic">
                       No anomalous processes detected. All running host processes verified safe.
                     </td>
                   </tr>
@@ -519,8 +584,9 @@ export const SystemAssessmentTab: React.FC<Props> = ({
 
       {/* Viewport: Predictive Forecast */}
       {activeSubTab === 'forecast' && (
-        <div className="glass-card p-6 rounded-3xl space-y-4">
-          <div>
+        <div className="glass-panel hover-glow-cyan p-6 sm:p-7 rounded-3xl border border-white/[0.12] space-y-4 relative overflow-hidden group">
+          <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none" />
+          <div className="relative z-10">
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-cyan-400" /> Predictive Threat Forecast &amp; Attack Vectors
             </h3>
@@ -529,12 +595,12 @@ export const SystemAssessmentTab: React.FC<Props> = ({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
             {threat_forecast.map((fc, idx) => (
-              <div key={idx} className="glass-panel p-5 rounded-2xl border border-white/[0.06] space-y-3">
+              <div key={idx} className="glass-subcard p-5 rounded-2xl border border-white/[0.08] space-y-3 hover:-translate-y-0.5 transition-all">
                 <div className="flex justify-between items-start">
                   <div className="font-bold text-white text-sm flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: fc.probability === 'CRITICAL' ? '#ef4444' : fc.probability === 'HIGH' ? '#f59e0b' : '#22c55e' }} />
+                    <span className="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_currentColor]" style={{ backgroundColor: fc.probability === 'CRITICAL' ? '#ef4444' : fc.probability === 'HIGH' ? '#f59e0b' : '#22c55e' }} />
                     {fc.vector}
                   </div>
                   <div className="flex items-center gap-2">
@@ -551,7 +617,7 @@ export const SystemAssessmentTab: React.FC<Props> = ({
 
                 <p className="text-xs text-slate-300">{fc.reasoning}</p>
 
-                <div className="bg-slate-900/90 p-3 rounded-xl border border-white/[0.04] text-xs font-mono text-cyan-300">
+                <div className="bg-cyan-950/30 p-3 rounded-xl border border-cyan-500/20 text-xs font-mono text-cyan-300 backdrop-blur-sm">
                   <strong className="text-slate-400">Preemptive Defense:</strong> {fc.mitigation}
                 </div>
               </div>
@@ -570,8 +636,9 @@ export const SystemAssessmentTab: React.FC<Props> = ({
             onOpenJarvisChat={onOpenJarvisChat}
           />
 
-          <div className="glass-card p-6 rounded-3xl space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="glass-panel hover-glow-emerald p-6 sm:p-7 rounded-3xl border border-white/[0.12] space-y-4 relative overflow-hidden group">
+            <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent pointer-events-none" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
               <div>
                 <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
                   <Wrench className="w-4 h-4 text-emerald-400" /> Actionable Vulnerability Remediation Plan
@@ -586,43 +653,43 @@ export const SystemAssessmentTab: React.FC<Props> = ({
                   cyberAudio.playClick();
                   jarvisVoice.speak(jarvisVoice.generateSolutionScript(null, assessment), 'solution');
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600/30 via-teal-600/30 to-cyan-600/30 hover:from-emerald-600/50 hover:to-cyan-600/50 text-emerald-200 hover:text-white border border-emerald-500/50 hover:border-emerald-400 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer shrink-0"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600/30 via-teal-600/30 to-cyan-600/30 hover:from-emerald-600/50 hover:to-cyan-600/50 text-emerald-200 hover:text-white border border-emerald-500/50 hover:border-emerald-400 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer shrink-0 backdrop-blur-sm"
               >
                 <Bot className="w-4 h-4 text-emerald-400" />
                 <span>Hear J.A.R.V.I.S. Remediation Guide</span>
               </button>
             </div>
 
-          <div className="space-y-3">
-            {remediation_plan.length === 0 ? (
-              <div className="p-8 bg-slate-950/80 rounded-2xl text-center text-emerald-400 text-xs border border-emerald-500/30">
-                🎉 No immediate remediation required! System is currently in a hardened state.
-              </div>
-            ) : (
-              remediation_plan.map((item, idx) => (
-                <div key={idx} className="bg-slate-950/80 p-4 rounded-2xl border border-white/[0.05] flex justify-between items-start gap-4">
-                  <div className="space-y-1">
-                    <div className="font-bold text-white text-sm flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800/60 text-xs flex items-center justify-center font-mono font-bold">
-                        {idx + 1}
-                      </span>
-                      {item.action}
-                    </div>
-                    <div className="text-xs text-slate-300 pl-7">{item.details}</div>
-                  </div>
-
-                  <span className={`px-2.5 py-1 text-[10px] font-bold rounded whitespace-nowrap ${
-                    item.urgency === 'IMMEDIATE' ? 'bg-rose-950 text-rose-300 border border-rose-800' :
-                    item.urgency === 'HIGH' ? 'bg-amber-950 text-amber-300 border border-amber-800' :
-                    'bg-slate-800 text-slate-400'
-                  }`}>
-                    {item.urgency} PRIORITY
-                  </span>
+            <div className="space-y-3 relative z-10">
+              {remediation_plan.length === 0 ? (
+                <div className="p-8 glass-subcard rounded-2xl text-center text-emerald-400 text-xs border border-emerald-500/30">
+                  🎉 No immediate remediation required! System is currently in a hardened state.
                 </div>
-              ))
-            )}
+              ) : (
+                remediation_plan.map((item, idx) => (
+                  <div key={idx} className="glass-subcard p-4 rounded-2xl border border-white/[0.08] flex justify-between items-start gap-4">
+                    <div className="space-y-1">
+                      <div className="font-bold text-white text-sm flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 text-xs flex items-center justify-center font-mono font-bold">
+                          {idx + 1}
+                        </span>
+                        {item.action}
+                      </div>
+                      <div className="text-xs text-slate-300 pl-7">{item.details}</div>
+                    </div>
+
+                    <span className={`px-2.5 py-1 text-[10px] font-bold rounded whitespace-nowrap ${
+                      item.urgency === 'IMMEDIATE' ? 'bg-rose-950 text-rose-300 border border-rose-800' :
+                      item.urgency === 'HIGH' ? 'bg-amber-950 text-amber-300 border border-amber-800' :
+                      'bg-slate-800/80 text-slate-300 border border-white/10'
+                    }`}>
+                      {item.urgency} PRIORITY
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        </div>
         </div>
       )}
     </div>

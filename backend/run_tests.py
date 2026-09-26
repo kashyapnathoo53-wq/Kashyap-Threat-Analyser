@@ -11,9 +11,9 @@ from samples_generator import get_preset_samples, get_preset_sample_by_id
 def test_full_pipeline():
     print("[+] Testing Malware Threat Analysis Pipeline...")
     
-    preset = get_preset_sample_by_id("sample_wannacry")
-    content = preset["content_bytes"]
-    filename = preset["name"]
+    # Self-contained synthetic test payload for analytical pipeline verification
+    content = b"MZ\x90\0\x03\0\0\0vssadmin.exe delete shadows /all /quiet bcdedit /set {default} recoveryenabled No CryptEncrypt VirtualAllocEx WriteProcessMemory CreateRemoteThread 185.220.101.4 UPX0 UPX1"
+    filename = "test_synthetic_payload.bin"
     
     # 1. Static Analyzer
     sa = StaticAnalyzer()
@@ -68,6 +68,14 @@ def test_full_pipeline():
     assert len(assessment["threat_forecast"]) > 0
     print(f"  [x] Host Scanner & Vulnerability Auditor passed (Host: {assessment['host_info']['hostname']}, Health: {assessment['health_score']}/100).")
     
+    # 9. Pasha 2.0 Local Agent & Snapshot Engine
+    from agent.main import run_local_scan
+    snapshot = run_local_scan(save_to_store=True)
+    assert snapshot.snapshot_id is not None
+    assert len(snapshot.collector_reports) >= 6
+    assert "processes" in snapshot.collector_reports
+    print(f"  [x] Pasha 2.0 Local Agent passed (Snapshot: {snapshot.snapshot_id}, Collectors: {len(snapshot.collector_reports)}).")
+
     print("[SUCCESS] All pipeline & host security tests passed cleanly!")
 
 if __name__ == "__main__":

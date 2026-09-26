@@ -13,6 +13,9 @@ from agent.security.suspicious_items import (
 
 from agent.security.diff import compute_security_diff
 from agent.security.correlation import correlate_evidence
+from agent.security.timeline import reconstruct_security_timeline
+from agent.security.blast_radius import compute_blast_radius
+from agent.security.metrics import evaluate_dual_metrics
 
 __all__ = [
     "evaluate_process_heuristics",
@@ -23,6 +26,9 @@ __all__ = [
     "evaluate_file_heuristics",
     "compute_security_diff",
     "correlate_evidence",
+    "reconstruct_security_timeline",
+    "compute_blast_radius",
+    "evaluate_dual_metrics",
 ]
 
 

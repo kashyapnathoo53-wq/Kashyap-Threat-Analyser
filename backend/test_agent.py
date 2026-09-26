@@ -728,8 +728,270 @@ class TestPashaLocalAgent(unittest.TestCase):
         r_bad = client.get("/api/agent/attack-story/nonexistent_cand_9999")
         self.assertEqual(r_bad.status_code, 404)
 
+    def test_security_timeline_reconstruction(self):
+        from agent.models.candidate import SuspiciousCandidate
+        from agent.security.timeline import reconstruct_security_timeline
+
+        cand = SuspiciousCandidate(
+            candidate_id="cand_time_test",
+            snapshot_id="snap_time_test_01",
+            category="process",
+            name="evil_stealer.exe",
+            target_path="C:\\Users\\Victim\\AppData\\Local\\Temp\\evil_stealer.exe",
+            sha256="abc1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcd",
+            discovered_at="2026-09-26T07:00:00+00:00",
+            priority_score=85,
+            heuristics_matched=["Executed from temporary directory", "Network connection to untrusted host"],
+            status="ANALYZED"
+        )
+
+        mock_report = {
+            "report_id": "rep_time_test",
+            "behavioral_analysis": {
+                "api_call_stream": [
+                    {"timestamp": 0.2, "pid": 4120, "process": "evil_stealer.exe", "api": "VirtualAllocEx", "category": "Memory Injection", "arguments": "flProtect=PAGE_EXECUTE_READWRITE", "risk": "HIGH"},
+                    {"timestamp": 0.8, "pid": 4120, "process": "evil_stealer.exe", "api": "URLDownloadToFileW", "category": "Network Download", "arguments": "szURL='http://c2.evil.com/drop.bin'", "risk": "HIGH"},
+                ],
+                "filesystem_activity": [
+                    {"action": "CREATE_TEMP", "path": "C:\\Users\\Victim\\AppData\\Local\\Temp\\drop.bin", "size": "128 KB"}
+                ],
+                "registry_activity": [
+                    {"action": "SET_VALUE", "key": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\Persist", "value": "C:\\Temp\\evil_stealer.exe"}
+                ],
+                "network_activity": [
+                    {"proto": "HTTP", "destination": "185.190.140.88:80", "domain": "c2.evil.com", "type": "Beacon", "bytes_sent": 256}
+                ]
+            },
+            "mitre_mapping": {
+                "techniques": [
+                    {"technique_id": "T1059", "name": "Command and Scripting Interpreter", "tactic": "Execution"}
+                ]
+            }
+        }
+
+        timeline = reconstruct_security_timeline(candidate=cand, report=mock_report)
+        self.assertIsNotNone(timeline.timeline_id)
+        self.assertEqual(timeline.target_id, "cand_time_test")
+        self.assertGreater(timeline.total_events, 4)
+        self.assertIn("api_call", timeline.event_counts_by_category)
+        self.assertIn("detection", timeline.event_counts_by_category)
+        self.assertIn("filesystem", timeline.event_counts_by_category)
+        self.assertIn("network", timeline.event_counts_by_category)
+
+        # Verify strict chronological order
+        prev_rel = -1.0
+        for ev in timeline.events:
+            self.assertGreaterEqual(ev.relative_time_seconds, prev_rel)
+            prev_rel = ev.relative_time_seconds
+
+    def test_security_timeline_api_endpoints(self):
+        from fastapi.testclient import TestClient
+        from main import app
+        client = TestClient(app)
+
+        # 1. Test GET /api/agent/timeline/latest
+        r_latest = client.get("/api/agent/timeline/latest")
+        if r_latest.status_code == 200:
+            t_data = r_latest.json()
+            self.assertIn("timeline_id", t_data)
+            self.assertIn("events", t_data)
+            self.assertIn("total_events", t_data)
+            self.assertIn("event_counts_by_category", t_data)
+            self.assertIn("event_counts_by_severity", t_data)
+
+            # 2. Test candidate timeline endpoint
+            target_id = t_data["target_id"]
+            if t_data["target_type"] == "candidate":
+                r_cand = client.get(f"/api/agent/timeline/{target_id}")
+                self.assertEqual(r_cand.status_code, 200)
+                self.assertEqual(r_cand.json()["target_id"], target_id)
+
+        # 3. Test 404 on nonexistent candidate timeline
+        r_bad = client.get("/api/agent/timeline/nonexistent_cand_9999")
+        self.assertEqual(r_bad.status_code, 404)
+
+        # 4. Test 404 on nonexistent snapshot timeline
+        r_bad_snap = client.get("/api/agent/timeline/snapshot/nonexistent_snap_9999")
+        self.assertEqual(r_bad_snap.status_code, 404)
+
+    def test_blast_radius_computation(self):
+        from agent.models.candidate import SuspiciousCandidate
+        from agent.security.blast_radius import compute_blast_radius
+
+        cand = SuspiciousCandidate(
+            candidate_id="cand_blast_test",
+            snapshot_id="snap_blast_test_01",
+            category="process",
+            name="ransom_payload.exe",
+            target_path="C:\\Users\\Victim\\AppData\\Local\\Temp\\ransom_payload.exe",
+            sha256="1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff",
+            discovered_at="2026-09-26T07:15:00+00:00",
+            priority_score=90,
+            heuristics_matched=["Known Ransomware Heuristics", "Suspicious Process Spawn"],
+            status="ANALYZED",
+            metadata={"pid": 5512, "path": "C:\\Users\\Victim\\AppData\\Local\\Temp\\ransom_payload.exe"}
+        )
+
+        mock_report = {
+            "report_id": "rep_blast_test",
+            "threat_scoring": {"threat_score": 85, "verdict": "MALICIOUS"},
+            "behavioral_analysis": {
+                "process_tree": {
+                    "name": "ransom_payload.exe",
+                    "pid": 5512,
+                    "children": [
+                        {"name": "vssadmin.exe", "pid": 6010, "children": []}
+                    ]
+                },
+                "api_call_stream": [
+                    {"api": "VirtualAllocEx", "process": "explorer.exe", "risk": "HIGH"}
+                ],
+                "filesystem_activity": [
+                    {"action": "CREATE_TEMP", "path": "C:\\Users\\Victim\\AppData\\Local\\Temp\\note.txt", "size": "2 KB"}
+                ],
+                "registry_activity": [
+                    {"action": "SET_VALUE", "key": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\Locker", "value": "C:\\Temp\\ransom_payload.exe"}
+                ],
+                "network_activity": [
+                    {"proto": "HTTP", "destination": "45.33.32.156:8080", "domain": "c2.ransom-gate.com"}
+                ]
+            }
+        }
+
+        blast = compute_blast_radius(candidate=cand, report=mock_report)
+        self.assertIsNotNone(blast.report_id)
+        self.assertEqual(blast.candidate_id, "cand_blast_test")
+        self.assertGreater(blast.blast_score, 50)
+        self.assertIn(blast.scope_level, ["PERSISTED", "HOST_WIDE_COMPROMISE"])
+        self.assertGreater(len(blast.affected_processes), 1)  # root + child or injected
+        self.assertGreater(len(blast.affected_files), 0)
+        self.assertGreater(len(blast.affected_registry), 0)
+        self.assertGreater(len(blast.affected_network), 0)
+        self.assertGreater(len(blast.containment_actions), 2)
+
+        action_types = [a.action for a in blast.containment_actions]
+        self.assertIn("TERMINATE", action_types)
+        self.assertIn("QUARANTINE", action_types)
+        self.assertIn("DELETE_KEY", action_types)
+        self.assertIn("BLOCK_FIREWALL", action_types)
+
+    def test_blast_radius_api_endpoints(self):
+        from fastapi.testclient import TestClient
+        from main import app
+        client = TestClient(app)
+
+        # 1. Test GET /api/agent/blast-radius/latest
+        r_latest = client.get("/api/agent/blast-radius/latest")
+        if r_latest.status_code == 200:
+            b_data = r_latest.json()
+            self.assertIn("report_id", b_data)
+            self.assertIn("blast_score", b_data)
+            self.assertIn("scope_level", b_data)
+            self.assertIn("containment_actions", b_data)
+            self.assertIn("affected_processes", b_data)
+
+            # 2. Test candidate blast radius endpoint
+            cand_id = b_data["candidate_id"]
+            r_cand = client.get(f"/api/agent/blast-radius/{cand_id}")
+            self.assertEqual(r_cand.status_code, 200)
+            self.assertEqual(r_cand.json()["candidate_id"], cand_id)
+
+        # 3. Test 404 on nonexistent candidate
+        r_bad = client.get("/api/agent/blast-radius/nonexistent_cand_9999")
+        self.assertEqual(r_bad.status_code, 404)
+
+    def test_dual_threat_metrics_computation(self):
+        from agent.models.candidate import SuspiciousCandidate
+        from agent.security.metrics import evaluate_dual_metrics
+
+        # Case 1: High Risk & High Confidence (WannaCry with YARA & C2 & Injection)
+        cand_high = SuspiciousCandidate(
+            candidate_id="cand_metric_test_01",
+            snapshot_id="snap_m_01",
+            category="process",
+            name="wannacry_sim.exe",
+            target_path="C:\\Users\\Victim\\AppData\\Local\\Temp\\wannacry_sim.exe",
+            sha256="222233334444555566667777888899990000aaaabbbbccccddddeeeeffff1111",
+            discovered_at="2026-09-26T07:20:00+00:00",
+            priority_score=95,
+            heuristics_matched=["Known Ransomware Heuristics", "Suspicious Process Spawn"],
+            status="ANALYZED"
+        )
+        report_high = {
+            "report_id": "rep_metric_01",
+            "threat_scoring": {"threat_score": 90, "verdict": "MALICIOUS"},
+            "yara_scan": {
+                "matches": [
+                    {"rule": "Ransomware_WannaCry", "severity": "CRITICAL"},
+                    {"rule": "ShadowCopy_Deletion", "severity": "HIGH"}
+                ]
+            },
+            "static_analysis": {"entropy": {"value": 7.8}},
+            "behavioral_analysis": {
+                "api_call_stream": [
+                    {"api": "VirtualAllocEx", "process": "lsass.exe", "risk": "HIGH"}
+                ],
+                "registry_activity": [
+                    {"key": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\Wanna", "value": "C:\\Temp\\wannacry_sim.exe"}
+                ],
+                "network_activity": [
+                    {"proto": "TCP", "destination": "185.190.140.88:445"}
+                ]
+            }
+        }
+        metrics_high = evaluate_dual_metrics(candidate=cand_high, report=report_high)
+        self.assertIsNotNone(metrics_high.metric_id)
+        self.assertGreaterEqual(metrics_high.risk_score, 75)
+        self.assertGreaterEqual(metrics_high.confidence_score, 75)
+        self.assertEqual(metrics_high.action_classification, "AUTOMATED_CONTAINMENT")
+        self.assertEqual(metrics_high.risk_tier, "CRITICAL")
+        self.assertIn(metrics_high.confidence_tier, ["HIGH_CONFIDENCE", "CONFIRMED"])
+
+        # Case 2: Speculative / Unconfirmed Heuristic Candidate (No sandbox report)
+        cand_spec = SuspiciousCandidate(
+            candidate_id="cand_metric_test_02",
+            snapshot_id="snap_m_02",
+            category="file",
+            name="strange_script.ps1",
+            target_path="C:\\Users\\Victim\\AppData\\Local\\Temp\\strange_script.ps1",
+            discovered_at="2026-09-26T07:22:00+00:00",
+            priority_score=80,
+            heuristics_matched=["Suspicious Script Extension"],
+            status="DISCOVERED"
+        )
+        metrics_spec = evaluate_dual_metrics(candidate=cand_spec, report=None)
+        # Confidence must be capped to prevent false-positive automated containment
+        self.assertLessEqual(metrics_spec.confidence_score, 50)
+        self.assertEqual(metrics_spec.action_classification, "URGENT_ANALYST_REVIEW")
+
+    def test_dual_threat_metrics_api_endpoints(self):
+        from fastapi.testclient import TestClient
+        from main import app
+        client = TestClient(app)
+
+        # 1. Test GET /api/agent/metrics/latest
+        r_latest = client.get("/api/agent/metrics/latest")
+        if r_latest.status_code == 200:
+            m_data = r_latest.json()
+            self.assertIn("metric_id", m_data)
+            self.assertIn("risk_score", m_data)
+            self.assertIn("confidence_score", m_data)
+            self.assertIn("action_classification", m_data)
+            self.assertIn("factors", m_data)
+
+            # 2. Test candidate metrics endpoint
+            cand_id = m_data["candidate_id"]
+            r_cand = client.get(f"/api/agent/metrics/{cand_id}")
+            self.assertEqual(r_cand.status_code, 200)
+            self.assertEqual(r_cand.json()["candidate_id"], cand_id)
+
+        # 3. Test 404 on nonexistent candidate
+        r_bad = client.get("/api/agent/metrics/nonexistent_cand_9999")
+        self.assertEqual(r_bad.status_code, 404)
+
 if __name__ == "__main__":
     unittest.main()
+
 
 
 

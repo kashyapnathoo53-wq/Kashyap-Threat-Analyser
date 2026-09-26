@@ -14,6 +14,10 @@ from agent.models.snapshot import (
     SecuritySnapshot,
 )
 
+from agent.models.timeline import TimelineEvent, SecurityTimeline
+from agent.models.blast_radius import AffectedEntity, ContainmentAction, BlastRadiusReport
+from agent.models.metrics import EvidenceFactor, DualThreatMetrics
+
 __all__ = [
     "ProcessItem",
     "PersistenceItem",
@@ -24,4 +28,11 @@ __all__ = [
     "BrowserInfo",
     "CollectorReport",
     "SecuritySnapshot",
+    "TimelineEvent",
+    "SecurityTimeline",
+    "AffectedEntity",
+    "ContainmentAction",
+    "BlastRadiusReport",
+    "EvidenceFactor",
+    "DualThreatMetrics",
 ]

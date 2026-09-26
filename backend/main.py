@@ -26,6 +26,9 @@ from agent.security.candidate_detector import (
 )
 from agent.orchestration.investigator import InvestigationOrchestrator
 from agent.security.correlation import correlate_evidence
+from agent.security.timeline import reconstruct_security_timeline
+from agent.security.blast_radius import compute_blast_radius
+from agent.security.metrics import evaluate_dual_metrics
 
 
 
@@ -528,6 +531,142 @@ def get_candidate_attack_story(candidate_id: str):
 
     story = correlate_evidence(candidate=cand, report=report, snapshot=snapshot)
     return story.model_dump(mode="json")
+
+
+# -------------------------------------------------------------
+# MILESTONE 7: SECURITY TIMELINE RECONSTRUCTION
+# -------------------------------------------------------------
+
+@app.get("/api/agent/timeline/latest")
+def get_latest_security_timeline():
+    """
+    Reconstructs the chronological forensic timeline for the latest investigated candidate
+    or most recent host snapshot.
+    """
+    candidates = candidate_queue.list_candidates(status="ANALYZED", limit=1)
+    if not candidates:
+        candidates = candidate_queue.list_candidates(limit=1)
+
+    if candidates:
+        cand = candidates[0]
+        report = orchestrator.get_candidate_report(cand.candidate_id)
+        snapshot = snapshot_store.load_snapshot(cand.snapshot_id) if cand.snapshot_id else None
+        timeline = reconstruct_security_timeline(candidate=cand, report=report, snapshot=snapshot)
+        return timeline.model_dump(mode="json")
+
+    # If no candidate, fallback to latest host snapshot
+    snap = snapshot_store.get_latest_snapshot()
+    if not snap:
+        raise HTTPException(status_code=404, detail="No candidates or snapshots found to construct timeline.")
+
+    timeline = reconstruct_security_timeline(snapshot=snap)
+    return timeline.model_dump(mode="json")
+
+
+@app.get("/api/agent/timeline/snapshot/{snapshot_id}")
+def get_snapshot_security_timeline(snapshot_id: str):
+    """
+    Reconstructs the forensic timeline across all events in a specific host snapshot.
+    """
+    snap = snapshot_store.load_snapshot(snapshot_id)
+    if not snap:
+        raise HTTPException(status_code=404, detail=f"Snapshot '{snapshot_id}' not found.")
+
+    timeline = reconstruct_security_timeline(snapshot=snap)
+    return timeline.model_dump(mode="json")
+
+
+@app.get("/api/agent/timeline/{candidate_id}")
+def get_candidate_security_timeline(candidate_id: str):
+    """
+    Reconstructs the chronological forensic timeline for a specific suspicious candidate.
+    """
+    cand = candidate_queue.get_candidate(candidate_id)
+    if not cand:
+        raise HTTPException(status_code=404, detail=f"Candidate '{candidate_id}' not found.")
+
+    report = orchestrator.get_candidate_report(candidate_id)
+    snapshot = snapshot_store.load_snapshot(cand.snapshot_id) if cand.snapshot_id else None
+    timeline = reconstruct_security_timeline(candidate=cand, report=report, snapshot=snapshot)
+    return timeline.model_dump(mode="json")
+
+
+# -------------------------------------------------------------
+# MILESTONE 8: IMPACT & BLAST RADIUS ANALYSIS
+# -------------------------------------------------------------
+
+@app.get("/api/agent/blast-radius/latest")
+def get_latest_blast_radius():
+    """
+    Computes the Impact and Blast Radius for the latest investigated candidate.
+    """
+    candidates = candidate_queue.list_candidates(status="ANALYZED", limit=1)
+    if not candidates:
+        candidates = candidate_queue.list_candidates(limit=1)
+
+    if not candidates:
+        raise HTTPException(status_code=404, detail="No candidates found to evaluate blast radius.")
+
+    cand = candidates[0]
+    report = orchestrator.get_candidate_report(cand.candidate_id)
+    snapshot = snapshot_store.load_snapshot(cand.snapshot_id) if cand.snapshot_id else None
+    blast_report = compute_blast_radius(candidate=cand, report=report, snapshot=snapshot)
+    return blast_report.model_dump(mode="json")
+
+
+@app.get("/api/agent/blast-radius/{candidate_id}")
+def get_candidate_blast_radius(candidate_id: str):
+    """
+    Computes the Impact and Blast Radius for a specific suspicious candidate.
+    """
+    cand = candidate_queue.get_candidate(candidate_id)
+    if not cand:
+        raise HTTPException(status_code=404, detail=f"Candidate '{candidate_id}' not found.")
+
+    report = orchestrator.get_candidate_report(candidate_id)
+    snapshot = snapshot_store.load_snapshot(cand.snapshot_id) if cand.snapshot_id else None
+    blast_report = compute_blast_radius(candidate=cand, report=report, snapshot=snapshot)
+    return blast_report.model_dump(mode="json")
+
+
+# -------------------------------------------------------------
+# MILESTONE 9: RISK VS. CONFIDENCE METRIC SEPARATION
+# -------------------------------------------------------------
+
+@app.get("/api/agent/metrics/latest")
+def get_latest_threat_metrics():
+    """
+    Evaluates independent Risk Severity and Evidentiary Confidence metrics
+    for the latest investigated candidate.
+    """
+    candidates = candidate_queue.list_candidates(status="ANALYZED", limit=1)
+    if not candidates:
+        candidates = candidate_queue.list_candidates(limit=1)
+
+    if not candidates:
+        raise HTTPException(status_code=404, detail="No candidates found to evaluate threat metrics.")
+
+    cand = candidates[0]
+    report = orchestrator.get_candidate_report(cand.candidate_id)
+    snapshot = snapshot_store.load_snapshot(cand.snapshot_id) if cand.snapshot_id else None
+    metrics = evaluate_dual_metrics(candidate=cand, report=report, snapshot=snapshot)
+    return metrics.model_dump(mode="json")
+
+
+@app.get("/api/agent/metrics/{candidate_id}")
+def get_candidate_threat_metrics(candidate_id: str):
+    """
+    Evaluates independent Risk Severity and Evidentiary Confidence metrics
+    for a specific suspicious candidate.
+    """
+    cand = candidate_queue.get_candidate(candidate_id)
+    if not cand:
+        raise HTTPException(status_code=404, detail=f"Candidate '{candidate_id}' not found.")
+
+    report = orchestrator.get_candidate_report(candidate_id)
+    snapshot = snapshot_store.load_snapshot(cand.snapshot_id) if cand.snapshot_id else None
+    metrics = evaluate_dual_metrics(candidate=cand, report=report, snapshot=snapshot)
+    return metrics.model_dump(mode="json")
 
 
 @app.post("/api/analyze/upload")
